@@ -1,0 +1,963 @@
+🎯 Cash Trip - Fluxo Completo Explicado (Linguagem Simples) 
+
+# 🎬 A JORNADA DO USUÁRIO (Passo a Passo Visual) 
+
+# 🏗  O QUE PRECISA SER CONSTRUÍDO (6 Partes Principais) 
+
+Vou explicar como se fosse construir uma casa: 
+
+## PARTE 1: O QUIZ (A Porta de Entrada)  🚪 
+
+O que é: 
+
+Como um questionário do BuzzFeed, mas sobre viagens 
+
+25 perguntas para entender quem é o usuário 
+
+👤 USUÁRIO ABRE O APP 👤 USUÁRIO ABRE O APP 
+
+↓↓
+
+📝 FAZ O QUIZ (25 perguntas) 📝 FAZ O QUIZ (25 perguntas) 
+
+↓↓
+
+⏳ BARRINHA DE LOADING (Agente analisando...) ⏳ BARRINHA DE LOADING (Agente analisando...) 
+
+↓↓
+
+✅ PERFIL CRIADO! ✅ PERFIL CRIADO! 
+
+↓↓
+
+🗺  USUÁRIO ESCOLHE: 🗺  USUÁRIO ESCOLHE: 
+
+[Digite destino + orçamento] [Digite destino + orçamento] 
+
+OU OU 
+
+[Ver sugestões do agente] [Ver sugestões do agente] 
+
+↓↓
+
+🤖 AGENTE PLANEJA VIAGEM COMPLETA 🤖 AGENTE PLANEJA VIAGEM COMPLETA 
+
+(Voos, hotel, restaurantes, passeios) (Voos, hotel, restaurantes, passeios) 
+
+↓↓
+
+📱 USUÁRIO REVISA NO APP 📱 USUÁRIO REVISA NO APP 
+
+↓↓
+
+💳 APROVA E PAGA 💳 APROVA E PAGA 
+
+↓↓
+
+📅 ROTEIRO VAI PARA O DASHBOARD 📅 ROTEIRO VAI PARA O DASHBOARD 
+
+↓↓
+
+✈ VIAGEM ACONTECE! ✈ VIAGEM ACONTECE! 
+
+↓↓
+
+💬 CHAT 24/7 durante viagem (se precisar) 💬 CHAT 24/7 durante viagem (se precisar) O que precisa construir: 
+
+1.  Telas do quiz no app  (React Native/Flutter) 
+
+25 telas, cada uma com uma pergunta 
+
+Botões bonitos para escolher respostas 
+
+Barra de progresso (1/25, 2/25... 25/25) 
+
+2.  Armazenar as respostas 
+
+Conforme usuário responde, salvar num "caderninho" temporário 
+
+Exemplo: {"P1": "Homem", "P2": "São Paulo", "P3": 28...} 
+
+3.  Botão "Finalizar Quiz" 
+
+Quando clicar, envia todas respostas para o "cérebro" (backend) 
+
+Analogia:  É como fazer uma ficha médica antes de consultar um médico. O médico (agente) precisa dessas informações para te entender. 
+
+## PARTE 2: O CÉREBRO DO AGENTE (Profile Builder)  🧠 
+
+O que é: 
+
+O "Sherlock Holmes" que lê suas respostas e descobre quem você é 
+
+O que precisa construir: 
+
+2.1. Backend (Servidor) 
+
+Pense como:  A cozinha de um restaurante (ninguém vê, mas é onde a mágica acontece) 
+
+2.2. Endpoint (Portinha de Comunicação) 
+
+Funcionamento (em português): 
+
+> Ingredientes (tecnologias): Ingredientes (tecnologias):
+> - Node.js (o fogão) - Node.js (o fogão)
+> - Express (as panelas) - Express (as panelas)
+> - Anthropic Claude (o chef especialista em IA) - Anthropic Claude (o chef especialista em IA)
+> - PostgreSQL (a geladeira que guarda tudo) - PostgreSQL (a geladeira que guarda tudo)
+> Endereço: /api/user/profile Endereço: /api/user/profile
+> O que faz: Recebe quiz → manda pro agente → retorna perfil O que faz: Recebe quiz → manda pro agente → retorna perfil
+
+2.3. Barrinha de Loading 
+
+No app, enquanto isso acontece (demora ~3-5 segundos): 
+
+Como fazer: 
+
+Usar WebSocket ou Server-Sent Events (SSE) 
+
+Backend manda atualizações: "30%... 60%... 100%!" 
+
+App atualiza barrinha em tempo real 
+
+## PARTE 3: ESCOLHER DESTINO (Duas Rotas)  🗺 
+
+Depois que o perfil está pronto, app mostra: 
+
+1. App envia: "Aqui estão as 25 respostas do João" 1. App envia: "Aqui estão as 25 respostas do João" 
+
+2. Backend fala: "Claude, analisa essas respostas pra mim" 2. Backend fala: "Claude, analisa essas respostas pra mim" 
+
+3. Claude pensa: "Hmm... João é aventureiro, gosta de natureza, 3. Claude pensa: "Hmm... João é aventureiro, gosta de natureza, 
+
+treina todo dia, vegetariano..." treina todo dia, vegetariano..." 
+
+4. Claude retorna: Um "RG digital" do João (perfil JSON) 4. Claude retorna: Um "RG digital" do João (perfil JSON) 
+
+5. Backend salva na "geladeira" (banco de dados) 5. Backend salva na "geladeira" (banco de dados) 
+
+6. Backend avisa o app: "Pronto! Perfil criado!" 6. Backend avisa o app: "Pronto! Perfil criado!" 
+
+TELA DO APP: TELA DO APP: 
+
+┌────────────────────────────────┐ ┌────────────────────────────────┐ 
+
+│ Analisando suas respostas... │ │ Analisando suas respostas... │ 
+
+│ ││ │
+
+│ ████████░░░░░░░░ 60% ││ ████████░░░░░░░░ 60% │
+
+│ ││ │
+
+│ 🧠 Entendendo seu estilo ││ 🧠 Entendendo seu estilo │
+
+│ 🎯 Descobrindo preferências ││ 🎯 Descobrindo preferências │
+
+│ ✨ Criando perfil perfeito ││ ✨ Criando perfil perfeito │
+
+└────────────────────────────────┘ └────────────────────────────────┘ 3.1. Se escolher OPÇÃO 1 (Eu já sei) 
+
+Usuário digita: "Chapada Diamantina, R$ 8.000, 7 dias" 
+
+App guarda e pula direto para  PARTE 4 
+
+3.2. Se escolher OPÇÃO 2 (Me sugira) 
+
+O que precisa construir: 
+
+Endpoint novo: 
+
+Funcionamento: 
+
+TELA DO APP: TELA DO APP: 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Para onde vamos?  ✈ ││ Para onde vamos?  ✈ │
+
+│ ││ │
+
+│ 🎯 OPÇÃO 1: Eu já sei ││ 🎯 OPÇÃO 1: Eu já sei │
+
+│ ┌──────────────────────────┐ ││ ┌──────────────────────────┐ │
+
+│ │ Destino: [_____________] │ ││ │ Destino: [_____________] │ │
+
+│ │ Orçamento: R$ [_______] │ ││ │ Orçamento: R$ [_______] │ │
+
+│ │ Datas: [__/__] a [__/__] │ ││ │ Datas: [__/__] a [__/__] │ │
+
+│ │ │ ││ │ │ │
+
+│ │ [Planejar Viagem] │ ││ │ [Planejar Viagem] │ │
+
+│ └──────────────────────────┘ ││ └──────────────────────────┘ │
+
+│ ││ │
+
+│ 💡 OPÇÃO 2: Me sugira! ││ 💡 OPÇÃO 2: Me sugira! │
+
+│ ┌──────────────────────────┐ ││ ┌──────────────────────────┐ │
+
+│ │ Não sabe pra onde ir? │ ││ │ Não sabe pra onde ir? │ │
+
+│ │ │ ││ │ │ │
+
+│ │ [Ver Sugestões do Agente]│ ││ │ [Ver Sugestões do Agente]│ │
+
+│ └──────────────────────────┘ ││ └──────────────────────────┘ │
+
+└────────────────────────────────────┘ └────────────────────────────────────┘ 
+
+Endereço: /api/trip/suggest Endereço: /api/trip/suggest 
+
+O que recebe: Perfil do usuário + constraints (orçamento aprox, etc) O que recebe: Perfil do usuário + constraints (orçamento aprox, etc) 
+
+O que retorna: 3-5 destinos perfeitos O que retorna: 3-5 destinos perfeitos 
+
+1. App pede: "Claude, sugere destinos pro João" 1. App pede: "Claude, sugere destinos pro João" 
+
+2. Claude analisa: "João é aventureiro (0.8), gosta de natureza (0.9), 2. Claude analisa: "João é aventureiro (0.8), gosta de natureza (0.9), 
+
+vegetariano, treina todo dia..." vegetariano, treina todo dia..." 
+
+3. Claude pensa: "Perfeito! Chapada Diamantina, Jalapão, Patagônia..." 3. Claude pensa: "Perfeito! Chapada Diamantina, Jalapão, Patagônia..." 
+
+4. Claude retorna: Lista de 3-5 destinos com explicação 4. Claude retorna: Lista de 3-5 destinos com explicação 
+
+5. App mostra numa tela bonita 5. App mostra numa tela bonita Tela de Sugestões: 
+
+Usuário clica em um → vai para  PARTE 4 
+
+## PARTE 4: PLANEJAMENTO COMPLETO (A Mágica!)  ✨
+
+O que é:  Agora o agente vai planejar TUDO da viagem: voo, hotel, restaurantes, passeios. 
+
+O que precisa construir: 
+
+4.1. Endpoint Principal 
+
+4.2. Integrações com APIs Externas (As "Ferramentas" do Agente) 
+
+Pense assim:  O agente é um arquiteto. Ele precisa de ferramentas: 
+
+🔨 Skyscanner API = Martelo (buscar voos) 
+
+🔧 Booking.com API = Chave de fenda (buscar hotéis) 
+
+📐 Google Places API = Régua (buscar restaurantes) 
+
+Como funciona (passo a passo): 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Destinos Perfeitos Pra Você 🎯 ││ Destinos Perfeitos Pra Você 🎯 │
+
+│ ││ │
+
+│ 🏆 1. Chapada Diamantina ││ 🏆 1. Chapada Diamantina │
+
+│ Match: 95% ⭐⭐⭐⭐⭐ ││ Match: 95% ⭐⭐⭐⭐⭐ │
+
+│ R$ 4.500 (7 dias) ││ R$ 4.500 (7 dias) │
+
+│ "Trilhas épicas, natureza..." │ │ "Trilhas épicas, natureza..." │ 
+
+│ [Escolher Este] ││ [Escolher Este] │
+
+│ ││ │
+
+│ 🥈 2. Jalapão ││ 🥈 2. Jalapão │
+
+│ Match: 88% ⭐⭐⭐⭐ ││ Match: 88% ⭐⭐⭐⭐ │
+
+│ R$ 5.500 (7 dias) ││ R$ 5.500 (7 dias) │
+
+│ [Escolher Este] ││ [Escolher Este] │
+
+│ ││ │
+
+│ 🥉 3. Bonito - MS ││ 🥉 3. Bonito - MS │
+
+│ Match: 85% ⭐⭐⭐⭐ ││ Match: 85% ⭐⭐⭐⭐ │
+
+│ [Escolher Este] ││ [Escolher Este] │
+
+└────────────────────────────────────┘ └────────────────────────────────────┘ 
+
+Endereço: /api/trip/plan Endereço: /api/trip/plan 
+
+O que recebe: Perfil + Destino + Orçamento + Datas O que recebe: Perfil + Destino + Orçamento + Datas 
+
+O que retorna: Viagem completa planejada O que retorna: Viagem completa planejada 4.3. Barrinha de Loading (Enquanto planeja) 
+
+ETAPA 1: BUSCAR VOOS ETAPA 1: BUSCAR VOOS 
+
+├─ App pede: "Claude, planeja viagem pro João" ├─ App pede: "Claude, planeja viagem pro João" 
+
+├─ Claude pensa: "Primeiro preciso de voos de São Paulo pra Chapada" ├─ Claude pensa: "Primeiro preciso de voos de São Paulo pra Chapada" 
+
+├─ Claude usa ferramenta: search_flights() ├─ Claude usa ferramenta: search_flights() 
+
+├─ Backend chama: Skyscanner API ├─ Backend chama: Skyscanner API 
+
+├─ Skyscanner retorna: 10 opções de voos ├─ Skyscanner retorna: 10 opções de voos 
+
+├─ Claude analisa: "Voo LATAM é perfeito! Direto, horário bom, R$850" ├─ Claude analisa: "Voo LATAM é perfeito! Direto, horário bom, R$850" 
+
+└─ Claude escolhe: Voo LATAM LA3456 └─ Claude escolhe: Voo LATAM LA3456 
+
+ETAPA 2: BUSCAR HOTÉIS ETAPA 2: BUSCAR HOTÉIS 
+
+├─ Claude pensa: "Agora preciso de hospedagem" ├─ Claude pensa: "Agora preciso de hospedagem" 
+
+├─ Claude usa ferramenta: search_hotels() ├─ Claude usa ferramenta: search_hotels() 
+
+├─ Backend chama: Booking.com API ├─ Backend chama: Booking.com API 
+
+├─ Booking retorna: 15 hotéis/pousadas ├─ Booking retorna: 15 hotéis/pousadas 
+
+├─ Claude analisa: "João treina todo dia (fitness: 1.0), precisa de academia! ├─ Claude analisa: "João treina todo dia (fitness: 1.0), precisa de academia! 
+
+│ João gosta de natureza (urban: 0.3), melhor pousada fora do centro. │ João gosta de natureza (urban: 0.3), melhor pousada fora do centro. 
+
+│ Pousada Canto das Águas é perfeita! Tem academia, natureza, R$180/dia" │ Pousada Canto das Águas é perfeita! Tem academia, natureza, R$180/dia" 
+
+└─ Claude escolhe: Pousada Canto das Águas └─ Claude escolhe: Pousada Canto das Águas 
+
+ETAPA 3: BUSCAR RESTAURANTES ETAPA 3: BUSCAR RESTAURANTES 
+
+├─ Claude pensa: "João é vegetariano, food_sophistication: 0.8" ├─ Claude pensa: "João é vegetariano, food_sophistication: 0.8" 
+
+├─ Claude usa: search_restaurants() ├─ Claude usa: search_restaurants() 
+
+├─ Google Places retorna: 20 restaurantes ├─ Google Places retorna: 20 restaurantes 
+
+├─ Claude analisa e escolhe: 7 restaurantes vegetarianos ├─ Claude analisa e escolhe: 7 restaurantes vegetarianos 
+
+└─ Claude destaca: 1 restaurante premium (Smart Luxury!) └─ Claude destaca: 1 restaurante premium (Smart Luxury!) 
+
+ETAPA 4: MONTAR ROTEIRO ETAPA 4: MONTAR ROTEIRO 
+
+├─ Claude pensa: "João quer ritmo intenso (activity_intensity: 0.9)" ├─ Claude pensa: "João quer ritmo intenso (activity_intensity: 0.9)" 
+
+├─ Claude monta: 5-6 atividades por dia ├─ Claude monta: 5-6 atividades por dia 
+
+├─ Claude considera: Distâncias, horários, clima ├─ Claude considera: Distâncias, horários, clima 
+
+└─ Claude cria: Roteiro dia-a-dia completo └─ Claude cria: Roteiro dia-a-dia completo 
+
+ETAPA 5: OTIMIZAR ORÇAMENTO ETAPA 5: OTIMIZAR ORÇAMENTO 
+
+├─ Claude calcula: Voo + Hotel + Comida + Passeios + Transporte ├─ Claude calcula: Voo + Hotel + Comida + Passeios + Transporte 
+
+├─ Claude aplica Smart Luxury: "Economizar no hotel pra investir em 1 jantar especial" ├─ Claude aplica Smart Luxury: "Economizar no hotel pra investir em 1 jantar especial" 
+
+├─ Total: R$ 7.200 (dentro do orçamento de R$ 8.000) ├─ Total: R$ 7.200 (dentro do orçamento de R$ 8.000) 
+
+└─ Sobra: R$ 800 de buffer └─ Sobra: R$ 800 de buffer 
+
+TEMPO TOTAL: 5-8 segundos TEMPO TOTAL: 5-8 segundos Como fazer: 
+
+Backend vai avisando: "Terminei voos!" → App ✅
+
+"Terminei hotéis!" → App ✅
+
+Usuário vê progresso em tempo real 
+
+## PARTE 5: REVISÃO E APROVAÇÃO  👀 
+
+Quando agente termina, app mostra tudo numa tela linda: 
+
+TELA DO APP (tempo real): TELA DO APP (tempo real): 
+
+┌────────────────────────────────┐ ┌────────────────────────────────┐ 
+
+│ Planejando sua viagem... 🤖 ││ Planejando sua viagem... 🤖 │
+
+│ ││ │
+
+│ ✅ Buscando voos ││ ✅ Buscando voos │
+
+│ ⏳ Buscando hospedagens... ││ ⏳ Buscando hospedagens... │
+
+│ ⏹ Selecionando restaurantes ││ ⏹ Selecionando restaurantes │
+
+│ ⏹ Criando roteiro ││ ⏹ Criando roteiro │
+
+│ ││ │
+
+│ Isso leva ~8 segundos ││ Isso leva ~8 segundos │
+
+└────────────────────────────────┘ └────────────────────────────────┘ TELA: REVISÃO DA VIAGEM TELA: REVISÃO DA VIAGEM 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Sua Viagem Perfeita ✨ ││ Sua Viagem Perfeita ✨ │
+
+│ Match: 95% ⭐⭐⭐⭐⭐ ││ Match: 95% ⭐⭐⭐⭐⭐ │
+
+│ ││ │
+
+│ 📍 Chapada Diamantina ││ 📍 Chapada Diamantina │
+
+│ 📅 10 a 17 de Junho (7 dias) ││ 📅 10 a 17 de Junho (7 dias) │
+
+│ 💰 R$ 7.200 de R$ 8.000 ││ 💰 R$ 7.200 de R$ 8.000 │
+
+│ (sobra R$ 800 de buffer) ││ (sobra R$ 800 de buffer) │
+
+│ ││ │
+
+│ ───────────────────────────── ││ ───────────────────────────── │
+
+│ ││ │
+
+│ ✈ VOOS ││ ✈ VOOS │
+
+│ Ida: LATAM LA3456 ││ Ida: LATAM LA3456 │
+
+│ 10/jun 07:30 → 09:45 (direto) ││ 10/jun 07:30 → 09:45 (direto) │
+
+│ R$ 850 ││ R$ 850 │
+
+│ [Ver Detalhes] [Editar] ││ [Ver Detalhes] [Editar] │
+
+│ ││ │
+
+│ 🏨 HOSPEDAGEM ││ 🏨 HOSPEDAGEM │
+
+│ Pousada Canto das Águas ││ Pousada Canto das Águas │
+
+│ 7 noites × R$180 = R$1.260 ││ 7 noites × R$180 = R$1.260 │
+
+│ ⭐ 4.8 | Academia, Piscina ││ ⭐ 4.8 | Academia, Piscina │
+
+│ [Ver Fotos] [Editar] ││ [Ver Fotos] [Editar] │
+
+│ ││ │
+
+│ 🍽  RESTAURANTES (7) ││ 🍽  RESTAURANTES (7) │
+
+│ Café da Manhã: Incluso na pousada│ │ Café da Manhã: Incluso na pousada│ 
+
+│ Almoço: Restaurante Vegetariano A│ │ Almoço: Restaurante Vegetariano A│ 
+
+│ Jantar: Restaurante B ││ Jantar: Restaurante B │
+
+│ ⭐ Especial: Fine Dining R$300 ││ ⭐ Especial: Fine Dining R$300 │
+
+│ [Ver Todos] ││ [Ver Todos] │
+
+│ ││ │
+
+│ 🎯 ROTEIRO (7 dias) ││ 🎯 ROTEIRO (7 dias) │
+
+│ Dia 1: Morro do Pai Inácio ││ Dia 1: Morro do Pai Inácio │
+
+│ Dia 2: Vale do Pati (início) ││ Dia 2: Vale do Pati (início) │
+
+│ Dia 3: Vale do Pati (meio) ││ Dia 3: Vale do Pati (meio) │
+
+│ [Ver Roteiro Completo] ││ [Ver Roteiro Completo] │
+
+│ ││ │
+
+│ ───────────────────────────── ││ ───────────────────────────── │
+
+│ ││ │
+
+│ Por que escolhemos isso pra você:│ │ Por que escolhemos isso pra você:│ 
+
+│ "Priorizamos trilhas épicas ││ "Priorizamos trilhas épicas │
+
+│ (adventure: 0.8), pousada com ││ (adventure: 0.8), pousada com │
+
+│ academia (fitness: 1.0), e ││ academia (fitness: 1.0), e │
+
+│ restaurantes vegetarianos..." ││ restaurantes vegetarianos..." │
+
+│ ││ │
+
+│ [ ✏ Editar Algo] ││ [ ✏ Editar Algo] │Funcionalidades: 
+
+1.  Ver detalhes:  Cada item expande mostrando mais info 
+
+2.  Editar:  Usuário pode trocar hotel, voo, etc (o agente replaneja) 
+
+3.  Aprovar:  Vai para pagamento 
+
+## PARTE 6: PAGAMENTO E RESERVA  💳 
+
+6.1. Tela de Pagamento 
+
+6.2. O que acontece ao pagar (Nos Bastidores) 
+
+FASE 2 (MVP): Redirect para sites externos 
+
+│ [ ✅ Aprovar e Ir pro Pagamento] │ │ [ ✅ Aprovar e Ir pro Pagamento] │ 
+
+└────────────────────────────────────┘ └────────────────────────────────────┘ 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Pagamento Seguro 🔒 ││ Pagamento Seguro 🔒 │
+
+│ ││ │
+
+│ Total: R$ 7.200 ││ Total: R$ 7.200 │
+
+│ ││ │
+
+│ Forma de pagamento: ││ Forma de pagamento: │
+
+│ ◉ Cartão de Crédito ││ ◉ Cartão de Crédito │
+
+│ ○ PIX ││ ○ PIX │
+
+│ ││ │
+
+│ [____-____-____-____] (nº cartão)│ │ [____-____-____-____] (nº cartão)│ 
+
+│ [___] CVV [__/__] Validade ││ [___] CVV [__/__] Validade │
+
+│ ││ │
+
+│ Parcelas: ││ Parcelas: │
+
+│ ○ À vista ││ ○ À vista │
+
+│ ◉ 3x de R$ 2.400 sem juros ││ ◉ 3x de R$ 2.400 sem juros │
+
+│ ○ 6x de R$ 1.200 sem juros ││ ○ 6x de R$ 1.200 sem juros │
+
+│ ││ │
+
+│ [Confirmar e Pagar] ││ [Confirmar e Pagar] │
+
+└────────────────────────────────────┘ └────────────────────────────────────┘ FASE 3 (Futuro): Tudo dentro do app 
+
+O que precisa construir (Fase 2 - MVP): 
+
+Integração Stripe (pagamento assinatura) 
+
+Gerar links de afiliado 
+
+Salvar viagem no banco como "confirmada" 
+
+O que precisa construir (Fase 3 - Futuro): 
+
+Parcerias com Booking/Airlines 
+
+APIs de execução de reserva 
+
+Sistema de vouchers 
+
+Sistema de reembolso/cancelamento 
+
+## PARTE 7: DASHBOARD DA VIAGEM  📅 
+
+Após confirmar, o roteiro vai para uma área especial no app: 
+
+1. Usuário clica "Confirmar" 1. Usuário clica "Confirmar" 
+
+2. App cobra assinatura Cash Trip (R$ 27,90) 2. App cobra assinatura Cash Trip (R$ 27,90) 
+
+3. App abre links de afiliado: 3. App abre links de afiliado: 
+
+→ Skyscanner para comprar voo → Skyscanner para comprar voo 
+
+→ Booking para reservar hotel → Booking para reservar hotel 
+
+4. Usuário compra fora do app 4. Usuário compra fora do app 
+
+5. Usuário volta e coloca confirmações no app 5. Usuário volta e coloca confirmações no app 
+
+1. Usuário clica "Confirmar" 1. Usuário clica "Confirmar" 
+
+2. App processa pagamento (Stripe) 2. App processa pagamento (Stripe) 
+
+3. Backend chama APIs de RESERVA: 3. Backend chama APIs de RESERVA: 
+
+→ Amadeus Flight Booking (voo) → Amadeus Flight Booking (voo) 
+
+→ Booking Reservations (hotel) → Booking Reservations (hotel) 
+
+4. APIs confirmam reservas 4. APIs confirmam reservas 
+
+5. Backend gera vouchers (PDF) 5. Backend gera vouchers (PDF) 
+
+6. App mostra: "Viagem confirmada! ✅"6. App mostra: "Viagem confirmada! ✅"
+
+7. Vouchers vão pro e-mail + app 7. Vouchers vão pro e-mail + app DASHBOARD - MINHA VIAGEM DASHBOARD - MINHA VIAGEM 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Chapada Diamantina  🏔  ││ Chapada Diamantina  🏔  │
+
+│ Faltam 45 dias! ││ Faltam 45 dias! │
+
+│ ││ │
+
+│ ▼ DOCUMENTOS ││ ▼ DOCUMENTOS │
+
+│ 📄 Voucher Voo (PDF) ││ 📄 Voucher Voo (PDF) │
+
+│ 📄 Voucher Hotel (PDF) ││ 📄 Voucher Hotel (PDF) │
+
+│ 📄 Roteiro Completo (PDF) ││ 📄 Roteiro Completo (PDF) │
+
+│ ││ │
+
+│ ▼ CHECKLIST PRÉ-VIAGEM ││ ▼ CHECKLIST PRÉ-VIAGEM │
+
+│ ✅ Passagens compradas ││ ✅ Passagens compradas │
+
+│ ✅ Hotel reservado ││ ✅ Hotel reservado │
+
+│ ⏹ Fazer mala ││ ⏹ Fazer mala │
+
+│ ⏹ Conferir documentos ││ ⏹ Conferir documentos │
+
+│ ││ │
+
+│ ▼ ROTEIRO DIA-A-DIA ││ ▼ ROTEIRO DIA-A-DIA │
+
+│ ││ │
+
+│ 📅 DIA 1 - 10/junho (Segunda) ││ 📅 DIA 1 - 10/junho (Segunda) │
+
+│ ┌──────────────────────────┐ ││ ┌──────────────────────────┐ │
+
+│ │ 07:30  ✈ Voo GRU → SSA │ ││ │ 07:30  ✈ Voo GRU → SSA │ │
+
+│ │ 11:00 🚗 Pegar carro │ ││ │ 11:00 🚗 Pegar carro │ │
+
+│ │ 14:00 🏨 Check-in pousada │ ││ │ 14:00 🏨 Check-in pousada │ │
+
+│ │ 16:00 🥾 Morro Pai Inácio │ ││ │ 16:00 🥾 Morro Pai Inácio │ │
+
+│ │ 20:00  🍽  Jantar Restaurante│ ││ │ 20:00  🍽  Jantar Restaurante│ │
+
+│ └──────────────────────────┘ ││ └──────────────────────────┘ │
+
+│ [Ver Detalhes do Dia] ││ [Ver Detalhes do Dia] │
+
+│ ││ │
+
+│ 📅 DIA 2 - 11/junho ││ 📅 DIA 2 - 11/junho │
+
+│ ┌──────────────────────────┐ ││ ┌──────────────────────────┐ │
+
+│ │ 08:00 🍳 Café da manhã │ ││ │ 08:00 🍳 Café da manhã │ │
+
+│ │ 09:00 🥾 Vale do Pati │ ││ │ 09:00 🥾 Vale do Pati │ │
+
+│ │ ... (trilha dia inteiro) │ ││ │ ... (trilha dia inteiro) │ │
+
+│ └──────────────────────────┘ ││ └──────────────────────────┘ │
+
+│ ││ │
+
+│ [Ver Próximos 5 Dias] ││ [Ver Próximos 5 Dias] │
+
+│ ││ │
+
+│ ▼ GASTOS ││ ▼ GASTOS │
+
+│ Planejado: R$ 7.200 ││ Planejado: R$ 7.200 │
+
+│ Gasto até agora: R$ 2.050 ││ Gasto até agora: R$ 2.050 │
+
+│ Restante: R$ 5.150 ││ Restante: R$ 5.150 │
+
+│ [Ver Breakdown] ││ [Ver Breakdown] │
+
+│ ││ │
+
+│ ▼ CLIMA ││ ▼ CLIMA │
+
+│ 🌤  Ensolarado 28°C ││ 🌤  Ensolarado 28°C │
+
+│ Previsão próximos 7 dias ││ Previsão próximos 7 dias │O que precisa construir: 
+
+1.  Tela de Dashboard  (frontend) 
+
+2.  Sistema de notificações 
+
+"Faltam 7 dias pra viagem!" 
+
+"Lembre de fazer check-in do voo" 
+
+"Hoje: Trilha do Vale do Pati às 9h" 
+
+3.  Sincronização 
+
+Se usuário comprar voo em outro horário, atualizar roteiro 
+
+Se hotel cancelar, avisar imediatamente 
+
+## PARTE 8: CHAT COM O AGENTE (Assistente 24/7)  💬 
+
+Durante a viagem, usuário pode ter dúvidas:         
+
+> ││││
+> │💬 [Falar com Agente] ││💬 [Falar com Agente] │
+> └────────────────────────────────────┘ └────────────────────────────────────┘
+
+Como funciona: 
+
+1.  Usuário manda mensagem 
+
+2.  App envia pro backend 
+
+3.  Backend chama Claude  (com contexto da viagem atual) 
+
+4.  Claude responde  (considerando perfil + situação) 
+
+5.  App mostra resposta 
+
+O que precisa construir: 
+
+1.  Chat UI no app  (como WhatsApp) 
+
+CHAT COM AGENTE CHAT COM AGENTE 
+
+┌────────────────────────────────────┐ ┌────────────────────────────────────┐ 
+
+│ Cash Trip Assistant 🤖 ││ Cash Trip Assistant 🤖 │
+
+│ ││ │
+
+│ 👤 Usuário: ││ 👤 Usuário: │
+
+│ "O restaurante de hoje tá fechado!│ │ "O restaurante de hoje tá fechado!│ 
+
+│ Pode sugerir outro?" ││ Pode sugerir outro?" │
+
+│ ││ │
+
+│ 🤖 Agente: ││ 🤖 Agente: │
+
+│ "Claro! Baseado no seu perfil ││ "Claro! Baseado no seu perfil │
+
+│ vegetariano, aqui estão 3 ││ vegetariano, aqui estão 3 │
+
+│ opções próximas: ││ opções próximas: │
+
+│ ││ │
+
+│ 1. Sabor da Terra (400m) ││ 1. Sabor da Terra (400m) │
+
+│ ⭐ 4.7 | Vegetariano ││ ⭐ 4.7 | Vegetariano │
+
+│ [Ver no Mapa] ││ [Ver no Mapa] │
+
+│ ││ │
+
+│ 2. Veggie House (800m) ││ 2. Veggie House (800m) │
+
+│ ⭐ 4.5 | Vegano ││ ⭐ 4.5 | Vegano │
+
+│ [Ver no Mapa] ││ [Ver no Mapa] │
+
+│ ││ │
+
+│ Prefere algum?" ││ Prefere algum?" │
+
+│ ││ │
+
+│ 👤 Usuário: ││ 👤 Usuário: │
+
+│ "O primeiro! Obrigado" ││ "O primeiro! Obrigado" │
+
+│ ││ │
+
+│ 🤖 Agente: ││ 🤖 Agente: │
+
+│ "Perfeito! Atualizei seu roteiro │ │ "Perfeito! Atualizei seu roteiro │ 
+
+│ de hoje. Bom apetite!  🍽 " ││ de hoje. Bom apetite!  🍽 " │
+
+│ ││ │
+
+│ [Digite sua mensagem...] ││ [Digite sua mensagem...] │
+
+└────────────────────────────────────┘ └────────────────────────────────────┘ 2.  Endpoint de chat: 
+
+3.  Histórico de conversas  (salvar no banco) 
+
+4.  Notificações push  (quando agente responder) 
+
+Exemplos de uso: 
+
+"Mudou o clima, pode reajustar roteiro de hoje?" 
+
+"Tô cansado, pode sugerir algo mais leve?" 
+
+"Onde fica o melhor pôr do sol aqui?" 
+
+"Quero adicionar um passeio extra, quanto fica?" 
+
+# 📋 RESUMO GERAL (O que construir em ordem) 
+
+## MÊS 1: Base do App 
+
+## MÊS 2: Backend + Agente 
+
+POST /api/chat/message POST /api/chat/message 
+
+Recebe: mensagem do usuário + contexto da viagem Recebe: mensagem do usuário + contexto da viagem 
+
+Retorna: resposta do agente Retorna: resposta do agente 
+
+Semana 1-2: Quiz Semana 1-2: Quiz 
+
+├─ 25 telas de perguntas ├─ 25 telas de perguntas 
+
+├─ Validações ├─ Validações 
+
+├─ Salvar respostas ├─ Salvar respostas 
+
+└─ Botão "Finalizar" └─ Botão "Finalizar" 
+
+Semana 3-4: Telas Principais Semana 3-4: Telas Principais 
+
+├─ Tela "Escolher Destino" ├─ Tela "Escolher Destino" 
+
+├─ Tela "Revisão da Viagem" ├─ Tela "Revisão da Viagem" 
+
+├─ Tela "Dashboard" ├─ Tela "Dashboard" 
+
+└─ Navegação entre telas └─ Navegação entre telas 
+
+Semana 5-6: Setup Backend Semana 5-6: Setup Backend 
+
+├─ Node.js + Express ├─ Node.js + Express 
+
+├─ PostgreSQL ├─ PostgreSQL 
+
+├─ Anthropic SDK ├─ Anthropic SDK 
+
+└─ Endpoints base └─ Endpoints base 
+
+Semana 7-8: Integrar Agente Semana 7-8: Integrar Agente 
+
+├─ Profile Builder (Fase 1) ├─ Profile Builder (Fase 1) MÊS 3: Integrações + Refinamento 
+
+# 🎯 LISTA DE VERIFICAÇÃO FINAL 
+
+## Frontend (App Mobile) 
+
+Quiz (25 perguntas) 
+
+Tela escolher destino 
+
+Tela sugestões 
+
+Tela revisão viagem 
+
+Tela pagamento 
+
+Dashboard da viagem 
+
+Chat com agente 
+
+Barrinhas de loading (com updates em tempo real) 
+
+Notificações push 
+
+## Backend (Servidor) 
+
+Setup Node.js + Express 
+
+Banco de dados PostgreSQL 
+
+Integração Anthropic Claude 
+
+Endpoint: POST /api/user/profile 
+
+Endpoint: POST /api/trip/suggest 
+
+Endpoint: POST /api/trip/plan 
+
+Endpoint: POST /api/chat/message 
+
+Endpoint: POST /api/booking/execute 
+
+├─ Destination Suggester (Fase 2A) ├─ Destination Suggester (Fase 2A) 
+
+├─ Trip Planner (Fase 2B) ├─ Trip Planner (Fase 2B) 
+
+└─ Testar tudo └─ Testar tudo 
+
+Semana 9-10: APIs Externas Semana 9-10: APIs Externas 
+
+├─ Skyscanner (voos) ├─ Skyscanner (voos) 
+
+├─ Booking.com (hotéis) ├─ Booking.com (hotéis) 
+
+├─ Google Places (restaurantes) ├─ Google Places (restaurantes) 
+
+└─ Function calling └─ Function calling 
+
+Semana 11-12: Features Finais Semana 11-12: Features Finais 
+
+├─ Sistema de pagamento (Stripe) ├─ Sistema de pagamento (Stripe) 
+
+├─ Dashboard da viagem ├─ Dashboard da viagem 
+
+├─ Chat com agente ├─ Chat com agente 
+
+├─ Notificações push ├─ Notificações push 
+
+└─ Testes com usuários reais └─ Testes com usuários reais Integração Skyscanner API 
+
+Integração Booking.com API 
+
+Integração Google Places API 
+
+Integração Stripe (pagamentos) 
+
+Sistema de notificações 
+
+Logs e monitoramento 
+
+## Agente (Inteligência) 
+
+Prompt Profile Builder 
+
+Prompt Destination Suggester 
+
+Prompt Trip Planner 
+
+Prompt Chat Assistant 
+
+Function calling (search_flights, search_hotels, etc) 
+
+Sistema de aprendizado (feedback pós-viagem) 
+
+# 💡 ANALOGIA FINAL (Resumo em 1 minuto) 
+
+Imagine que você está construindo um  assistente de viagens pessoal robô :
+
+1.  Quiz = Entrevista inicial  (conhecer o cliente) 
+
+2.  Profile Builder = Médico fazendo diagnóstico  (entender quem é) 
+
+3.  Destination Suggester = Consultor dando opções  (sugerir destinos) 
+
+4.  Trip Planner = Arquiteto desenhando casa  (criar roteiro completo) 
+
+5.  APIs = Fornecedores  (Skyscanner vende voos, Booking vende hotéis) 
+
+6.  Payment = Caixa registradora  (processar pagamento) 
+
+7.  Dashboard = Agenda do cliente  (tudo organizado) 
+
+8.  Chat = Telefone 24h  (assistência durante viagem) 
+
+Tudo isso trabalhando junto = Cash Trip completo!  🚀 
+
+Ficou claro? Quer que eu detalhe alguma parte específica?
