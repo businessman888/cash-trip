@@ -1,17 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 export default function QuizAllReadyPage() {
-  const router = useRouter();
-
-  const handleContinue = () => {
-    // Redirecionar para o dashboard
-    router.push("/dashboard");
-  };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
+    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px] pb-[120px]">
       {/* Progress Bar Section */}
       <div className="w-full flex flex-col justify-center items-center gap-[18px] px-[41px] h-[133px]">
         {/* Progress Component */}
@@ -84,8 +76,8 @@ export default function QuizAllReadyPage() {
         </h1>
       </div>
 
-      {/* Golden Key Illustration */}
-      <div className="w-full flex justify-center items-center px-[87px]">
+      {/* Frame 277 - Golden Key Illustration */}
+      <div className="w-full flex flex-row justify-center items-center self-stretch gap-[10px] px-[87px]">
         <div className="w-[150px] h-[150px]">
           <img
             src="/icons/Icon-superior-pagina-fechando-com-chave-de-ouro.svg"
@@ -95,34 +87,13 @@ export default function QuizAllReadyPage() {
         </div>
       </div>
 
-      {/* Message Section */}
-      <div className="w-full flex flex-col justify-center items-center px-[51px] pt-6 pb-20">
-        <p className="text-white font-roboto-condensed font-normal text-[32px] leading-[37px] text-left">
+      {/* Frame 274 - Message Section */}
+      <div className="w-full flex flex-col justify-center items-center self-stretch gap-[10px] px-[51px] pt-6 pb-20">
+        <p className="w-full text-white font-roboto-condensed font-normal text-[32px] leading-[37px] text-left">
           Você é um explorador gastronômico anos que valoriza o 'Smart Luxury': economiza no geral para investir pesado em experiências culinárias premium. Busca refúgios privados em meio à natureza e adora explorar a cultura local com a liberdade, mantendo um ritmo equilibrado e focado em relaxar.
         </p>
       </div>
 
-      {/* Floating Button - Active */}
-      <button
-        onClick={handleContinue}
-        className="fixed bottom-5 right-5 w-[73px] h-[73px] rounded-full bg-white border-[3px] border-[#1E293B] shadow-[2px_2px_9px_0px_rgba(30,41,59,0.4)] flex items-center justify-center hover:scale-105 transition-transform z-50"
-      >
-        <svg
-          width="42"
-          height="24"
-          viewBox="0 0 42 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M7.875 10.667h26.25M24.938 1.277l11.844 21.389"
-            stroke="#E6502C"
-            strokeWidth="2.667"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
     </div>
   );
 }

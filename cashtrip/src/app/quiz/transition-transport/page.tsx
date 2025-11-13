@@ -1,13 +1,62 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
 
 export default function TransitionTransportPage() {
   const router = useRouter();
+  const lottieRef = useRef<HTMLDivElement>(null);
 
   const handleContinue = () => {
     router.push("/quiz/own-vehicle");
   };
+
+  // Ajustar cor de fundo do SVG após renderização
+  useEffect(() => {
+    const adjustBackground = () => {
+      if (lottieRef.current) {
+        const svg = lottieRef.current.querySelector("svg");
+        if (svg) {
+          svg.style.backgroundColor = "transparent";
+          // Alterar retângulos com fundo branco/claro para transparente ou cor da página
+          const rects = svg.querySelectorAll('rect[fill="#f5f5f5"], rect[fill="#F5F5F5"], rect[fill="rgb(245, 245, 245)"], rect[fill="#ffffff"], rect[fill="#FFFFFF"]');
+          rects.forEach((rect) => {
+            (rect as SVGElement).setAttribute("fill", "transparent");
+          });
+          // Verificar todos os retângulos
+          const allRects = svg.querySelectorAll("rect");
+          allRects.forEach((rect) => {
+            const fill = (rect as SVGElement).getAttribute("fill");
+            if (fill === "#f5f5f5" || fill === "#F5F5F5" || fill === "rgb(245, 245, 245)" || fill === "#ffffff" || fill === "#FFFFFF") {
+              (rect as SVGElement).setAttribute("fill", "transparent");
+            }
+          });
+        }
+      }
+    };
+
+    // Tentar imediatamente
+    adjustBackground();
+
+    // Verificar periodicamente até encontrar o SVG (com timeout de segurança)
+    const interval = setInterval(() => {
+      if (lottieRef.current?.querySelector("svg")) {
+        adjustBackground();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Limpar após 3 segundos (tempo suficiente para carregar)
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-[7px] py-[58px]" style={{
@@ -66,20 +115,27 @@ export default function TransitionTransportPage() {
         </h1>
       </div>
 
-      {/* Seção de Imagem - Carro */}
+      {/* Seção de Imagem - Carro - Animação Lottie */}
       <div className="w-full h-[200px] flex items-center justify-center">
-        <div className="w-[200px] h-[200px]">
-          <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Carro simplificado */}
-            <rect x="0.48" y="53.81" width="199.4" height="89.24" rx="10" fill="#FF473E"/>
-            <rect x="27.29" y="63.54" width="145.67" height="99.09" rx="5" fill="#2B3B47"/>
-            <rect x="34.98" y="125.69" width="130.29" height="29.26" rx="4" fill="#9BA5A8"/>
-            <rect x="44.49" y="135.19" width="111.28" height="10.25" rx="2" fill="#E5E4DF"/>
-            <rect x="4.82" y="112.79" width="195.02" height="12.59" rx="6" fill="#FFD469"/>
-            {/* Janelas */}
-            <rect x="61.54" y="63.4" width="107.32" height="27.51" rx="3" fill="#D32A2A"/>
-            <rect x="21.47" y="112.12" width="156.21" height="30.93" rx="3" fill="#D32A2A"/>
-          </svg>
+        <div 
+          ref={lottieRef}
+          className="w-[200px] h-[200px]"
+          style={{ backgroundColor: "transparent" }}
+        >
+          <Lottie
+            path="/animations/car-animation.json"
+            loop={true}
+            autoplay={true}
+            style={{ 
+              width: "200px", 
+              height: "200px", 
+              backgroundColor: "transparent",
+            }}
+            rendererSettings={{
+              preserveAspectRatio: "xMidYMid meet",
+              clearCanvas: true,
+            }}
+          />
         </div>
       </div>
 

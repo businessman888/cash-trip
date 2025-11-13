@@ -191,3 +191,5 @@ As imagens em `/public` são automaticamente cacheadas pelo Next.js durante o bu
 **Agora você está pronto para construir o fluxo do quiz! 🚀**
 
 
+
+

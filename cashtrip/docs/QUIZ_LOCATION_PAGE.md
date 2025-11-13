@@ -148,3 +148,5 @@ Adicionado filtro CSS para que o ícone fique laranja quando a opção é seleci
 4. Adicionar autocomplete para estados/cidades brasileiras
 
 
+
+

@@ -1,13 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
 
 type WorkoutFrequency = "everyday" | "occasionally" | "yogaPilates" | "noWorkout";
 
 export default function QuizWorkoutFrequencyPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<WorkoutFrequency | null>(null);
+  const lottieRef = useRef<HTMLDivElement>(null);
+
+  // Ajustar cor de fundo do SVG após renderização
+  useEffect(() => {
+    const adjustBackground = () => {
+      if (lottieRef.current) {
+        const svg = lottieRef.current.querySelector("svg");
+        if (svg) {
+          svg.style.backgroundColor = "#F1F1F1";
+          // Alterar retângulos com fundo branco para a cor da página
+          const rects = svg.querySelectorAll('rect[fill="#f5f5f5"], rect[fill="#F5F5F5"], rect[fill="rgb(245, 245, 245)"]');
+          rects.forEach((rect) => {
+            (rect as SVGElement).setAttribute("fill", "#F1F1F1");
+          });
+          // Também verificar elementos com style inline
+          const allRects = svg.querySelectorAll("rect");
+          allRects.forEach((rect) => {
+            const fill = (rect as SVGElement).getAttribute("fill");
+            if (fill === "#f5f5f5" || fill === "#F5F5F5" || fill === "rgb(245, 245, 245)") {
+              (rect as SVGElement).setAttribute("fill", "#F1F1F1");
+            }
+          });
+        }
+      }
+    };
+
+    // Tentar imediatamente
+    adjustBackground();
+
+    // Verificar periodicamente até encontrar o SVG (com timeout de segurança)
+    const interval = setInterval(() => {
+      if (lottieRef.current?.querySelector("svg")) {
+        adjustBackground();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Limpar após 3 segundos (tempo suficiente para carregar)
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   const handleSelect = (frequency: WorkoutFrequency) => {
     setSelected(frequency);
@@ -82,12 +130,25 @@ export default function QuizWorkoutFrequencyPage() {
 
       {/* Título da Pergunta */}
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px] h-[262px]">
-        {/* Ícone Principal */}
-        <div className="w-[90px] h-[90px]">
-          <img
-            src="/icons/Icon-superior-página-você-treina-com-frequencia.svg"
-            alt="Treino/Academia"
-            className="w-full h-full object-contain"
+        {/* Ícone Principal - Animação Lottie */}
+        <div 
+          ref={lottieRef}
+          className="w-[90px] h-[90px] bg-[#F1F1F1] rounded-lg overflow-hidden"
+          style={{ backgroundColor: "#F1F1F1" }}
+        >
+          <Lottie
+            path="/animations/academia.json"
+            loop={true}
+            autoplay={true}
+            style={{ 
+              width: "90px", 
+              height: "90px", 
+              backgroundColor: "#F1F1F1",
+            }}
+            rendererSettings={{
+              preserveAspectRatio: "xMidYMid meet",
+              clearCanvas: true,
+            }}
           />
         </div>
 

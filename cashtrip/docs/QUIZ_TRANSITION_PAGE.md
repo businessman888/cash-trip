@@ -161,3 +161,5 @@ Esta página estabelece o padrão de transição entre níveis:
 4. Implementar salvamento completo no Supabase
 
 
+
+
