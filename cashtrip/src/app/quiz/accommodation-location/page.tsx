@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
+import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 
 type LocationType = "downtown" | "beach" | "nature" | "publicTransport" | "touristSpots" | "flexible";
 
@@ -95,11 +97,11 @@ export default function AccommodationLocationPage() {
       {/* Seção de Título */}
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px] h-[310px]">
         <div className="w-[90px] h-[90px] flex items-center justify-center">
-          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M45 15 L45 75 M45 15 C45 15, 30 30, 45 45 M45 15 C45 15, 60 30, 45 45" stroke="white" strokeWidth="4" fill="none"/>
-            <circle cx="45" cy="20" r="12" stroke="#E6502C" strokeWidth="4" fill="white"/>
-            <path d="M45 75 L35 85 L45 80 L55 85 Z" fill="white"/>
-          </svg>
+          <img 
+            src="/icons/Icon-superior-página-qual-a-localização-ideal-da-hospedagem.svg" 
+            alt="Ícone Qual localização ideal da hospedagem"
+            className="w-full h-full object-contain"
+          />
         </div>
 
         <h1 className="text-[36px] font-roboto-condensed font-black text-[#FF5F38] leading-[1.17em] text-left">
@@ -132,13 +134,9 @@ export default function AccommodationLocationPage() {
                 `}
               >
                 {/* Check Badge */}
-                {isSelected && (
-                  <div className="absolute right-[2px] top-[10px] w-[40px] h-[40px] rounded-full border-[2px] border-[#E6502C] bg-white flex items-center justify-center z-10">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.26 6.38L9.73 11.85L20.72 0.87" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                <div className="absolute right-[2px] top-[10px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 {/* Ícone */}
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
@@ -186,13 +184,10 @@ export default function AccommodationLocationPage() {
                   }
                 `}
               >
-                {isSelected && (
-                  <div className="absolute right-[2px] top-[10px] w-[40px] h-[40px] rounded-full border-[2px] border-[#E6502C] bg-white flex items-center justify-center z-10">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.26 6.38L9.73 11.85L20.72 0.87" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                {/* Check Badge */}
+                <div className="absolute right-[2px] top-[10px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
                   <img 
@@ -237,13 +232,10 @@ export default function AccommodationLocationPage() {
                   }
                 `}
               >
-                {isSelected && (
-                  <div className="absolute right-[2px] top-[10px] w-[40px] h-[40px] rounded-full border-[2px] border-[#E6502C] bg-white flex items-center justify-center z-10">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.26 6.38L9.73 11.85L20.72 0.87" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                {/* Check Badge */}
+                <div className="absolute right-[2px] top-[10px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
                   <img 
@@ -274,14 +266,10 @@ export default function AccommodationLocationPage() {
 
       {/* Botão Flutuante */}
       {selected.length > 0 && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-[8px] right-[6px] w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

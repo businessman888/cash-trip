@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 
 type FoodLevelType = "gourmet" | "casual" | "healthy" | "local" | "cooking";
 
@@ -96,7 +97,7 @@ export default function FoodLevelPage() {
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px] h-[262px]">
         <div className="w-[90px] h-[90px] flex items-center justify-center">
           <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g stroke="white" strokeWidth="3">
+            <g stroke="#FF5F38" strokeWidth="3">
               <rect x="22.5" y="22.5" width="30" height="16.88" rx="2" fill="none"/>
               <line x1="37.5" y1="39.38" x2="37.5" y2="67.5"/>
               <line x1="22.5" y1="67.5" x2="52.5" y2="67.5"/>
@@ -159,14 +160,10 @@ export default function FoodLevelPage() {
 
       {/* Botão Flutuante */}
       {hasAnyLevel && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-[8px] right-[6px] w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

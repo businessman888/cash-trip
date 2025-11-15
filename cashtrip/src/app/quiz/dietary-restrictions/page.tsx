@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
+import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 
 type RestrictionType = "vegetarian" | "vegan" | "glutenFree" | "lactoseFree" | "halal" | "kosher" | "none";
 
@@ -95,11 +97,11 @@ export default function DietaryRestrictionsPage() {
       {/* Seção de Título */}
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px]">
         <div className="w-[90px] h-[90px] flex items-center justify-center">
-          <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="45" cy="45" r="35" stroke="white" strokeWidth="4"/>
-            <line x1="20" y1="45" x2="70" y2="45" stroke="white" strokeWidth="4"/>
-            <path d="M45 20 L65 45 L45 70 L25 45 Z" stroke="white" strokeWidth="4" fill="none"/>
-          </svg>
+          <img 
+            src="/icons/Icon-superior-pagina-Restrições-alimentares.svg" 
+            alt="Ícone Restrições alimentares"
+            className="w-full h-full object-contain"
+          />
         </div>
 
         <h1 className="text-[36px] font-roboto-condensed font-black text-[#FF5F38] leading-[1.17em] text-left">
@@ -128,13 +130,9 @@ export default function DietaryRestrictionsPage() {
                 `}
               >
                 {/* Check Badge */}
-                {isSelected && (
-                  <div className="absolute right-[7px] top-[12px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                <div className="absolute right-[7px] top-[12px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 {/* Ícone */}
                 <div className="absolute left-[43px] top-[62px] w-[70px] h-[70px]">
@@ -173,13 +171,10 @@ export default function DietaryRestrictionsPage() {
                   }
                 `}
               >
-                {isSelected && (
-                  <div className="absolute right-[7px] top-[12px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                {/* Check Badge */}
+                <div className="absolute right-[7px] top-[12px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 <div className="absolute left-[43px] top-[62px] w-[70px] h-[70px]">
                   <img 
@@ -216,13 +211,10 @@ export default function DietaryRestrictionsPage() {
                   }
                 `}
               >
-                {isSelected && (
-                  <div className="absolute right-[7px] top-[12px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                {/* Check Badge */}
+                <div className="absolute right-[7px] top-[12px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 <div className="absolute left-[43px] top-[62px] w-[70px] h-[70px]">
                   <img 
@@ -259,13 +251,10 @@ export default function DietaryRestrictionsPage() {
                   }
                 `}
               >
-                {isSelected && (
-                  <div className="absolute right-[7px] top-[12px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+                {/* Check Badge */}
+                <div className="absolute right-[7px] top-[12px] z-10">
+                  <SelectionIcon isSelected={isSelected} />
+                </div>
 
                 <div className="absolute left-[43px] top-[62px] w-[70px] h-[70px]">
                   <img 
@@ -288,14 +277,10 @@ export default function DietaryRestrictionsPage() {
 
       {/* Botão Flutuante */}
       {selected.length > 0 && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-[8px] right-[6px] w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

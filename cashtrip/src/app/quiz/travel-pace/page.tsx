@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
 
 type TravelPace = "agitado" | "equilibrado" | "tranquilo";
@@ -146,14 +147,10 @@ export default function QuizTravelPacePage() {
 
       {/* Botão Flutuante - Círculo no canto direito */}
       {selected && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-4 right-4 w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

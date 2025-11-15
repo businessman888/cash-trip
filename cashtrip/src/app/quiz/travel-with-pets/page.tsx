@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckIcon } from "@/components/quiz/CheckIcon";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 
 export default function QuizTravelWithPetsPage() {
   const router = useRouter();
@@ -97,7 +99,7 @@ export default function QuizTravelWithPetsPage() {
               className={`absolute left-[95px] top-[32px] font-roboto-condensed font-black text-xl leading-[23px] text-left ${
                 selectedOption === options[0].id
                   ? "text-[#FF5F38]"
-                  : "text-[#FF5F38]"
+                  : "text-[#1E293B]"
               }`}
             >
               {options[0].label}
@@ -106,15 +108,7 @@ export default function QuizTravelWithPetsPage() {
 
           {/* Check Area */}
           <div className="absolute right-[8px] top-2.5 w-[54px] h-[88px] flex items-center justify-center">
-            {selectedOption === options[0].id && (
-              <div className="w-10 h-10 flex items-center justify-center">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="19.5" stroke="#FF5F38" strokeWidth="1" fill="white"/>
-                  <circle cx="20" cy="20" r="15" fill="white"/>
-                  <path d="M9.79 17.51l8.42 6.72 11.89-16.72" stroke="#FF5F38" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            )}
+            <CheckIcon isSelected={selectedOption === options[0].id} />
           </div>
         </button>
 
@@ -151,15 +145,7 @@ export default function QuizTravelWithPetsPage() {
 
           {/* Check Area */}
           <div className="absolute right-[8px] top-2.5 w-[54px] h-[88px] flex items-center justify-center">
-            {selectedOption === options[1].id && (
-              <div className="w-10 h-10 flex items-center justify-center">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="19.5" stroke="#FF5F38" strokeWidth="1" fill="white"/>
-                  <circle cx="20" cy="20" r="15" fill="white"/>
-                  <path d="M9.79 17.51l8.42 6.72 11.89-16.72" stroke="#FF5F38" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            )}
+            <CheckIcon isSelected={selectedOption === options[1].id} />
           </div>
         </button>
 
@@ -196,15 +182,7 @@ export default function QuizTravelWithPetsPage() {
 
           {/* Check Area */}
           <div className="absolute right-[8px] top-2.5 w-[54px] h-[88px] flex items-center justify-center">
-            {selectedOption === options[2].id && (
-              <div className="w-10 h-10 flex items-center justify-center">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="19.5" stroke="#FF5F38" strokeWidth="1" fill="white"/>
-                  <circle cx="20" cy="20" r="15" fill="white"/>
-                  <path d="M9.79 17.51l8.42 6.72 11.89-16.72" stroke="#FF5F38" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            )}
+            <CheckIcon isSelected={selectedOption === options[2].id} />
           </div>
         </button>
 
@@ -241,44 +219,18 @@ export default function QuizTravelWithPetsPage() {
 
           {/* Check Area */}
           <div className="absolute right-[8px] top-2.5 w-[54px] h-[88px] flex items-center justify-center">
-            {selectedOption === options[3].id && (
-              <div className="w-10 h-10 flex items-center justify-center">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="19.5" stroke="#FF5F38" strokeWidth="1" fill="white"/>
-                  <circle cx="20" cy="20" r="15" fill="white"/>
-                  <path d="M9.79 17.51l8.42 6.72 11.89-16.72" stroke="#FF5F38" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            )}
+            <CheckIcon isSelected={selectedOption === options[3].id} />
           </div>
         </button>
       </div>
 
       {/* Floating Button */}
-      <button
-        onClick={handleContinue}
-        disabled={!selectedOption}
-        className={`fixed bottom-2 right-[20px] w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
-          selectedOption
-            ? "bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] hover:scale-105"
-            : "bg-gray-300 cursor-not-allowed"
-        }`}
-      >
-        <svg
-          className="w-10 h-10"
-          viewBox="0 0 40 40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M4 4.08L31.97 31.92"
-            stroke="white"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+      {selectedOption && (
+        <NavigationButton
+          onClick={handleContinue}
+          variant="white-background"
+        />
+      )}
     </div>
   );
 }

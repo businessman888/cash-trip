@@ -2,7 +2,7 @@ import { createApi } from 'unsplash-js'
 
 // Initialize Unsplash client
 export const unsplash = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY!,
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || 'placeholder-key',
 })
 
 export interface UnsplashPhoto {
@@ -107,6 +107,10 @@ export async function getPhotoById(photoId: string): Promise<UnsplashPhoto | nul
     return null
   }
 }
+
+
+
+
 
 
 

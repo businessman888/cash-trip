@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 import Lottie from "lottie-react";
 
 export default function TransitionTransportPage() {
@@ -149,14 +150,10 @@ export default function TransitionTransportPage() {
       </div>
 
       {/* Botão "Preparado(a)?" - Círculo no canto inferior direito */}
-      <button
+      <NavigationButton
         onClick={handleContinue}
-        className="fixed bottom-[8px] right-[6px] w-[73px] h-[73px] rounded-full bg-white border-[3px] border-[#1E293B] shadow-[2px_2px_9px_0px_rgba(30,41,59,0.4)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-      >
-        <svg width="42" height="24" viewBox="0 0 42 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.88 10.67H26.25M26.25 10.67L24.94 1.28M26.25 10.67L11.84 21.39" stroke="#E6502C" strokeWidth="2.67" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+        variant="orange-background"
+      />
     </div>
   );
 }

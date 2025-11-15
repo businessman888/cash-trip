@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
+import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 import Image from "next/image";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
 
@@ -114,6 +116,11 @@ export default function QuizNighttimePreferencesPage() {
                 }
               `}
             >
+              {/* Ícone de Seleção */}
+              <div className="absolute right-[8px] top-[8px] z-10">
+                <SelectionIcon isSelected={isSelected} />
+              </div>
+
               {/* Área do Ícone */}
               <div className="absolute left-[18px] top-[63px] w-[297px] h-[90px] flex items-center justify-center">
                 <Image
@@ -143,14 +150,10 @@ export default function QuizNighttimePreferencesPage() {
 
       {/* Botão Flutuante - Círculo no canto direito */}
       {selected.length > 0 && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-4 right-4 w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="32" height="28" viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 4L28 14M28 14L18 24M28 14H4" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

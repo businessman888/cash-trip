@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
+import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 
 export default function QuizBucketListPage() {
   const router = useRouter();
@@ -127,24 +129,8 @@ export default function QuizBucketListPage() {
             }`}
           >
             {/* Check area */}
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[0].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[0].id)} />
             </div>
             {/* Card body */}
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
@@ -175,24 +161,8 @@ export default function QuizBucketListPage() {
             }`}
           >
             {/* Check area */}
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[1].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[1].id)} />
             </div>
             {/* Card body */}
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
@@ -225,20 +195,8 @@ export default function QuizBucketListPage() {
                 : "border-[3px] border-[#1E293B]"
             }`}
           >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[2].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[2].id)} />
             </div>
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
               <img
@@ -267,20 +225,8 @@ export default function QuizBucketListPage() {
                 : "border-[3px] border-[#1E293B]"
             }`}
           >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[3].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[3].id)} />
             </div>
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
               <img
@@ -312,20 +258,8 @@ export default function QuizBucketListPage() {
                 : "border-[3px] border-[#1E293B]"
             }`}
           >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[4].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[4].id)} />
             </div>
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
               <img
@@ -354,20 +288,8 @@ export default function QuizBucketListPage() {
                 : "border-[3px] border-[#1E293B]"
             }`}
           >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[5].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[5].id)} />
             </div>
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
               <img
@@ -396,23 +318,11 @@ export default function QuizBucketListPage() {
             className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
               selectedItems.includes(options[6].id)
                 ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
-                : "border-[3px] border-[#FF5F38]"
+                : "border-[3px] border-[#1E293B]"
             }`}
           >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start">
-              {selectedItems.includes(options[6].id) && (
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6502C] bg-white flex items-center justify-center">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4.26 11.62l4.59 4.61 10.89-10.85"
-                      stroke="#E6502C"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
+            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+              <SelectionIcon isSelected={selectedItems.includes(options[6].id)} />
             </div>
             <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
               <img
@@ -424,7 +334,7 @@ export default function QuizBucketListPage() {
                 className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center ${
                   selectedItems.includes(options[6].id)
                     ? "text-[#E6502C]"
-                    : "text-[#FF5F38]"
+                    : "text-[#1E293B]"
                 }`}
               >
                 {options[6].label}
@@ -435,30 +345,12 @@ export default function QuizBucketListPage() {
       </div>
 
       {/* Floating Button */}
-      <button
-        onClick={handleContinue}
-        disabled={selectedItems.length === 0}
-        className={`fixed bottom-4 right-4 w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
-          selectedItems.length > 0
-            ? "bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] hover:scale-105"
-            : "bg-gray-300 cursor-not-allowed"
-        }`}
-      >
-        <svg
-          className="w-7 h-7"
-          viewBox="0 0 50 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M9.375 12.44h31.25M29.688 1.49l14.094 24.95"
-            stroke="white"
-            strokeWidth="3.11"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+      {selectedItems.length > 0 && (
+        <NavigationButton
+          onClick={handleContinue}
+          variant="white-background"
+        />
+      )}
     </div>
   );
 }

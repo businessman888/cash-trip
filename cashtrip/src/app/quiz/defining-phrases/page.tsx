@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckIcon } from "@/components/quiz/CheckIcon";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 
 type PhraseType = "culturalImmersion" | "exploreRegion" | "enjoyAccommodation";
 
@@ -85,37 +87,34 @@ export default function QuizDefiningPhrasesPage() {
             <button
               onClick={() => handleSelect(options[0].id)}
               className={`
-                relative w-[234px] h-[179.5px] rounded-[10px] border-[2px]
+                relative w-[234px] h-[142px] border-[3px]
+                flex items-center justify-center
                 transition-all duration-200
                 ${selected === options[0].id
-                  ? "bg-[rgba(255,95,56,0.25)] border-[#E6502C] shadow-[2px_2px_9px_0px_rgba(255,95,56,1)]"
-                  : "bg-white border-[#1E293B] hover:shadow-lg"
+                  ? "bg-[rgba(230,80,44,0.3)] border-[#FF5F38] shadow-[1px_1px_9px_0px_rgba(255,95,56,1)]"
+                  : "bg-white border-[#1E293B] shadow-[1px_1px_9px_0px_rgba(0,0,0,0.25)]"
                 }
               `}
+              style={{
+                borderRadius: selected === options[0].id 
+                  ? "30px 40px 50px 5px" 
+                  : "30px 40px 50px 5px"
+              }}
             >
               {/* Check Badge */}
-              {selected === options[0].id && (
-                <div className="absolute right-[9.5px] top-[9px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
+              <div className="absolute right-[10px] top-[16px] z-10">
+                <CheckIcon isSelected={selected === options[0].id} />
+              </div>
               
-              {/* Texto com aspas e itálico */}
-              <p className={`absolute left-[31.5px] top-[49px] w-[161px] font-roboto italic text-[20px] leading-[1.17em] whitespace-pre-line ${
-                selected === options[0].id ? "text-[#E6502C]" : "text-[#1E293B]"
-              }`}>
-                {options[0].text}
-              </p>
+              {/* Texto */}
+              <div className="w-full flex items-center justify-center px-4 py-2">
+                <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
+                  selected === options[0].id ? "text-[#E6502C]" : "text-[#1E293B]"
+                }`}>
+                  {options[0].text}
+                </p>
+              </div>
             </button>
-            {/* Cauda do balão - esquerda */}
-            <div className={`absolute -bottom-[18px] left-[20px] w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[20px] ${
-              selected === options[0].id ? "border-t-[#E6502C]" : "border-t-[#1E293B]"
-            }`}></div>
-            <div className={`absolute -bottom-[15px] left-[22px] w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-t-[18px] ${
-              selected === options[0].id ? "border-t-[rgba(255,95,56,0.25)]" : "border-t-white"
-            }`}></div>
           </div>
         </div>
 
@@ -125,37 +124,34 @@ export default function QuizDefiningPhrasesPage() {
             <button
               onClick={() => handleSelect(options[1].id)}
               className={`
-                relative w-[234px] h-[179.5px] rounded-[10px] border-[2px]
+                relative w-[234px] h-[142px] border-[3px]
+                flex items-center justify-center
                 transition-all duration-200
                 ${selected === options[1].id
-                  ? "bg-[rgba(255,95,56,0.25)] border-[#E6502C] shadow-[2px_2px_9px_0px_rgba(255,95,56,1)]"
-                  : "bg-white border-[#1E293B] hover:shadow-lg"
+                  ? "bg-[rgba(230,80,44,0.3)] border-[#FF5F38] shadow-[1px_1px_9px_0px_rgba(255,95,56,1)]"
+                  : "bg-white border-[#1E293B] shadow-[1px_1px_9px_0px_rgba(0,0,0,0.25)]"
                 }
               `}
+              style={{
+                borderRadius: selected === options[1].id 
+                  ? "40px 30px 5px 50px" 
+                  : "40px 30px 5px 50px"
+              }}
             >
               {/* Check Badge */}
-              {selected === options[1].id && (
-                <div className="absolute left-[9.5px] top-[9px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
+              <div className="absolute left-[10px] top-[16px] z-10">
+                <CheckIcon isSelected={selected === options[1].id} />
+              </div>
               
-              {/* Texto com aspas e itálico */}
-              <p className={`absolute left-[41.5px] top-[49px] w-[145px] font-roboto italic text-[20px] leading-[1.17em] whitespace-pre-line ${
-                selected === options[1].id ? "text-[#E6502C]" : "text-[#1E293B]"
-              }`}>
-                {options[1].text}
-              </p>
+              {/* Texto */}
+              <div className="w-full flex items-center justify-center px-4 py-2">
+                <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
+                  selected === options[1].id ? "text-[#E6502C]" : "text-[#1E293B]"
+                }`}>
+                  {options[1].text}
+                </p>
+              </div>
             </button>
-            {/* Cauda do balão - direita */}
-            <div className={`absolute -bottom-[18px] right-[20px] w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[20px] ${
-              selected === options[1].id ? "border-t-[#E6502C]" : "border-t-[#1E293B]"
-            }`}></div>
-            <div className={`absolute -bottom-[15px] right-[22px] w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-t-[18px] ${
-              selected === options[1].id ? "border-t-[rgba(255,95,56,0.25)]" : "border-t-white"
-            }`}></div>
           </div>
         </div>
 
@@ -165,51 +161,44 @@ export default function QuizDefiningPhrasesPage() {
             <button
               onClick={() => handleSelect(options[2].id)}
               className={`
-                relative w-[234px] h-[179.5px] rounded-[10px] border-[2px]
+                relative w-[234px] h-[142px] border-[3px]
+                flex items-center justify-center
                 transition-all duration-200
                 ${selected === options[2].id
-                  ? "bg-[rgba(255,95,56,0.25)] border-[#E6502C] shadow-[2px_2px_9px_0px_rgba(255,95,56,1)]"
-                  : "bg-white border-[#1E293B] hover:shadow-lg"
+                  ? "bg-[rgba(230,80,44,0.3)] border-[#FF5F38] shadow-[1px_1px_9px_0px_rgba(255,95,56,1)]"
+                  : "bg-white border-[#1E293B] shadow-[1px_1px_9px_0px_rgba(0,0,0,0.25)]"
                 }
               `}
+              style={{
+                borderRadius: selected === options[2].id 
+                  ? "30px 40px 50px 5px" 
+                  : "30px 40px 50px 5px"
+              }}
             >
               {/* Check Badge */}
-              {selected === options[2].id && (
-                <div className="absolute right-[9.5px] top-[9px] w-[40px] h-[40px] rounded-full border border-[#FF5F38] bg-white flex items-center justify-center z-10">
-                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.79 7.51L9.73 12.45L20.94 1.24" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              )}
+              <div className="absolute right-[10px] top-[16px] z-10">
+                <CheckIcon isSelected={selected === options[2].id} />
+              </div>
               
-              {/* Texto com aspas e itálico */}
-              <p className={`absolute left-[31.5px] top-[49px] w-[160px] font-roboto italic text-[20px] leading-[1.17em] whitespace-pre-line ${
-                selected === options[2].id ? "text-[#E6502C]" : "text-[#1E293B]"
-              }`}>
-                {options[2].text}
-              </p>
+              {/* Texto */}
+              <div className="w-full flex items-center justify-center px-4 py-2">
+                <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
+                  selected === options[2].id ? "text-[#E6502C]" : "text-[#1E293B]"
+                }`}>
+                  {options[2].text}
+                </p>
+              </div>
             </button>
-            {/* Cauda do balão - esquerda */}
-            <div className={`absolute -bottom-[18px] left-[20px] w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[20px] ${
-              selected === options[2].id ? "border-t-[#E6502C]" : "border-t-[#1E293B]"
-            }`}></div>
-            <div className={`absolute -bottom-[15px] left-[22px] w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-t-[18px] ${
-              selected === options[2].id ? "border-t-[rgba(255,95,56,0.25)]" : "border-t-white"
-            }`}></div>
           </div>
         </div>
       </div>
 
       {/* Botão Flutuante - Círculo no canto direito */}
       {selected && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-2 right-[3px] w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );

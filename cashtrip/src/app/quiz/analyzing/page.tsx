@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
 
 export default function QuizAnalyzingPage() {
   const router = useRouter();
+  const lottieRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Simular processamento de análise por 4 segundos
@@ -90,32 +92,27 @@ export default function QuizAnalyzingPage() {
         </h1>
       </div>
 
-      {/* Loading Illustration */}
-      <div className="w-full flex justify-center items-center px-[87px]">
-        <div className="w-[150px] h-[150px] relative">
-          {/* Animated spinning circle */}
-          <div className="w-full h-full animate-spin">
-            <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle 
-                cx="75" 
-                cy="75" 
-                r="54.65" 
-                stroke="white" 
-                strokeWidth="10" 
-                strokeDasharray="343" 
-                strokeDashoffset="86"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-          {/* Magnifying glass icon */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <img
-              src="/icons/Icone-superior-página-analisando.svg"
-              alt="Analisando"
-              className="w-[42px] h-[42px]"
-            />
-          </div>
+      {/* Loading Illustration - Airplane Flying Lottie Animation */}
+      <div className="w-full flex justify-center items-center px-[87px] py-8">
+        <div 
+          ref={lottieRef}
+          className="w-[300px] h-[300px] flex items-center justify-center"
+          style={{ backgroundColor: "transparent" }}
+        >
+          <Lottie
+            path="/animations/airplane-loading.json"
+            loop={true}
+            autoplay={true}
+            style={{ 
+              width: "300px", 
+              height: "300px",
+              backgroundColor: "transparent",
+            }}
+            rendererSettings={{
+              preserveAspectRatio: "xMidYMid meet",
+              clearCanvas: true,
+            }}
+          />
         </div>
       </div>
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Lottie from "lottie-react";
 
 export default function QuizDefiningProfilePage() {
   const router = useRouter();
+  const lottieRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Redirecionar após 2 segundos
@@ -87,6 +89,30 @@ export default function QuizDefiningProfilePage() {
         <h1 className="text-white font-roboto-condensed font-bold text-[36px] leading-[42px] text-center whitespace-pre-line">
           {"Definindo seu perfil\nideal..."}
         </h1>
+      </div>
+
+      {/* Loading Illustration - Airplane Flying Lottie Animation */}
+      <div className="w-full flex justify-center items-center px-[87px] py-8">
+        <div 
+          ref={lottieRef}
+          className="w-[300px] h-[300px] flex items-center justify-center"
+          style={{ backgroundColor: "transparent" }}
+        >
+          <Lottie
+            path="/animations/airplane-loading.json"
+            loop={true}
+            autoplay={true}
+            style={{ 
+              width: "300px", 
+              height: "300px",
+              backgroundColor: "transparent",
+            }}
+            rendererSettings={{
+              preserveAspectRatio: "xMidYMid meet",
+              clearCanvas: true,
+            }}
+          />
+        </div>
       </div>
 
       {/* Floating Button (non-interactive) */}

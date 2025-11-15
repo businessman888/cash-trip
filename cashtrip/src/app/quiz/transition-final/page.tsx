@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 
 export default function QuizTransitionFinalPage() {
   const router = useRouter();
@@ -107,26 +108,10 @@ export default function QuizTransitionFinalPage() {
       </div>
 
       {/* Floating Button */}
-      <button
+      <NavigationButton
         onClick={handleContinue}
-        className="fixed bottom-5 right-5 w-[73px] h-[73px] rounded-full bg-white border-[3px] border-[#1E293B] shadow-[2px_2px_9px_0px_rgba(30,41,59,0.4)] flex items-center justify-center hover:scale-105 transition-transform z-50"
-      >
-        <svg
-          width="42"
-          height="24"
-          viewBox="0 0 42 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M7.875 10.667h26.25M24.938 1.277l11.844 21.389"
-            stroke="#E6502C"
-            strokeWidth="2.667"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+        variant="orange-background"
+      />
     </div>
   );
 }

@@ -3,41 +3,53 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type IncomeRange = "0-2000" | "2000-5000" | "5000-10000" | "10000-20000" | "20000+" | null;
-
 export default function QuizIncomePage() {
   const router = useRouter();
-  const [selected, setSelected] = useState<IncomeRange>(null);
+  const [income, setIncome] = useState<number>(3000);
+
+  const minIncome = 1000;
+  const maxIncome = 1000000;
 
   const handleContinue = () => {
-    if (!selected) return;
-    
-    // Salvar escolha (localStorage temporário, depois Supabase)
-    localStorage.setItem("income", selected);
-    
-    // Redirecionar para página de transição
+    localStorage.setItem("income", income.toString());
     router.push("/quiz/transition");
   };
 
-  const options = [
-    { id: "0-2000" as IncomeRange, label: "Até R$ 2.000" },
-    { id: "2000-5000" as IncomeRange, label: "R$ 2.000 a R$ 5.000" },
-    { id: "5000-10000" as IncomeRange, label: "R$ 5.000 a R$ 10.000" },
-    { id: "10000-20000" as IncomeRange, label: "R$ 10.000 a R$ 20.000" },
-    { id: "20000+" as IncomeRange, label: "Acima de R$ 20.000" }
-  ];
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIncome(Number(e.target.value));
+  };
+
+  // Calcular posição do slider (0-100%)
+  const sliderPosition = ((income - minIncome) / (maxIncome - minIncome)) * 100;
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center px-4 py-[25px] pb-20">
-      {/* Header com Progresso e Textos */}
-      <div className="w-full max-w-md flex flex-col items-center gap-[21px] mb-3">
+    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[10px] px-4 py-[25px] pb-[80px]">
+      {/* Header com Progresso */}
+      <div className="w-full flex flex-col items-center gap-[21px]">
         {/* Barra de Progresso */}
-        <div className="w-full flex justify-center items-center p-2">
-          <div className="w-[325px] h-[31px] bg-white rounded-full overflow-hidden shadow-sm">
-            <div 
-              className="h-full bg-gradient-to-r from-[#FF5F38] to-[#FF896F] rounded-full transition-all duration-300"
-              style={{ width: '16%' }} // 4 de 25 perguntas = 16%
-            />
+        <div className="w-full flex flex-col items-center gap-[10px] px-[9px] py-[8px]">
+          <div className="relative w-[325px] h-[31px]">
+            <span className="absolute left-0 top-0 text-[#64748B] font-inria-sans font-normal text-[16px] leading-[1.2em]">
+              Pergunta 4 de 4
+            </span>
+            <span className="absolute right-0 top-0 text-[#FF5F38] font-inria-sans font-normal text-[16px] leading-[1.2em]">
+              100%
+            </span>
+            <div className="absolute left-0 top-[25px] w-[325px] h-[6px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
+              <div 
+                className="h-full bg-[#FF5F38] rounded-[20px] transition-all duration-300"
+                style={{ width: '325px' }}
+              />
+            </div>
           </div>
         </div>
 
@@ -53,127 +65,79 @@ export default function QuizIncomePage() {
         </div>
       </div>
 
-      {/* Opções de Renda em Grid */}
-      <div className="w-full max-w-md flex flex-col items-center py-[15px] px-[2px] h-[416px] gap-[10px]">
-        {/* Linha 1 */}
-        <div className="w-full h-[124px] relative">
-          <button
-            onClick={() => setSelected(options[0].id)}
-            className={`
-              absolute left-[11px] top-0 w-[156px] h-[124px] rounded-[20px]
-              flex items-center justify-center text-center px-2
-              transition-all duration-200 border-2
-              ${selected === options[0].id
-                ? "bg-[#FF5F38]/25 border-[#E6502C] shadow-[0.9px_0.9px_9px_0px_rgba(255,95,56,0.6)]"
-                : "bg-white border-[#1E293B] hover:shadow-lg"
-              }
-            `}
-          >
-            <span className={`font-inria-sans font-bold text-[16px] ${selected === options[0].id ? "text-[#E6502C]" : "text-[#1E293B]"}`}>
-              {options[0].label}
+      {/* Slider de Renda */}
+      <div className="w-full flex flex-col items-center gap-[10px] px-[2px] py-[15px]">
+        <div className="w-[339px] flex flex-col items-center gap-[22px] py-[14px]">
+          {/* Valor Exibido */}
+          <div className="flex flex-col items-center gap-[16px] px-[92px] py-[19px]">
+            <span className="text-[#1E293B] font-roboto font-bold text-[32px] leading-[1.17em]">
+              {formatCurrency(income)}
             </span>
-          </button>
-          
-          <button
-            onClick={() => setSelected(options[1].id)}
-            className={`
-              absolute left-[172px] top-0 w-[156px] h-[124px] rounded-[20px]
-              flex items-center justify-center text-center px-2
-              transition-all duration-200 border-2
-              ${selected === options[1].id
-                ? "bg-[#FF5F38]/25 border-[#E6502C] shadow-[0.9px_0.9px_9px_0px_rgba(255,95,56,0.6)]"
-                : "bg-white border-[#1E293B] hover:shadow-lg"
-              }
-            `}
-          >
-            <span className={`font-inria-sans font-bold text-[16px] ${selected === options[1].id ? "text-[#E6502C]" : "text-[#1E293B]"}`}>
-              {options[1].label}
-            </span>
-          </button>
-        </div>
+          </div>
 
-        {/* Linha 2 */}
-        <div className="w-full h-[124px] relative">
-          <button
-            onClick={() => setSelected(options[2].id)}
-            className={`
-              absolute left-[11px] top-0 w-[156px] h-[124px] rounded-[20px]
-              flex items-center justify-center text-center px-2
-              transition-all duration-200 border-2
-              ${selected === options[2].id
-                ? "bg-[#FF5F38]/25 border-[#E6502C] shadow-[0.9px_0.9px_9px_0px_rgba(255,95,56,0.6)]"
-                : "bg-white border-[#1E293B] hover:shadow-lg"
-              }
-            `}
-          >
-            <span className={`font-inria-sans font-bold text-[16px] ${selected === options[2].id ? "text-[#E6502C]" : "text-[#1E293B]"}`}>
-              {options[2].label}
-            </span>
-          </button>
-          
-          <button
-            onClick={() => setSelected(options[3].id)}
-            className={`
-              absolute left-[172px] top-0 w-[156px] h-[124px] rounded-[20px]
-              flex items-center justify-center text-center px-2
-              transition-all duration-200 border-2
-              ${selected === options[3].id
-                ? "bg-[#FF5F38]/25 border-[#E6502C] shadow-[0.9px_0.9px_9px_0px_rgba(255,95,56,0.6)]"
-                : "bg-white border-[#1E293B] hover:shadow-lg"
-              }
-            `}
-          >
-            <span className={`font-inria-sans font-bold text-[16px] ${selected === options[3].id ? "text-[#E6502C]" : "text-[#1E293B]"}`}>
-              {options[3].label}
-            </span>
-          </button>
-        </div>
+          {/* Slider Container */}
+          <div className="w-full flex flex-col gap-[10px] px-[4px] py-[27px]">
+            <div className="relative w-[330px] h-[43px]">
+              {/* Barra de Fundo */}
+              <div className="absolute left-0 top-[7px] w-[330px] h-[10px] bg-[rgba(100,116,139,0.1)] rounded-[20px]" />
+              
+              {/* Barra de Progresso */}
+              <div 
+                className="absolute left-0 top-[7px] h-[10px] bg-[#E6502C] rounded-[20px] transition-all duration-200"
+                style={{ width: `${sliderPosition}%` }}
+              />
 
-        {/* Linha 3 - Opção Maior */}
-        <div className="w-full h-[124px] relative">
-          <button
-            onClick={() => setSelected(options[4].id)}
-            className={`
-              absolute left-[12px] top-0 w-[316px] h-[124px] rounded-[20px]
-              flex items-center justify-center text-center px-2
-              transition-all duration-200 border-2
-              ${selected === options[4].id
-                ? "bg-[#FF5F38]/25 border-[#E6502C] shadow-[0.9px_0.9px_9px_0px_rgba(255,95,56,0.6)]"
-                : "bg-white border-[#1E293B] hover:shadow-lg"
-              }
-            `}
-          >
-            <span className={`font-inria-sans font-bold text-[16px] ${selected === options[4].id ? "text-[#E6502C]" : "text-[#1E293B]"}`}>
-              {options[4].label}
-            </span>
-          </button>
+              {/* Círculo do Slider */}
+              <div 
+                className="absolute top-0 w-[22px] h-[22px] bg-[#1E293B] border-[1px] border-white rounded-full cursor-pointer transition-all duration-200"
+                style={{ left: `calc(${sliderPosition}% - 11px)` }}
+              />
+
+              {/* Input Range (invisível mas funcional) */}
+              <input
+                type="range"
+                min={minIncome}
+                max={maxIncome}
+                value={income}
+                onChange={handleSliderChange}
+                className="absolute top-0 left-0 w-full h-[22px] opacity-0 cursor-pointer z-10"
+                style={{
+                  background: 'transparent',
+                }}
+              />
+            </div>
+
+            {/* Labels Min e Max */}
+            <div className="relative w-[330px] h-[15px]">
+              <span className="absolute left-0 top-0 text-[#1E293B] font-inter font-normal text-[12px] leading-[1.21em]">
+                {formatCurrency(minIncome)}
+              </span>
+              <span className="absolute right-0 top-0 text-[#1E293B] font-inter font-normal text-[12px] leading-[1.21em]">
+                {formatCurrency(maxIncome)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Botão Próxima Pergunta */}
-      <div className="w-full max-w-md flex justify-center items-center py-[28px] px-[67px]">
+      <div className="w-full flex justify-center items-center py-[28px] px-[67px]">
         <button
           onClick={handleContinue}
-          disabled={!selected}
-          className={`
-            relative w-[240px] h-[51px] rounded-[30px] flex items-center justify-center gap-2
-            transition-all duration-200
-            ${selected
-              ? "bg-[#FF896F] hover:bg-[#FF7A5C] cursor-pointer shadow-md"
-              : "bg-[#FF896F]/50 cursor-not-allowed"
-            }
-          `}
+          className="relative w-[240px] h-[51px] rounded-[30px] bg-[#FF896F] flex items-center justify-center gap-2 hover:bg-[#FF7A5C] transition-colors cursor-pointer"
         >
           <span className="text-white font-inria-sans font-bold text-[20px] leading-[1.2em]">
             Próxima pergunta
           </span>
-          {/* Arrow Icon */}
-          <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14.5 1.5L22 9M22 9L14.5 16.5M22 9H2" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <img 
+            src="/icons/icon seta para direita.svg" 
+            alt="Seta para direita" 
+            width={32} 
+            height={18}
+            className="object-contain"
+          />
         </button>
       </div>
     </div>
   );
 }
-

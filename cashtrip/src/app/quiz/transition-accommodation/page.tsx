@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
 
 export default function TransitionAccommodationPage() {
   const router = useRouter();
@@ -10,7 +11,7 @@ export default function TransitionAccommodationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-[5px] py-[30px]">
+    <div className="min-h-screen bg-[#FF5F38] flex flex-col py-[30px]">
       {/* Indicador de Níveis */}
       <div className="w-full flex flex-col items-center justify-center gap-[18px] py-[30px] px-[10px]">
         {/* Barra de Progresso com Níveis */}
@@ -61,53 +62,13 @@ export default function TransitionAccommodationPage() {
       </div>
 
       {/* Seção de Imagens - Fotos de Hospedagens Sobrepostas em Leque */}
-      <div className="w-full flex items-center justify-center py-[25px] px-[14px]">
-        <div className="relative w-[347px] h-[304px]">
-          {/* Imagem 1 - Esquerda (rotacionada) */}
-          <div 
-            className="absolute left-0 top-[17.5px] w-[168.85px] h-[269.33px] overflow-hidden shadow-[-2px_2px_4px_0px_rgba(0,0,0,0.25)]"
-            style={{
-              borderRadius: '20px 20px 8px 8px',
-              transform: 'rotate(-8deg)',
-              transformOrigin: 'bottom center'
-            }}
-          >
-            <img 
-              src="/img/imagem-da-página-estadia-perfeita_1.webp" 
-              alt="Hospedagem 1"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          {/* Imagem 2 - Centro/Direita (rotacionada) */}
-          <div 
-            className="absolute left-[159px] top-[19.5px] w-[188.49px] h-[274.29px] overflow-hidden shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)]"
-            style={{
-              borderRadius: '20px 20px 8px 8px',
-              transform: 'rotate(8deg)',
-              transformOrigin: 'bottom center'
-            }}
-          >
-            <img 
-              src="/img/imagem-da-página-estadia-perfeita-2_1.webp" 
-              alt="Hospedagem 2"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          {/* Imagem 3 - Centro (em destaque, sem rotação) */}
-          <div 
-            className="absolute left-[93.45px] top-0 w-[150.74px] h-[278.92px] overflow-hidden shadow-[2px_4px_4px_0px_rgba(255,95,56,0.25)] z-10"
-            style={{
-              borderRadius: '20px 20px 8px 8px'
-            }}
-          >
-            <img 
-              src="/img/imagem-da-página-estadia-perfeita-3_1.webp" 
-              alt="Hospedagem 3"
-              className="w-full h-full object-cover"
-            />
-          </div>
+      <div className="w-full flex items-center justify-center pt-[40px] pb-[30px] px-[14px]">
+        <div className="w-[347px] h-[304px] flex items-center justify-center">
+          <img 
+            src="/illustrations/Frame 259.svg" 
+            alt="Hospedagens em destaque"
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
 
@@ -126,14 +87,10 @@ export default function TransitionAccommodationPage() {
       </div>
 
       {/* Botão "Preparado(a)?" - Círculo no canto inferior direito */}
-      <button
+      <NavigationButton
         onClick={handleContinue}
-        className="fixed bottom-[8px] right-[6px] w-[73px] h-[73px] rounded-full bg-white border-[3px] border-[#1E293B] shadow-[2px_2px_9px_0px_rgba(30,41,59,0.4)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-      >
-        <svg width="42" height="24" viewBox="0 0 42 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.88 10.67H26.25M26.25 10.67L24.94 1.28M26.25 10.67L11.84 21.39" stroke="#E6502C" strokeWidth="2.67" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+        variant="orange-background"
+      />
     </div>
   );
 }

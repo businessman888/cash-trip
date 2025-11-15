@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationButton } from "@/components/quiz/NavigationButton";
+import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 
 type AttractionType = "museums" | "themeParks" | "nature" | "shopping" | "shows" | "gastronomy" | "sports" | "instagram";
 
@@ -137,15 +139,9 @@ export default function QuizAttractionsPage() {
                   `}
                 >
                   {/* Check Badge */}
-                  {isSelected && (
-                    <div className="absolute right-[9px] top-[10px] w-[138px] h-[43px] flex justify-end items-start">
-                      <div className="w-[40px] h-[40px] rounded-full border-[2px] border-[#E6502C] bg-white flex items-center justify-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M4.26 6.38L9.73 11.85L20.72 0.87" stroke="#E6502C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                    </div>
-                  )}
+                  <div className="absolute right-[9px] top-[10px] z-10">
+                    <SelectionIcon isSelected={isSelected} />
+                  </div>
 
                   {/* Corpo do Card */}
                   <div className="absolute left-[9px] top-[63px] w-[138px] h-[154px] flex flex-col items-center">
@@ -174,14 +170,10 @@ export default function QuizAttractionsPage() {
 
       {/* Botão Flutuante - Círculo no canto direito */}
       {selected.length > 0 && (
-        <button
+        <NavigationButton
           onClick={handleContinue}
-          className="fixed bottom-4 right-4 w-20 h-20 rounded-full bg-gradient-to-b from-[#FF896F] via-[#FF5F38] to-[#E6502C] shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:scale-110 transition-transform cursor-pointer z-50"
-        >
-          <svg width="50" height="28" viewBox="0 0 50 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.375 12.438H31.25M31.25 12.438L29.688 1.49M31.25 12.438L14.094 24.949" stroke="white" strokeWidth="3.125" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+          variant="white-background"
+        />
       )}
     </div>
   );
