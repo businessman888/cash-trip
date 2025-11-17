@@ -197,3 +197,4 @@ As imagens em `/public` são automaticamente cacheadas pelo Next.js durante o bu
 
 
 
+
