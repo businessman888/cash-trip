@@ -3,13 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
+import { useQuiz } from "@/contexts/QuizContext";
 
 export default function QuizPreparingAgentPage() {
   const router = useRouter();
+  const { responses } = useQuiz();
   const lottieRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Preparando seu agente de viagens...");
   const [error, setError] = useState<string | null>(null);
+  
+  const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
 
   useEffect(() => {
     processQuiz();
@@ -25,9 +29,15 @@ export default function QuizPreparingAgentPage() {
       setProgress(40);
       setStatus("Entendendo seu estilo...");
       
+      const body = IS_DEV_MODE ? { responses } : undefined;
+      
       // Call agent API
       const response = await fetch('/api/agent/process-quiz', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
       });
       
       setProgress(70);
@@ -39,6 +49,11 @@ export default function QuizPreparingAgentPage() {
       }
       
       const { profile } = await response.json();
+      
+      // Em modo dev, salvar no localStorage
+      if (IS_DEV_MODE) {
+        localStorage.setItem('user_profile_dev', JSON.stringify(profile));
+      }
       
       setProgress(100);
       setStatus("Perfil completo!");

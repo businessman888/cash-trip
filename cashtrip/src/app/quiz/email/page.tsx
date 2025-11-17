@@ -1,7 +1,29 @@
-import Link from 'next/link';
-import Image from 'next/image';
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function QuizEmailPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+
+  const handleContinue = () => {
+    if (!email.trim()) {
+      setError("Por favor, digite um email");
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Email inválido");
+      return;
+    }
+    
+    localStorage.setItem("userEmail", email);
+    router.push("/quiz/password");
+  };
+
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col items-center justify-center px-4 py-[100px]">
       {/* Header Section */}
@@ -26,21 +48,33 @@ export default function QuizEmailPage() {
             <input
               type="email"
               placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+              onKeyPress={(e) => e.key === 'Enter' && handleContinue()}
               className="flex-1 outline-none text-gray-700 placeholder:text-gray-400"
             />
           </div>
+          {error && (
+            <p className="text-white text-sm mt-2 text-center bg-red-500/20 px-3 py-2 rounded-lg">
+              {error}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Continue Button */}
       <div className="flex flex-col justify-center items-center gap-[10px] px-[10px] w-full h-[93px]">
-        <Link href="/quiz/password">
-          <button className="w-[232px] h-[61px] bg-[#1E293B] rounded-[40px] shadow-[2px_4px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center">
-            <span className="text-white font-roboto-condensed font-bold text-[20px] leading-[1.17em]">
-              Continuar
-            </span>
-          </button>
-        </Link>
+        <button 
+          onClick={handleContinue}
+          className="w-[232px] h-[61px] bg-[#1E293B] rounded-[40px] shadow-[2px_4px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:bg-[#2d3e54] transition-colors"
+        >
+          <span className="text-white font-roboto-condensed font-bold text-[20px] leading-[1.17em]">
+            Continuar
+          </span>
+        </button>
       </div>
     </div>
   );

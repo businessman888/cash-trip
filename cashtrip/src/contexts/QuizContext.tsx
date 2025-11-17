@@ -11,6 +11,8 @@ interface QuizContextType {
 }
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
+const STORAGE_KEY = 'quiz_responses_dev';
+const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
 
 export function QuizProvider({ children }: { children: ReactNode }) {
   const [responses, setResponses] = useState<Record<string, any>>({});
@@ -24,6 +26,16 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
   const loadResponses = async () => {
     try {
+      if (IS_DEV_MODE) {
+        // Modo dev: carregar do localStorage
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setResponses(JSON.parse(stored));
+        }
+        return;
+      }
+
+      // Produção: carregar do Supabase
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -49,11 +61,19 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     
     try {
-      // Update local state
-      setResponses(prev => ({ ...prev, [key]: value }));
+      const newResponses = { ...responses, [key]: value };
+      setResponses(newResponses);
       
-      // Save to Supabase
+      // Em modo dev, sempre salvar no localStorage
+      if (IS_DEV_MODE) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newResponses));
+        setIsLoading(false);
+        return;
+      }
+      
+      // Produção: salvar no Supabase
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (user) {
         const { error } = await supabase.from('quiz_responses').upsert({
           user_id: user.id,

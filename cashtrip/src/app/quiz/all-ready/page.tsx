@@ -36,25 +36,40 @@ export default function QuizAllReadyPage() {
   }, []);
 
   async function loadProfile() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
     
-    if (!user) {
-      router.push("/quiz/email");
-      return;
-    }
+    try {
+      if (IS_DEV_MODE) {
+        // Modo dev: buscar do localStorage
+        const stored = localStorage.getItem('user_profile_dev');
+        if (stored) {
+          setProfile(JSON.parse(stored) as UserProfile);
+        }
+      } else {
+        // Produção: buscar do Supabase
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          router.push("/quiz/email");
+          return;
+        }
 
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("profile_data")
-      .eq("user_id", user.id)
-      .single();
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("profile_data")
+          .eq("user_id", user.id)
+          .single();
 
-    if (data) {
-      setProfile(data.profile_data as UserProfile);
+        if (data) {
+          setProfile(data.profile_data as UserProfile);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   }
 
   const handleContinue = () => {

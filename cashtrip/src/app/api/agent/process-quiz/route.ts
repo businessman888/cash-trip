@@ -9,31 +9,48 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
+    const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
     
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    let responsesObj: Record<string, any> = {};
+    let user = null;
+    
+    if (IS_DEV_MODE) {
+      // Modo dev: aceitar respostas do body
+      const body = await request.json();
+      responsesObj = body.responses || {};
+      
+      if (Object.keys(responsesObj).length === 0) {
+        throw new Error('No quiz responses provided');
+      }
+    } else {
+      // Produção: buscar do Supabase (requer autenticação)
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !authUser) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+      
+      user = authUser;
+
+      // Fetch all quiz responses for this user
+      const { data: responses, error: fetchError } = await supabase
+        .from('quiz_responses')
+        .select('question_key, answer_value')
+        .eq('user_id', user.id);
+
+      if (fetchError) {
+        throw new Error(`Error fetching responses: ${fetchError.message}`);
+      }
+
+      // Transform responses into object
+      responsesObj = responses?.reduce((acc, item) => {
+        acc[item.question_key] = item.answer_value;
+        return acc;
+      }, {} as Record<string, any>) || {};
     }
-
-    // 1. Fetch all quiz responses for this user
-    const { data: responses, error: fetchError } = await supabase
-      .from('quiz_responses')
-      .select('question_key, answer_value')
-      .eq('user_id', user.id);
-
-    if (fetchError) {
-      throw new Error(`Error fetching responses: ${fetchError.message}`);
-    }
-
-    // 2. Transform responses into object
-    const responsesObj = responses?.reduce((acc, item) => {
-      acc[item.question_key] = item.answer_value;
-      return acc;
-    }, {} as Record<string, any>) || {};
 
     // 3. Format for agent
     const formattedQuiz = formatQuizResponsesForAgent(responsesObj);
@@ -59,26 +76,27 @@ export async function POST(request: NextRequest) {
       throw new Error('Invalid profile structure returned by agent');
     }
 
-    // 7. Save to Supabase
-    const { data: savedProfile, error: saveError } = await supabase
-      .from('user_profiles')
-      .upsert({
-        user_id: user.id,
-        profile_data: profileData.user_profile,
-        version: 1,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+    // 7. Save to Supabase apenas se usuário autenticado
+    if (user) {
+      const { error: saveError } = await supabase
+        .from('user_profiles')
+        .upsert({
+          user_id: user.id,
+          profile_data: profileData.user_profile,
+          version: 1,
+          updated_at: new Date().toISOString(),
+        });
 
-    if (saveError) {
-      throw new Error(`Error saving profile: ${saveError.message}`);
+      if (saveError) {
+        throw new Error(`Error saving profile: ${saveError.message}`);
+      }
     }
 
     // 8. Return profile
     return NextResponse.json({
       success: true,
       profile: profileData.user_profile,
+      devMode: IS_DEV_MODE,
     });
 
   } catch (error: any) {
