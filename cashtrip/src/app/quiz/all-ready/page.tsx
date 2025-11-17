@@ -1,14 +1,137 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+interface UserProfile {
+  preference_scores: {
+    adventure_level: number;
+    luxury_preference: number;
+    urban_vs_nature: number;
+    activity_intensity: number;
+    food_sophistication: number;
+    fitness_priority: number;
+    nightlife_interest: number;
+    cultural_interest: number;
+    exploration_desire: number;
+    social_level: number;
+  };
+  hard_requirements: {
+    accommodation_type: string[];
+    must_have_experiences: string[];
+  };
+  persona_summary: string;
+  travel_rhythm: string;
+}
+
 export default function QuizAllReadyPage() {
   const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  async function loadProfile() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      router.push("/quiz/email");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("profile_data")
+      .eq("user_id", user.id)
+      .single();
+
+    if (data) {
+      setProfile(data.profile_data as UserProfile);
+    }
+    
+    setLoading(false);
+  }
 
   const handleContinue = () => {
     router.push("/quiz/video-demo");
   };
+
+  // Determinar tipo de viajante baseado em scores
+  const getTravelerType = () => {
+    if (!profile) return null;
+    
+    const scores = profile.preference_scores;
+    
+    if (scores.adventure_level > 0.7 && scores.urban_vs_nature < 0.4) {
+      return {
+        name: "Explorador Aventureiro",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você busca experiências autênticas e destinos únicos fora do convencional",
+        tags: ["Natureza", "Aventura", "Cultura local"]
+      };
+    } else if (scores.food_sophistication > 0.7) {
+      return {
+        name: "Viajante Gourmet",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você valoriza experiências gastronômicas autênticas e sofisticadas",
+        tags: ["Gastronomia", "Cultura local", "Experiências únicas"]
+      };
+    } else if (scores.cultural_interest > 0.7) {
+      return {
+        name: "Explorador Cultural",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você busca imersão em história, arte e cultura local",
+        tags: ["Museus", "História", "Arte local"]
+      };
+    } else if (scores.luxury_preference > 0.7) {
+      return {
+        name: "Viajante de Luxo",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você valoriza conforto, sofisticação e experiências premium",
+        tags: ["Luxo", "Conforto", "Exclusividade"]
+      };
+    }
+    
+    // Default
+    return {
+      name: "Viajante Explorador",
+      icon: "/icons/icon-aventureiro.svg",
+      description: profile.persona_summary,
+      tags: profile.hard_requirements.must_have_experiences.slice(0, 3)
+    };
+  };
+
+  const travelerType = getTravelerType();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F1F1F1] flex items-center justify-center">
+        <p className="text-[#64748B] font-roboto-condensed text-xl">Carregando perfil...</p>
+      </div>
+    );
+  }
+
+  if (!profile || !travelerType) {
+    return (
+      <div className="min-h-screen bg-[#F1F1F1] flex items-center justify-center flex-col gap-4 px-8">
+        <p className="text-[#1E293B] font-roboto-condensed text-xl text-center">
+          Erro ao carregar perfil
+        </p>
+        <button
+          onClick={() => router.push("/quiz/preparing-agent")}
+          className="px-6 py-3 bg-[#FF5F38] text-white rounded-lg font-roboto-condensed"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F1F1F1] pb-8">
       {/* Header */}
@@ -64,14 +187,14 @@ export default function QuizAllReadyPage() {
         </div>
       </div>
 
-      {/* Tipo de Viajante Card */}
+      {/* Tipo de Viajante Card - DINÂMICO */}
       <div className="mx-auto mt-6 w-[312px] flex flex-col gap-[3px] px-[10px] py-[5px] bg-[rgba(255,95,56,0.25)] border border-[#FF5F38] rounded-[20px]">
         <div className="w-full flex items-start gap-3 p-[10px]">
           {/* Ícone no topo-esquerda */}
           <div className="w-[50px] h-[50px] flex-shrink-0 bg-[rgba(255,95,56,0.6)] rounded-[10px] flex items-center justify-center p-2">
             <Image
-              src="/icons/icon-aventureiro.svg"
-              alt="Explorador Aventureiro"
+              src={travelerType.icon}
+              alt={travelerType.name}
               width={30}
               height={30}
               className="object-contain"
@@ -82,39 +205,23 @@ export default function QuizAllReadyPage() {
           <div className="flex-1 flex flex-col gap-[6px] min-w-0">
             {/* Título */}
             <h3 className="text-[#1E293B] font-roboto-condensed font-semibold text-sm leading-[16px]">
-              Explorador Aventureiro
+              {travelerType.name}
             </h3>
             
             {/* Descrição */}
             <p className="text-[#E6502C] font-roboto-condensed font-normal text-[11px] leading-[13px]">
-              Você busca experiências autênticas<br />
-              e destinos únicos fora do<br />
-              convencional
+              {travelerType.description}
             </p>
             
-            {/* Tags em duas linhas */}
-            <div className="flex flex-col gap-2 mt-[6px]">
-              {/* Primeira linha */}
-              <div className="flex flex-row gap-2">
-                <div className="px-[15px] py-[5px] bg-[rgba(255,95,56,0.6)] rounded-[10px]">
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mt-[6px]">
+              {travelerType.tags.map((tag, i) => (
+                <div key={i} className="px-[15px] py-[5px] bg-[rgba(255,95,56,0.6)] rounded-[10px]">
                   <span className="text-white font-roboto-condensed font-normal text-[11px] leading-[13px] whitespace-nowrap">
-                    Natureza
+                    {tag}
                   </span>
                 </div>
-                <div className="px-[15px] py-[5px] bg-[rgba(255,95,56,0.6)] rounded-[10px]">
-                  <span className="text-white font-roboto-condensed font-normal text-[11px] leading-[13px] whitespace-nowrap">
-                    Aventura
-                  </span>
-                </div>
-              </div>
-              {/* Segunda linha */}
-              <div className="flex flex-row gap-2">
-                <div className="px-[7px] py-[5px] bg-[rgba(255,95,56,0.6)] rounded-[10px]">
-                  <span className="text-white font-roboto-condensed font-normal text-[11px] leading-[13px] whitespace-nowrap">
-                    Cultura local
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -128,7 +235,7 @@ export default function QuizAllReadyPage() {
           </h2>
         </div>
         <div className="flex flex-col gap-[15px] px-[35px] py-6">
-          {/* Tipo de Destino */}
+          {/* Tipo de Destino - DINÂMICO */}
           <div className="w-full max-w-[285px] h-[71px] bg-[#F6F7F9] rounded-[15px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative flex items-center px-[10px] gap-3">
             <div className="w-[64px] h-[59px] flex-shrink-0">
               <Image
@@ -144,20 +251,23 @@ export default function QuizAllReadyPage() {
                 Tipo de Destino
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                Montanhas e natureza
+                {profile.preference_scores.urban_vs_nature < 0.4 ? "Natureza e montanhas" : profile.preference_scores.urban_vs_nature > 0.7 ? "Urbano e cidade" : "Mix de natureza e cidade"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div className="w-[95%] h-full bg-[#FF5F38] rounded-[20px]" />
+                  <div 
+                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                    style={{ width: `${Math.round((1 - profile.preference_scores.urban_vs_nature) * 100)}%` }}
+                  />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  95%
+                  {Math.round((1 - profile.preference_scores.urban_vs_nature) * 100)}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Atividades */}
+          {/* Atividades - DINÂMICO */}
           <div className="w-full max-w-[285px] h-[71px] bg-[#F6F7F9] rounded-[15px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative flex items-center px-[10px] gap-3">
             <div className="w-[64px] h-[59px] flex-shrink-0">
               <Image
@@ -173,20 +283,23 @@ export default function QuizAllReadyPage() {
                 Atividades
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                Trilhas e Esportes
+                {profile.preference_scores.adventure_level > 0.7 ? "Aventura e esportes" : profile.preference_scores.adventure_level > 0.4 ? "Moderadas" : "Relaxantes"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div className="w-[88%] h-full bg-[#FF5F38] rounded-[20px]" />
+                  <div 
+                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                    style={{ width: `${Math.round(profile.preference_scores.adventure_level * 100)}%` }}
+                  />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  88%
+                  {Math.round(profile.preference_scores.adventure_level * 100)}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Gastronomia */}
+          {/* Gastronomia - DINÂMICO */}
           <div className="w-full max-w-[285px] h-[71px] bg-[#F6F7F9] rounded-[15px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative flex items-center px-[10px] gap-3">
             <div className="w-[64px] h-[59px] flex-shrink-0">
               <Image
@@ -202,14 +315,17 @@ export default function QuizAllReadyPage() {
                 Gastronomia
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                Culinária local autêntica
+                {profile.preference_scores.food_sophistication > 0.7 ? "Gourmet e sofisticada" : profile.preference_scores.food_sophistication > 0.4 ? "Culinária local autêntica" : "Casual e prática"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div className="w-[82%] h-full bg-[#FF5F38] rounded-[20px]" />
+                  <div 
+                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                    style={{ width: `${Math.round(profile.preference_scores.food_sophistication * 100)}%` }}
+                  />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  82%
+                  {Math.round(profile.preference_scores.food_sophistication * 100)}%
                 </span>
               </div>
             </div>

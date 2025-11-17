@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
+import { useQuiz } from "@/contexts/QuizContext";
 
 type TravelerType = "adventurer" | "cultural" | "relax" | "luxury" | "economic" | "balanced" | "gastronomic";
 
 export default function QuizTravelerTypePage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [selected, setSelected] = useState<TravelerType[]>([]);
+
+  // Load existing response
+  useEffect(() => {
+    if (responses.travelerType) {
+      setSelected(responses.travelerType as TravelerType[]);
+    }
+  }, [responses]);
 
   const handleToggle = (type: TravelerType) => {
     if (selected.includes(type)) {
@@ -26,13 +35,13 @@ export default function QuizTravelerTypePage() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selected.length === 0) return;
     
-    // Salvar escolhas (localStorage temporário, depois Supabase)
-    localStorage.setItem("travelerType", JSON.stringify(selected));
+    // Save to Supabase via Context
+    await saveResponse("travelerType", selected);
     
-    // Redirecionar para próxima pergunta do quiz
+    // Redirect to next question
     router.push("/quiz/travel-pace");
   };
 

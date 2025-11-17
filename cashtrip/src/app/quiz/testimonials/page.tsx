@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function QuizTestimonialsPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'anual' | 'mensal'>('anual');
+  const [selectedPlanType, setSelectedPlanType] = useState<'pro' | 'viajante'>('pro');
+  const [billingPeriod, setBillingPeriod] = useState<'mensal' | 'anual'>('mensal');
 
   useEffect(() => {
     // Força fundo branco no body e html
@@ -33,12 +34,13 @@ export default function QuizTestimonialsPage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedPlan('anual'); // Reset para o plano padrão ao fechar
+    setSelectedPlanType('pro'); // Reset para o plano padrão ao fechar
+    setBillingPeriod('mensal'); // Reset para o período padrão ao fechar
   };
 
   const handleSelectPlan = () => {
-    // Usa o plano selecionado (anual ou mensal)
-    console.log('Plano selecionado:', selectedPlan);
+    // Usa o plano selecionado (pro ou viajante) e período (mensal ou anual)
+    console.log('Plano selecionado:', selectedPlanType, 'Período:', billingPeriod);
     setIsModalOpen(false);
     router.push("/");
   };
@@ -220,124 +222,155 @@ export default function QuizTestimonialsPage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="bg-white w-full max-w-[375px] rounded-t-[21px] border-t-2 border-[#FF5F38]"
+              className="bg-white w-full max-w-[375px] rounded-t-[20px]"
               onClick={(e) => e.stopPropagation()}
-              style={{ maxHeight: '96vh', overflowY: 'auto' }}
+              style={{ 
+                maxHeight: '96vh', 
+                overflowY: 'auto',
+                boxShadow: '0px -2px 4px 0px rgba(230, 80, 44, 0.3)'
+              }}
             >
             {/* Título */}
-            <div className="pt-9 pb-8 flex justify-center">
-              <h2 className="text-black font-semibold text-[28px] text-center">
+            <div className="pt-[28px] pb-0 flex justify-center">
+              <h2 className="text-[#1E293B] font-bold text-[24px] text-center leading-[28px]" style={{ fontFamily: 'Roboto' }}>
                 Escolha Seu Plano
               </h2>
             </div>
 
             {/* Banner de Promoção */}
-            <div className="mx-auto w-[340px] h-[44px] bg-[#F5F5F5] rounded-[12px] flex items-center justify-center mb-10 relative">
-              <svg className="absolute left-5" width="20" height="20" viewBox="0 0 14 14" fill="none">
-                <path d="M7 0L8.5 5L14 5L9.5 8.5L11 13.5L7 10L3 13.5L4.5 8.5L0 5L5.5 5L7 0Z" fill="url(#gradient)" />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#FD4B19" />
-                    <stop offset="100%" stopColor="#BBB736" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span className="text-[13px] font-semibold ml-10 bg-gradient-to-r from-[#FD4B19] to-[#BBB736] bg-clip-text text-transparent">
-                60% Off Sale
-              </span>
-              <span className="text-[13px] font-semibold ml-auto mr-5 bg-gradient-to-r from-[#FD4B19] to-[#BBB736] bg-clip-text text-transparent">
-                9 vagas restantes
-              </span>
-            </div>
-
-            {/* Plano Anual */}
-            <div 
-              onClick={() => setSelectedPlan('anual')}
-              className="mx-auto w-[340px] h-[95px] rounded-[14px] mb-6 relative cursor-pointer transition-all duration-200 hover:scale-[1.02]"
-              style={{ 
-                background: selectedPlan === 'anual' 
-                  ? 'linear-gradient(54deg, #C3C3C3 0%, #FFFFFF 100%)' 
-                  : 'rgba(255,255,255,0.61)',
-                border: selectedPlan === 'anual' 
-                  ? '1px solid transparent' 
-                  : '1px solid #C3C3C3',
-                backgroundImage: selectedPlan === 'anual'
-                  ? 'linear-gradient(54deg, #C3C3C3 0%, #FFFFFF 100%), linear-gradient(90deg, #FD4B19 0%, #BBB736 100%)'
-                  : 'none',
-                backgroundOrigin: selectedPlan === 'anual' ? 'border-box' : 'padding-box',
-                backgroundClip: selectedPlan === 'anual' ? 'padding-box, border-box' : 'padding-box'
-              }}>
-              <div className="absolute left-12 top-8">
-                <p className="text-black font-semibold text-[18px]">Anual</p>
+            <div className="mx-auto w-[348px] h-[70px] bg-[#F6F7F9] rounded-[15px] flex items-center mb-0 mt-[28px] relative px-[5px]">
+              <div className="flex items-center gap-[8px] ml-[7px]">
+                <Image
+                  src="/icons/star-icon.svg"
+                  alt="Estrela"
+                  width={30}
+                  height={30}
+                  className="object-contain"
+                />
+                <span className="text-[14px] font-semibold leading-[16px] bg-gradient-to-r from-[#FD4B19] to-[#BBB736] bg-clip-text text-transparent" style={{ fontFamily: 'Roboto Condensed' }}>
+                  7 dias gratuitos de plano PRO
+                </span>
               </div>
-              <div className="absolute right-16 top-6">
-                <p className="text-black font-semibold text-[18px]">R$ 19,99</p>
-                <p className="text-[#828282] text-[10px] text-right">por mês</p>
-              </div>
-              <div className="absolute right-[210px] top-7">
-                <p className="text-[#828282] text-[10px] line-through">R$397,90</p>
-              </div>
-              {/* Radio button */}
-              <div className="absolute left-6 bottom-8 w-5 h-5 rounded-full border border-[#C3C3C3] flex items-center justify-center">
-                {selectedPlan === 'anual' && (
-                  <div className="w-[7px] h-[7px] rounded-full bg-gradient-to-r from-[#FD4B19] to-[#BBB736]"></div>
-                )}
+              <div className="ml-auto mr-[5px]">
+                <span className="text-[12px] font-semibold leading-[14px] bg-gradient-to-r from-[#FD4B19] to-[#BBB736] bg-clip-text text-transparent" style={{ fontFamily: 'Roboto Condensed' }}>
+                  6 VAGAS restantes
+                </span>
               </div>
             </div>
 
-            {/* Plano Mensal */}
+            {/* Toggle Mensal/Anual */}
+            <div className="mx-auto w-[263px] h-[49px] border border-[#D9D9D9] rounded-[40px] flex relative mt-[19px] mb-0">
+              <div 
+                onClick={() => setBillingPeriod('mensal')}
+                className={`flex-1 h-[43px] rounded-[40px] flex items-center justify-center cursor-pointer transition-all duration-200 ${
+                  billingPeriod === 'mensal' 
+                    ? 'bg-gradient-to-r from-[#FD4B19] to-[#BBB736]' 
+                    : ''
+                }`}
+                style={{ margin: '3px 4px' }}
+              >
+                <span className={`text-[16px] font-semibold leading-[19px] ${
+                  billingPeriod === 'mensal' ? 'text-white' : 'text-[#1E293B]'
+                }`} style={{ fontFamily: 'Roboto Condensed' }}>
+                  Mensal
+                </span>
+              </div>
+              <div 
+                onClick={() => setBillingPeriod('anual')}
+                className={`flex-1 h-[43px] rounded-[40px] flex items-center justify-center cursor-pointer transition-all duration-200 ${
+                  billingPeriod === 'anual' 
+                    ? 'bg-gradient-to-r from-[#FD4B19] to-[#BBB736]' 
+                    : ''
+                }`}
+                style={{ margin: '3px 4px' }}
+              >
+                <span className={`text-[16px] font-semibold leading-[19px] ${
+                  billingPeriod === 'anual' ? 'text-white' : 'text-[#1E293B]'
+                }`} style={{ fontFamily: 'Roboto Condensed' }}>
+                  anual
+                </span>
+              </div>
+            </div>
+
+            {/* Plano PRO */}
             <div 
-              onClick={() => setSelectedPlan('mensal')}
-              className="mx-auto w-[340px] h-[95px] rounded-[14px] mb-10 relative cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+              onClick={() => setSelectedPlanType('pro')}
+              className="mx-auto w-[343px] h-[78px] rounded-[15px] mb-0 mt-[19px] relative cursor-pointer transition-all duration-200"
               style={{ 
-                background: selectedPlan === 'mensal' 
-                  ? 'linear-gradient(54deg, #C3C3C3 0%, #FFFFFF 100%)' 
-                  : 'rgba(255,255,255,0.61)',
-                border: selectedPlan === 'mensal' 
-                  ? '1px solid transparent' 
-                  : '1px solid #C3C3C3',
-                backgroundImage: selectedPlan === 'mensal'
-                  ? 'linear-gradient(54deg, #C3C3C3 0%, #FFFFFF 100%), linear-gradient(90deg, #FD4B19 0%, #BBB736 100%)'
-                  : 'none',
-                backgroundOrigin: selectedPlan === 'mensal' ? 'border-box' : 'padding-box',
-                backgroundClip: selectedPlan === 'mensal' ? 'padding-box, border-box' : 'padding-box'
-              }}>
-              <div className="absolute left-12 top-8">
-                <p className="text-black font-semibold text-[18px]">Mensal</p>
+                background: '#FEFEFE',
+                border: selectedPlanType === 'pro' ? '2px solid transparent' : '1px solid #D9D9D9',
+                boxShadow: selectedPlanType === 'pro' ? '1px 1px 9px 0px rgba(230, 80, 44, 1)' : 'none'
+              }}
+            >
+              <div className="absolute left-[14px] top-[11px] flex items-center gap-[16px]">
+                <Image
+                  src="/icons/pro-icon.svg"
+                  alt="PRO"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+                <p className="text-[#1E293B] font-semibold text-[20px] leading-[27px]" style={{ fontFamily: 'Open Sans' }}>PRO</p>
               </div>
-              <div className="absolute right-16 top-6">
-                <p className="text-black font-semibold text-[18px]">R$ 27,90</p>
-                <p className="text-[#828282] text-[10px] text-right">por mês</p>
+              <div className="absolute right-[16px] top-[11px] flex flex-col items-end">
+                <div className="flex items-baseline gap-[4px]">
+                  <span className="text-[rgba(100,116,139,0.4)] font-semibold text-[11px] leading-[15px] line-through" style={{ fontFamily: 'Roboto Slab' }}>147,90</span>
+                  <p className="text-[#1E293B] font-semibold text-[16px] leading-[21px]" style={{ fontFamily: 'Roboto Slab' }}>R$ 19,99</p>
+                </div>
+                <p className="text-[#1E293B] font-semibold text-[11px] leading-[15px] mt-[9px]" style={{ fontFamily: 'Roboto Slab' }}>por mês</p>
               </div>
-              <div className="absolute right-[210px] top-7">
-                <p className="text-[#828282] text-[10px] line-through">R$49,99</p>
+            </div>
+
+            {/* Plano Viajante */}
+            <div 
+              onClick={() => setSelectedPlanType('viajante')}
+              className="mx-auto w-[343px] h-[78px] rounded-[15px] mb-0 mt-[20px] relative cursor-pointer transition-all duration-200"
+              style={{ 
+                background: '#FEFEFE',
+                border: selectedPlanType === 'viajante' ? '2px solid transparent' : '1px solid #D9D9D9',
+                boxShadow: selectedPlanType === 'viajante' ? '1px 1px 9px 0px rgba(230, 80, 44, 1)' : 'none'
+              }}
+            >
+              <div className="absolute left-[14px] top-[11px] flex items-center gap-[12px]">
+                <div className="w-[40px] h-[40px] rounded-full border border-[#D9D9D9] flex items-center justify-center">
+                  <div className="w-[20px] h-[20px] rounded-full border border-[#D9D9D9]"></div>
+                </div>
+                <p className="text-[#1E293B] font-semibold text-[20px] leading-[27px]" style={{ fontFamily: 'Open Sans' }}>Viajante</p>
               </div>
-              {/* Radio button */}
-              <div className="absolute left-6 bottom-8 w-5 h-5 rounded-full border border-[#C3C3C3] flex items-center justify-center">
-                {selectedPlan === 'mensal' && (
-                  <div className="w-[7px] h-[7px] rounded-full bg-gradient-to-r from-[#FD4B19] to-[#BBB736]"></div>
-                )}
+              <div className="absolute right-[16px] top-[11px] flex flex-col items-end">
+                <div className="flex items-baseline gap-[4px]">
+                  <span className="text-[rgba(100,116,139,0.4)] font-semibold text-[11px] leading-[15px] line-through" style={{ fontFamily: 'Roboto Slab' }}>230,90</span>
+                  <p className="text-[#75738C] font-semibold text-[16px] leading-[21px]" style={{ fontFamily: 'Roboto Slab' }}>R$ 49,90</p>
+                </div>
+                <p className="text-[#75738C] font-semibold text-[11px] leading-[15px] mt-[9px]" style={{ fontFamily: 'Roboto Slab' }}>por mês</p>
               </div>
             </div>
 
             {/* Ícone e texto de garantia */}
-            <div className="flex items-center justify-center mb-10">
-              <svg width="20" height="20" viewBox="0 0 14 14" fill="none" className="mr-4">
-                <path d="M7 0L8 3L11 4L8 5L7 8L6 5L3 4L6 3L7 0Z" fill="#FFFFFF" />
-              </svg>
-              <p className="text-[#4F4F4F] text-[11px] font-semibold">
+            <div className="flex items-center justify-start mx-auto w-[346px] mt-[28px] mb-0 gap-[9px]">
+              <Image
+                src="/icons/certificate-icon.svg"
+                alt="Certificado"
+                width={24}
+                height={24}
+                className="object-contain ml-[30px]"
+              />
+              <p className="text-[#64748B] text-[13px] font-medium leading-[15px]" style={{ fontFamily: 'Roboto Condensed' }}>
                 Sem compromisso, cancele a qualquer momento
               </p>
             </div>
 
             {/* Botão de Ação */}
-            <div className="px-10 pb-12">
+            <div className="px-[12px] pb-[55px] pt-[10px]">
               <button
                 onClick={handleSelectPlan}
-                className="w-full h-[52px] rounded-[20px] flex items-center justify-center"
-                style={{ background: 'linear-gradient(90deg, #FD4B19 0%, #BBB736 100%)' }}
+                className="w-full h-[56px] rounded-[40px] flex items-center justify-center"
+                style={{ 
+                  background: 'linear-gradient(90deg, #FD4B19 0%, #BBB736 100%)',
+                  boxShadow: '2px 2px 4px 0px rgba(0, 0, 0, 0.25)'
+                }}
               >
-                <span className="text-white font-bold text-[15px]">
+                <span className="text-white font-medium text-[16px] leading-[19px]" style={{ fontFamily: 'Roboto Condensed' }}>
                   Começar minha jornada hoje
                 </span>
               </button>

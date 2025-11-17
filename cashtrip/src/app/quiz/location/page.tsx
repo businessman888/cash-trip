@@ -1,20 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQuiz } from "@/contexts/QuizContext";
 
 export default function QuizLocationPage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
 
-  const handleContinue = () => {
+  // Load existing response
+  useEffect(() => {
+    if (responses.location) {
+      setState(responses.location.state || "");
+      setCity(responses.location.city || "");
+    }
+  }, [responses]);
+
+  const handleContinue = async () => {
     if (!state.trim() || !city.trim()) return;
     
-    // Salvar escolha (localStorage temporário, depois Supabase)
-    localStorage.setItem("location", JSON.stringify({ state: state.trim(), city: city.trim() }));
+    // Save to Supabase via Context
+    await saveResponse("location", { state: state.trim(), city: city.trim() });
     
-    // Redirecionar para próxima pergunta do quiz
+    // Redirect to next question
     router.push("/quiz/age");
   };
 

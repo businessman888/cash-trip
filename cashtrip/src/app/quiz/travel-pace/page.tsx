@@ -1,28 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
+import { useQuiz } from "@/contexts/QuizContext";
 
 type TravelPace = "agitado" | "equilibrado" | "tranquilo";
 
 export default function QuizTravelPacePage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [selected, setSelected] = useState<TravelPace | null>(null);
+
+  // Load existing response
+  useEffect(() => {
+    if (responses.travelPace) {
+      setSelected(responses.travelPace as TravelPace);
+    }
+  }, [responses]);
 
   const handleSelect = (pace: TravelPace) => {
     setSelected(pace);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selected) return;
     
-    // Salvar escolha
-    localStorage.setItem("travelPace", selected);
+    // Save to Supabase via Context
+    await saveResponse("travelPace", selected);
     
-    // Redirecionar para próxima pergunta
+    // Redirect to next question
     router.push("/quiz/daytime-places");
   };
 

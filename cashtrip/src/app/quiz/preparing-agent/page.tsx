@@ -1,21 +1,63 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 
 export default function QuizPreparingAgentPage() {
   const router = useRouter();
   const lottieRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("Preparando seu agente de viagens...");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Redirecionar após 2 segundos
-    const timer = setTimeout(() => {
-      router.push("/quiz/all-ready");
-    }, 2000);
+    processQuiz();
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [router]);
+  async function processQuiz() {
+    try {
+      // Simulate progress
+      setProgress(20);
+      setStatus("Analisando suas respostas...");
+      
+      await new Promise(r => setTimeout(r, 1000));
+      setProgress(40);
+      setStatus("Entendendo seu estilo...");
+      
+      // Call agent API
+      const response = await fetch('/api/agent/process-quiz', {
+        method: 'POST',
+      });
+      
+      setProgress(70);
+      setStatus("Criando perfil perfeito...");
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to process quiz');
+      }
+      
+      const { profile } = await response.json();
+      
+      setProgress(100);
+      setStatus("Perfil completo!");
+      
+      // Wait a bit then redirect
+      await new Promise(r => setTimeout(r, 1500));
+      router.push("/quiz/all-ready");
+      
+    } catch (err: any) {
+      console.error('Error processing quiz:', err);
+      setError(err.message || 'Erro ao processar quiz');
+      setStatus("Ocorreu um erro. Tentando novamente...");
+      
+      // Retry after 3 seconds
+      setTimeout(() => {
+        processQuiz();
+      }, 3000);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
@@ -87,8 +129,20 @@ export default function QuizPreparingAgentPage() {
 
         {/* Title */}
         <h1 className="text-white font-roboto-condensed font-bold text-[36px] leading-[42px] text-center whitespace-pre-line">
-          {"Preparando seu\nagente de viagens..."}
+          {status}
         </h1>
+        
+        {/* Progress Percentage */}
+        <p className="text-white font-roboto-condensed font-semibold text-[20px]">
+          {progress}%
+        </p>
+        
+        {/* Error Message */}
+        {error && (
+          <p className="text-white/80 font-roboto-condensed text-[14px] px-4 text-center">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* Loading Illustration - Airplane Flying Lottie Animation */}

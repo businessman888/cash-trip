@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQuiz } from "@/contexts/QuizContext";
 
 export default function QuizAgePage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [day, setDay] = useState<number>(6);
   const [month, setMonth] = useState<number>(2);
   const [year, setYear] = useState<number>(2002);
@@ -32,9 +34,13 @@ export default function QuizAgePage() {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const birthDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    localStorage.setItem("birthDate", birthDate);
+    const age = new Date().getFullYear() - year;
+    
+    await saveResponse("age", age);
+    await saveResponse("birthDate", birthDate);
+    
     router.push("/quiz/income");
   };
 

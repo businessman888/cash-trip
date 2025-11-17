@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQuiz } from "@/contexts/QuizContext";
 
 export default function QuizIncomePage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [income, setIncome] = useState<number>(3000);
 
   const minIncome = 1000;
   const maxIncome = 1000000;
 
-  const handleContinue = () => {
-    localStorage.setItem("income", income.toString());
+  // Load existing response
+  useEffect(() => {
+    if (responses.income) {
+      setIncome(responses.income as number);
+    }
+  }, [responses]);
+
+  const handleContinue = async () => {
+    await saveResponse("income", income);
     router.push("/quiz/transition");
   };
 

@@ -1,22 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useQuiz } from "@/contexts/QuizContext";
 
 type Gender = "male" | "female" | "non-binary" | null;
 
 export default function QuizGenderPage() {
   const router = useRouter();
+  const { responses, saveResponse } = useQuiz();
   const [selected, setSelected] = useState<Gender>(null);
 
-  const handleContinue = () => {
+  // Load existing response
+  useEffect(() => {
+    if (responses.gender) {
+      setSelected(responses.gender as Gender);
+    }
+  }, [responses]);
+
+  const handleContinue = async () => {
     if (!selected) return;
     
-    // Salvar escolha (localStorage temporário, depois Supabase)
-    localStorage.setItem("gender", selected);
+    // Save to Supabase via Context
+    await saveResponse("gender", selected);
     
-    // Redirecionar para próxima pergunta do quiz
+    // Redirect to next question
     router.push("/quiz/location");
   };
 
