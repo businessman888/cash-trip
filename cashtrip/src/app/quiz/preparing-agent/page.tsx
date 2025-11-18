@@ -12,8 +12,12 @@ export default function QuizPreparingAgentPage() {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Preparando seu agente de viagens...");
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [showRetryButton, setShowRetryButton] = useState(false);
   
   const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
+  const MAX_RETRIES = 3;
 
   useEffect(() => {
     processQuiz();
@@ -21,6 +25,10 @@ export default function QuizPreparingAgentPage() {
 
   async function processQuiz() {
     try {
+      setIsRetrying(false);
+      setError(null);
+      setShowRetryButton(false);
+      
       // Simulate progress
       setProgress(20);
       setStatus("Analisando suas respostas...");
@@ -45,10 +53,14 @@ export default function QuizPreparingAgentPage() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process quiz');
+        const errorMessage = errorData.error || 'Failed to process quiz';
+        const isRetryable = errorData.retryable !== false;
+        
+        throw new Error(errorMessage);
       }
       
-      const { profile } = await response.json();
+      const data = await response.json();
+      const { profile } = data;
       
       // Em modo dev, salvar no localStorage
       if (IS_DEV_MODE) {
@@ -63,16 +75,51 @@ export default function QuizPreparingAgentPage() {
       router.push("/quiz/all-ready");
       
     } catch (err: any) {
-      console.error('Error processing quiz:', err);
-      setError(err.message || 'Erro ao processar quiz');
-      setStatus("Ocorreu um erro. Tentando novamente...");
+      console.error('[Frontend] Error processing quiz:', err);
       
-      // Retry after 3 seconds
-      setTimeout(() => {
-        processQuiz();
-      }, 3000);
+      const errorMessage = err.message || 'Erro ao processar quiz';
+      setError(errorMessage);
+      
+      // Verificar se é um erro retryable
+      const isQuotaError = errorMessage.toLowerCase().includes('quota') || 
+                          errorMessage.toLowerCase().includes('limite');
+      const isRetryable = !errorMessage.toLowerCase().includes('autenticação');
+      
+      if (retryCount < MAX_RETRIES && isRetryable) {
+        setStatus(`Ocorreu um erro. Tentando novamente... (${retryCount + 1}/${MAX_RETRIES})`);
+        setIsRetrying(true);
+        
+        // Retry after delay progressivo
+        const delayMs = (retryCount + 1) * 2000;
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+          processQuiz();
+        }, delayMs);
+      } else {
+        // Máximo de tentativas atingido ou erro não retryable
+        setIsRetrying(false);
+        setShowRetryButton(true);
+        
+        if (isQuotaError) {
+          setStatus("Limite de uso da API atingido");
+          setError("A API atingiu seu limite de uso. Por favor, tente novamente mais tarde ou entre em contato com o suporte.");
+        } else if (!isRetryable) {
+          setStatus("Erro de configuração");
+          setError("Erro de autenticação da API. Por favor, verifique as configurações do sistema.");
+        } else {
+          setStatus("Não foi possível processar");
+          setError("Não foi possível processar seu perfil após várias tentativas. Por favor, tente novamente.");
+        }
+      }
     }
   }
+
+  const handleManualRetry = () => {
+    setRetryCount(0);
+    setError(null);
+    setShowRetryButton(false);
+    processQuiz();
+  };
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
@@ -83,7 +130,10 @@ export default function QuizPreparingAgentPage() {
           {/* Progress Bar Background */}
           <div className="absolute left-0 top-[5px] w-[307px] h-[5px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
             {/* Progress Fill - 100% */}
-            <div className="absolute left-0 top-0 w-[291px] h-[5px] bg-white rounded-[20px]" />
+            <div 
+              className="absolute left-0 top-0 h-[5px] bg-white rounded-[20px] transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
           </div>
 
           {/* Nível 1 */}
@@ -148,15 +198,27 @@ export default function QuizPreparingAgentPage() {
         </h1>
         
         {/* Progress Percentage */}
-        <p className="text-white font-roboto-condensed font-semibold text-[20px]">
-          {progress}%
-        </p>
+        {!error && (
+          <p className="text-white font-roboto-condensed font-semibold text-[20px]">
+            {progress}%
+          </p>
+        )}
         
         {/* Error Message */}
         {error && (
-          <p className="text-white/80 font-roboto-condensed text-[14px] px-4 text-center">
-            {error}
-          </p>
+          <div className="flex flex-col items-center gap-3 mt-2">
+            <p className="text-white/90 font-roboto-condensed text-[16px] px-4 text-center max-w-md">
+              {error}
+            </p>
+            {showRetryButton && (
+              <button
+                onClick={handleManualRetry}
+                className="px-6 py-3 bg-white text-[#FF5F38] rounded-full font-roboto-condensed font-bold text-[18px] hover:bg-white/90 transition-colors shadow-lg"
+              >
+                Tentar Novamente
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -205,4 +267,3 @@ export default function QuizPreparingAgentPage() {
     </div>
   );
 }
-

@@ -16,8 +16,12 @@ export default function TravelPurposePage() {
     // Salvar escolha (localStorage temporário, depois Supabase)
     localStorage.setItem("travelPurpose", selected);
     
-    // Redirecionar para próxima página do quiz
-    router.push("/quiz/email");
+    // Redirecionar para próxima página do quiz baseado na escolha
+    if (selected === "business") {
+      router.push("/quiz/business/corporate-traveler-detected");
+    } else {
+      router.push("/quiz/email");
+    }
   };
 
   return (

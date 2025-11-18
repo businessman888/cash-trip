@@ -44,7 +44,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         .select('question_key, answer_value')
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading responses:', error);
+        return;
+      }
 
       const responsesObj = data?.reduce((acc, item) => {
         acc[item.question_key] = item.answer_value;
@@ -54,6 +57,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setResponses(responsesObj);
     } catch (error) {
       console.error('Error loading responses:', error);
+      // Não lançar erro, apenas logar
     }
   };
 

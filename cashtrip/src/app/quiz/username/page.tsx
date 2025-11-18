@@ -24,7 +24,16 @@ export default function QuizUsernamePage() {
       const password = localStorage.getItem("userPassword");
       
       if (!email || !password) {
-        throw new Error("Dados de cadastro incompletos");
+        setError("Dados de cadastro incompletos. Por favor, comece novamente.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Validar senha antes de tentar criar conta
+      if (password.length < 6) {
+        setError("A senha deve ter no mínimo 6 caracteres. Por favor, volte e crie uma senha mais longa.");
+        setIsLoading(false);
+        return;
       }
       
       // Criar conta no Supabase
@@ -39,7 +48,16 @@ export default function QuizUsernamePage() {
       });
       
       if (signUpError) {
-        throw signUpError;
+        // Tratar erros específicos do Supabase
+        if (signUpError.message.toLowerCase().includes("password")) {
+          setError("A senha deve ter no mínimo 6 caracteres. Por favor, volte e crie uma senha mais longa.");
+        } else if (signUpError.message.toLowerCase().includes("already") || signUpError.message.toLowerCase().includes("registered")) {
+          setError("Este email já está cadastrado. Tente fazer login ou use outro email.");
+        } else {
+          setError(signUpError.message || "Erro ao criar conta. Tente novamente.");
+        }
+        setIsLoading(false);
+        return;
       }
       
       // Salvar username no localStorage também
@@ -54,7 +72,6 @@ export default function QuizUsernamePage() {
     } catch (err: any) {
       console.error("Error creating account:", err);
       setError(err.message || "Erro ao criar conta. Tente novamente.");
-    } finally {
       setIsLoading(false);
     }
   };

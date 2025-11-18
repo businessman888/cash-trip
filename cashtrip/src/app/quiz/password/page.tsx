@@ -10,8 +10,14 @@ export default function QuizPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const passwordMinLength = 6;
+
   const handleContinue = () => {
     if (!password || !confirmPassword) return;
+    if (password.length < passwordMinLength) {
+      alert(`A senha deve ter no mínimo ${passwordMinLength} caracteres!`);
+      return;
+    }
     if (password !== confirmPassword) {
       alert("As senhas não coincidem!");
       return;
@@ -24,7 +30,9 @@ export default function QuizPasswordPage() {
     router.push("/quiz/username");
   };
 
-  const isValid = password && confirmPassword && password === confirmPassword;
+  const isPasswordValid = password.length >= passwordMinLength;
+  const isPasswordMatch = password === confirmPassword;
+  const isValid = password && confirmPassword && isPasswordValid && isPasswordMatch;
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col items-center justify-center px-4 py-5">
@@ -107,6 +115,20 @@ export default function QuizPasswordPage() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Validation Messages */}
+      <div className="flex flex-col justify-center items-center px-[10px] w-full max-w-[375px]">
+        {password && password.length < passwordMinLength && (
+          <p className="text-white text-sm text-center bg-yellow-500/20 px-4 py-2 rounded-lg">
+            A senha deve ter no mínimo {passwordMinLength} caracteres
+          </p>
+        )}
+        {password && confirmPassword && password !== confirmPassword && (
+          <p className="text-white text-sm text-center bg-red-500/20 px-4 py-2 rounded-lg mt-2">
+            As senhas não coincidem
+          </p>
+        )}
       </div>
 
       {/* Continue Button */}

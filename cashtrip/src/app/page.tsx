@@ -6,8 +6,13 @@ export default async function Home() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   
-  // Se as variáveis não estiverem configuradas, mostrar página de configuração
+  // Se as variáveis não estiverem configuradas, redirecionar para o quiz
   if (!supabaseUrl || !supabaseAnonKey || supabaseAnonKey === 'PLACEHOLDER_KEY_NEEDS_REPLACEMENT') {
+    redirect('/quiz/travel-purpose')
+  }
+
+  // Se as variáveis estiverem configuradas mas forem placeholders, mostrar página de configuração
+  if (false) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#1E293B] to-[#0f172a] text-white p-10">
         <div className="max-w-4xl mx-auto">
