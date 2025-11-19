@@ -92,7 +92,7 @@ export default function QuizTravelPacePage() {
       </div>
 
       {/* Opções de Ritmo */}
-      <div className="w-full flex flex-col items-center justify-center gap-[28px] py-[21px] px-4 pb-[80px]">
+      <div className="w-full flex flex-col items-center justify-center gap-[17px] py-[21px] px-4 pb-[80px]">
         {options.map((option) => {
           const isSelected = selected === option.id;
           return (
@@ -100,23 +100,34 @@ export default function QuizTravelPacePage() {
               key={option.id}
               onClick={() => handleSelect(option.id)}
               className={`
-                relative w-[335px] h-[172px] rounded-[20px] border-[3px]
-                transition-all duration-200
+                relative w-[355px] h-[64px] rounded-[20px] border-[3px]
+                transition-all duration-200 flex items-center
                 ${isSelected
                   ? "bg-[#E6502C]/30 border-[#FF5F38] shadow-[2px_2px_9px_0px_rgba(255,95,56,1)]"
                   : "bg-white border-[#1E293B] hover:shadow-lg"
                 }
               `}
             >
-              {/* Frame com Ícone e Textos */}
-              <div className="absolute left-[22px] top-[53px] w-[290px] h-[90px]">
-                {/* Ícone à esquerda */}
-                <div className="absolute left-0 top-0 w-[90px] h-[90px] flex items-center justify-center">
+              {/* Badge de seleção no topo direito */}
+              {isSelected && (
+                <div className="absolute right-[8px] top-[8px] z-10">
+                  <div className="w-[32px] h-[32px] rounded-full bg-[#E6502C] shadow-[0.6px_0.6px_4px_0px_rgba(230,80,44,1)] flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              )}
+
+              {/* Container do Ícone e Textos */}
+              <div className="flex items-center gap-4 pl-5 pr-12 flex-1">
+                {/* Ícone */}
+                <div className="flex items-center justify-center flex-shrink-0">
                   <Image
                     src={option.icon}
                     alt={option.label}
-                    width={90}
-                    height={90}
+                    width={35}
+                    height={37.5}
                     className={`object-contain transition-all duration-200`}
                     style={isSelected ? { 
                       filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)"
@@ -124,31 +135,20 @@ export default function QuizTravelPacePage() {
                   />
                 </div>
 
-                {/* Textos à direita */}
-                <div className="absolute left-[105px] top-[15px] flex flex-col">
-                  <span className={`font-roboto-condensed font-extrabold text-[32px] leading-[1.17em] ${
+                {/* Textos */}
+                <div className="flex flex-col">
+                  <span className={`font-roboto-condensed font-bold text-[20px] leading-[1.17em] ${
                     isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
                   }`}>
                     {option.label}
                   </span>
-                  <span className={`font-roboto-condensed font-normal text-[13px] leading-[1.17em] mt-[4px] ${
+                  <span className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] ${
                     isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
                   }`}>
                     {option.description}
                   </span>
                 </div>
               </div>
-
-              {/* Badge/Frame decorativo no topo (se selecionado) */}
-              {isSelected && (
-                <div className="absolute left-[22px] top-[7px] w-[290px] h-[46px] flex items-center justify-end pr-[3px]">
-                  <div className="w-[40px] h-[40px] rounded-full bg-[#E6502C] shadow-[0.6px_0.6px_4px_0px_rgba(230,80,44,1)] flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              )}
             </button>
           );
         })}

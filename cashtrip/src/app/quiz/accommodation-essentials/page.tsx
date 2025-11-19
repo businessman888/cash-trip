@@ -120,7 +120,7 @@ export default function AccommodationEssentialsPage() {
       {/* Grid de Opções - 2x4 */}
       <div className="w-full flex flex-col gap-[5px] h-[963px]">
         {/* Linha 1 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px]">
+        <div className="flex justify-center items-center px-[22px] gap-[10px]">
           {options.slice(0, 2).map((option) => {
             const isSelected = selected.includes(option.id);
             
@@ -162,7 +162,7 @@ export default function AccommodationEssentialsPage() {
         </div>
 
         {/* Linha 2 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px]">
+        <div className="flex justify-center items-center px-[22px] gap-[10px]">
           {options.slice(2, 4).map((option) => {
             const isSelected = selected.includes(option.id);
             
@@ -202,7 +202,7 @@ export default function AccommodationEssentialsPage() {
         </div>
 
         {/* Linha 3 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px]">
+        <div className="flex justify-center items-center px-[22px] gap-[10px]">
           {options.slice(4, 6).map((option) => {
             const isSelected = selected.includes(option.id);
             
@@ -242,7 +242,7 @@ export default function AccommodationEssentialsPage() {
         </div>
 
         {/* Linha 4 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px] pb-24">
+        <div className="flex justify-center items-center px-[22px] gap-[10px] pb-24">
           {options.slice(6, 8).map((option) => {
             const isSelected = selected.includes(option.id);
             

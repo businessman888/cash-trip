@@ -117,7 +117,7 @@ export default function AccommodationLocationPage() {
       {/* Grid de Opções - 2x3 */}
       <div className="w-full flex flex-col gap-[5px]">
         {/* Linha 1 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px]">
+        <div className="flex justify-center items-center px-[22px] gap-[10px]">
           {options.slice(0, 2).map((option) => {
             const isSelected = selected.includes(option.id);
             
@@ -168,7 +168,7 @@ export default function AccommodationLocationPage() {
         </div>
 
         {/* Linha 2 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px]">
+        <div className="flex justify-center items-center px-[22px] gap-[10px]">
           {options.slice(2, 4).map((option) => {
             const isSelected = selected.includes(option.id);
             
@@ -216,7 +216,7 @@ export default function AccommodationLocationPage() {
         </div>
 
         {/* Linha 3 */}
-        <div className="flex justify-between items-center px-[22px] gap-[10px] pb-24">
+        <div className="flex justify-center items-center px-[22px] gap-[10px] pb-24">
           {options.slice(4, 6).map((option) => {
             const isSelected = selected.includes(option.id);
             

@@ -106,7 +106,7 @@ export default function AccommodationTypePage() {
       </div>
 
       {/* Opções de Hospedagem */}
-      <div className="w-full flex flex-col items-center gap-[15px] py-[26px] px-[16px] pb-24">
+      <div className="w-full flex flex-col items-center gap-[17px] py-[26px] px-[16px] pb-24">
         {options.map((option, index) => {
           const isSelected = selected.includes(option.id);
           
@@ -115,16 +115,16 @@ export default function AccommodationTypePage() {
               key={option.id}
               onClick={() => handleSelect(option.id)}
               className={`
-                relative w-[343px] h-[171px] flex items-center gap-[10px] rounded-[20px]
-                transition-all duration-200
+                relative w-[355px] h-[64px] flex items-center rounded-[20px]
+                transition-all duration-200 overflow-hidden
                 ${isSelected
                   ? "bg-[#F1F1F1] shadow-[2px_2px_9px_0px_rgba(230,80,44,1)]"
                   : "bg-[#F1F1F1] shadow-[2px_2px_9px_0px_rgba(0,0,0,0.25)]"
                 }
               `}
             >
-              {/* Imagem à esquerda */}
-              <div className="w-[139px] h-[171px] rounded-[20px_10px_10px_20px] overflow-hidden flex-shrink-0">
+              {/* Imagem à esquerda - 64px de altura preenchendo a borda */}
+              <div className="w-[80px] h-[64px] rounded-l-[20px] overflow-hidden flex-shrink-0">
                 <img 
                   src={option.image} 
                   alt={option.title}
@@ -133,24 +133,24 @@ export default function AccommodationTypePage() {
               </div>
 
               {/* Área de Texto e Check */}
-              <div className="relative w-[186px] h-[151px]">
-                {/* Check Badge - posicionado no topo direito */}
-                <div className="absolute right-0 top-[4px] z-10">
-                  <SelectionIcon isSelected={isSelected} />
-                </div>
-
-                {/* Textos */}
-                <div className="absolute left-[-4px] top-[48px] w-[190px]">
-                  <h3 className={`font-roboto-condensed font-semibold text-[24px] leading-[1.17em] text-center ${
+              <div className="relative flex-1 h-full flex items-center justify-between px-4">
+                {/* Textos centralizados verticalmente */}
+                <div className="flex flex-col items-start justify-center flex-1">
+                  <h3 className={`font-roboto-condensed font-semibold text-[20px] leading-[1.17em] ${
                     isSelected ? "text-[#FF5F38]" : "text-[#1E293B]"
                   }`}>
                     {option.title}
                   </h3>
-                  <p className={`font-roboto-condensed font-normal text-[16px] leading-[1.17em] text-center mt-[9px] whitespace-pre-line ${
+                  <p className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] whitespace-pre-line ${
                     isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
                   }`}>
                     {option.subtitle}
                   </p>
+                </div>
+
+                {/* Check Badge - posicionado à direita */}
+                <div className="flex-shrink-0 z-10">
+                  <SelectionIcon isSelected={isSelected} />
                 </div>
               </div>
             </button>

@@ -107,7 +107,7 @@ export default function QuizDefiningPhrasesPage() {
               </div>
               
               {/* Texto */}
-              <div className="w-full flex items-center justify-center px-4 py-2">
+              <div className="w-full flex items-center justify-center pl-4 pr-[60px] py-2">
                 <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
                   selected === options[0].id ? "text-[#E6502C]" : "text-[#1E293B]"
                 }`}>
@@ -144,7 +144,7 @@ export default function QuizDefiningPhrasesPage() {
               </div>
               
               {/* Texto */}
-              <div className="w-full flex items-center justify-center px-4 py-2">
+              <div className="w-full flex items-center justify-center pr-4 pl-[60px] py-2">
                 <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
                   selected === options[1].id ? "text-[#E6502C]" : "text-[#1E293B]"
                 }`}>
@@ -181,7 +181,7 @@ export default function QuizDefiningPhrasesPage() {
               </div>
               
               {/* Texto */}
-              <div className="w-full flex items-center justify-center px-4 py-2">
+              <div className="w-full flex items-center justify-center pl-4 pr-[60px] py-2">
                 <p className={`w-full font-roboto font-bold text-[20px] leading-[1.17em] whitespace-pre-line text-center ${
                   selected === options[2].id ? "text-[#E6502C]" : "text-[#1E293B]"
                 }`}>

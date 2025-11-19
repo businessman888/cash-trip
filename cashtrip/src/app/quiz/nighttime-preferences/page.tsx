@@ -100,7 +100,7 @@ export default function QuizNighttimePreferencesPage() {
       </div>
 
       {/* Opções de Preferências Noturnas */}
-      <div className="w-full flex flex-col items-center justify-center gap-[12px] py-[21px] px-5 pb-20">
+      <div className="w-full flex flex-col items-center justify-center gap-[17px] py-[21px] px-5 pb-20">
         {options.map((option) => {
           const isSelected = selected.includes(option.id);
           return (
@@ -108,8 +108,8 @@ export default function QuizNighttimePreferencesPage() {
               key={option.id}
               onClick={() => handleToggle(option.id)}
               className={`
-                relative w-[334px] h-[172px] rounded-[20px] border-[3px]
-                transition-all duration-200
+                relative w-[355px] h-[64px] rounded-[20px] border-[3px]
+                transition-all duration-200 flex items-center
                 ${isSelected
                   ? "bg-[#E6502C]/30 border-[#E6502C] shadow-[2px_2px_9px_0px_rgba(255,95,56,1)]"
                   : "bg-white border-[#1E293B] hover:shadow-lg"
@@ -121,23 +121,24 @@ export default function QuizNighttimePreferencesPage() {
                 <SelectionIcon isSelected={isSelected} />
               </div>
 
-              {/* Área do Ícone */}
-              <div className="absolute left-[18px] top-[63px] w-[297px] h-[90px] flex items-center justify-center">
-                <Image
-                  src={option.icon}
-                  alt={option.label}
-                  width={80}
-                  height={80}
-                  className={`object-contain transition-all duration-200`}
-                  style={isSelected ? { 
-                    filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)"
-                  } : {}}
-                />
-              </div>
+              {/* Container do Ícone e Texto */}
+              <div className="flex items-center gap-4 pl-5 pr-12 flex-1">
+                {/* Ícone */}
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <Image
+                    src={option.icon}
+                    alt={option.label}
+                    width={35}
+                    height={37.5}
+                    className={`object-contain transition-all duration-200`}
+                    style={isSelected ? { 
+                      filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)"
+                    } : {}}
+                  />
+                </div>
 
-              {/* Área do Texto */}
-              <div className="absolute left-[7px] top-[6px] w-[320px] h-[47px] flex items-center justify-center">
-                <span className={`font-roboto-condensed font-bold text-[24px] ${
+                {/* Texto */}
+                <span className={`font-roboto-condensed font-bold text-[20px] ${
                   isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
                 }`}>
                   {option.label}
