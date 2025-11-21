@@ -37,7 +37,9 @@ export default function QuizPreparingAgentPage() {
       setProgress(40);
       setStatus("Entendendo seu estilo...");
       
-      const body = IS_DEV_MODE ? { responses } : undefined;
+      // Sempre enviar as respostas no body
+      // A API decidirá se usa o body ou busca do banco baseado na autenticação
+      const body = { responses };
       
       // Call agent API
       const response = await fetch('/api/agent/process-quiz', {
@@ -45,7 +47,7 @@ export default function QuizPreparingAgentPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: body ? JSON.stringify(body) : undefined,
+        body: JSON.stringify(body),
       });
       
       setProgress(70);
@@ -62,10 +64,8 @@ export default function QuizPreparingAgentPage() {
       const data = await response.json();
       const { profile } = data;
       
-      // Em modo dev, salvar no localStorage
-      if (IS_DEV_MODE) {
-        localStorage.setItem('user_profile_dev', JSON.stringify(profile));
-      }
+      // Sempre salvar no localStorage para usuários não autenticados
+      localStorage.setItem('user_profile_dev', JSON.stringify(profile));
       
       setProgress(100);
       setStatus("Perfil completo!");

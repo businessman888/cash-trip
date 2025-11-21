@@ -19,7 +19,7 @@ export default function QuizDefiningPhrasesPage() {
     if (!selected) return;
     
     localStorage.setItem("definingPhrase", selected);
-    router.push("/quiz/transition-accommodation");
+    router.push("/quiz/level-unlocked");
   };
 
   const options = [

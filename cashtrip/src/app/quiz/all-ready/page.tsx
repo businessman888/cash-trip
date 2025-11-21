@@ -36,34 +36,34 @@ export default function QuizAllReadyPage() {
   }, []);
 
   async function loadProfile() {
-    const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
-    
     try {
-      if (IS_DEV_MODE) {
-        // Modo dev: buscar do localStorage
-        const stored = localStorage.getItem('user_profile_dev');
-        if (stored) {
-          setProfile(JSON.parse(stored) as UserProfile);
-        }
-      } else {
-        // Produção: buscar do Supabase
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          router.push("/quiz/email");
-          return;
-        }
+      // Primeiro tentar buscar do localStorage
+      const stored = localStorage.getItem('user_profile_dev');
+      if (stored) {
+        setProfile(JSON.parse(stored) as UserProfile);
+        setLoading(false);
+        return;
+      }
+      
+      // Se não encontrar no localStorage, tentar buscar do Supabase
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Se não tem perfil no localStorage e não está autenticado, erro
+        console.error("No profile found and user not authenticated");
+        setLoading(false);
+        return;
+      }
 
-        const { data, error } = await supabase
-          .from("user_profiles")
-          .select("profile_data")
-          .eq("user_id", user.id)
-          .single();
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("profile_data")
+        .eq("user_id", user.id)
+        .single();
 
-        if (data) {
-          setProfile(data.profile_data as UserProfile);
-        }
+      if (data) {
+        setProfile(data.profile_data as UserProfile);
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -76,52 +76,255 @@ export default function QuizAllReadyPage() {
     router.push("/quiz/video-demo");
   };
 
-  // Determinar tipo de viajante baseado em scores
+  // Determinar tipo de viajante baseado em scores (0-10)
   const getTravelerType = () => {
     if (!profile) return null;
     
     const scores = profile.preference_scores;
     
-    if (scores.adventure_level > 0.7 && scores.urban_vs_nature < 0.4) {
+    // Aventureiro Intenso
+    if (scores.adventure_level >= 8 && scores.urban_vs_nature <= 3) {
       return {
-        name: "Explorador Aventureiro",
+        name: "Explorador Aventureiro Intenso",
         icon: "/icons/icon-aventureiro.svg",
-        description: "Você busca experiências autênticas e destinos únicos fora do convencional",
-        tags: ["Natureza", "Aventura", "Cultura local"]
-      };
-    } else if (scores.food_sophistication > 0.7) {
-      return {
-        name: "Viajante Gourmet",
-        icon: "/icons/icon-aventureiro.svg",
-        description: "Você valoriza experiências gastronômicas autênticas e sofisticadas",
-        tags: ["Gastronomia", "Cultura local", "Experiências únicas"]
-      };
-    } else if (scores.cultural_interest > 0.7) {
-      return {
-        name: "Explorador Cultural",
-        icon: "/icons/icon-aventureiro.svg",
-        description: "Você busca imersão em história, arte e cultura local",
-        tags: ["Museus", "História", "Arte local"]
-      };
-    } else if (scores.luxury_preference > 0.7) {
-      return {
-        name: "Viajante de Luxo",
-        icon: "/icons/icon-aventureiro.svg",
-        description: "Você valoriza conforto, sofisticação e experiências premium",
-        tags: ["Luxo", "Conforto", "Exclusividade"]
+        description: "Você é apaixonado por destinos selvagens e experiências que desafiam seus limites. Busca contato direto com a natureza e atividades que elevam a adrenalina.",
+        tags: ["Aventura extrema", "Natureza selvagem", "Trilhas e expedições"]
       };
     }
     
-    // Default
+    // Aventureiro Moderado
+    if (scores.adventure_level >= 6 && scores.urban_vs_nature <= 5) {
+      return {
+        name: "Viajante Aventureiro",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você equilibra aventura com conforto, buscando experiências autênticas na natureza sem abrir mão de uma boa infraestrutura de apoio.",
+        tags: ["Ecoturismo", "Trilhas moderadas", "Contato com natureza"]
+      };
+    }
+    
+    // Gourmet Sofisticado
+    if (scores.food_sophistication >= 8 && scores.luxury_preference >= 6) {
+      return {
+        name: "Viajante Gourmet Sofisticado",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Para você, a gastronomia é a essência da viagem. Busca restaurantes renomados, experiências culinárias únicas e os melhores sabores locais com toque refinado.",
+        tags: ["Alta gastronomia", "Restaurantes premiados", "Degustações exclusivas"]
+      };
+    }
+    
+    // Gourmet Cultural
+    if (scores.food_sophistication >= 7) {
+      return {
+        name: "Explorador Gastronômico",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você viaja para experimentar a cultura através da comida autêntica local. Mercados, comida de rua e restaurantes tradicionais são seus destinos favoritos.",
+        tags: ["Gastronomia local", "Experiências culinárias", "Cultura através da comida"]
+      };
+    }
+    
+    // Cultural Profundo
+    if (scores.cultural_interest >= 8) {
+      return {
+        name: "Viajante Cultural Apaixonado",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "História, arte e tradições locais são sua paixão. Você busca imersão completa na cultura de cada destino, visitando museus, galerias e eventos culturais.",
+        tags: ["Museus e história", "Arte local", "Patrimônio cultural"]
+      };
+    }
+    
+    // Luxo Premium
+    if (scores.luxury_preference >= 8) {
+      return {
+        name: "Viajante de Luxo Premium",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você valoriza o máximo em conforto, exclusividade e sofisticação. Hotéis cinco estrelas, serviços personalizados e experiências VIP definem suas viagens.",
+        tags: ["Luxo exclusivo", "Experiências VIP", "Conforto premium"]
+      };
+    }
+    
+    // Social e Festivo
+    if (scores.nightlife_interest >= 8 && scores.social_level >= 7) {
+      return {
+        name: "Viajante Social e Festivo",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Você viaja para conectar-se com pessoas e viver a energia noturna dos destinos. Bares, baladas e eventos sociais são essenciais no seu roteiro.",
+        tags: ["Vida noturna", "Socialização", "Festas e eventos"]
+      };
+    }
+    
+    // Zen e Relaxamento
+    if (scores.activity_intensity <= 3 && scores.nightlife_interest <= 4) {
+      return {
+        name: "Viajante Zen e Contemplativo",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Suas viagens são sobre desacelerar e recarregar energias. Busca destinos tranquilos, spas, yoga e momentos de paz longe do caos urbano.",
+        tags: ["Relaxamento profundo", "Bem-estar", "Tranquilidade"]
+      };
+    }
+    
+    // Urbano Explorador
+    if (scores.urban_vs_nature >= 8 && scores.exploration_desire >= 6) {
+      return {
+        name: "Explorador Urbano",
+        icon: "/icons/icon-aventureiro.svg",
+        description: "Cidades vibrantes são seu playground. Você adora explorar arquitetura, vida local, gastronomia urbana e a energia pulsante dos grandes centros.",
+        tags: ["Exploração urbana", "Arquitetura", "Cultura de cidade"]
+      };
+    }
+    
+    // Equilibrado
     return {
-      name: "Viajante Explorador",
+      name: "Viajante Versátil e Equilibrado",
       icon: "/icons/icon-aventureiro.svg",
       description: profile.persona_summary,
-      tags: profile.hard_requirements.must_have_experiences.slice(0, 3)
+      tags: ["Experiências variadas", "Flexível", "Aberto a tudo"]
     };
   };
 
   const travelerType = getTravelerType();
+
+  // Funções auxiliares para tornar seções dinâmicas
+  const getAccommodationInfo = () => {
+    if (!profile) return { label: "Padrão", score: 50 };
+    
+    const luxuryScore = profile.preference_scores.luxury_preference;
+    
+    if (luxuryScore >= 8) {
+      return { label: "Luxo e exclusividade", score: Math.round(luxuryScore * 10) };
+    } else if (luxuryScore >= 6) {
+      return { label: "Conforto premium", score: Math.round(luxuryScore * 10) };
+    } else if (luxuryScore >= 4) {
+      return { label: "Hospedagens únicas", score: Math.round(luxuryScore * 10) };
+    } else {
+      return { label: "Econômico e prático", score: Math.round(luxuryScore * 10) };
+    }
+  };
+
+  const getBudgetInfo = () => {
+    if (!profile) return { label: "Médio", score: 50 };
+    
+    const luxuryScore = profile.preference_scores.luxury_preference;
+    
+    if (luxuryScore >= 8) {
+      return { label: "Alto", score: 90 };
+    } else if (luxuryScore >= 6) {
+      return { label: "Médio-Alto", score: 75 };
+    } else if (luxuryScore >= 4) {
+      return { label: "Médio", score: 55 };
+    } else {
+      return { label: "Econômico", score: 35 };
+    }
+  };
+
+  const getCompanyStyle = () => {
+    if (!profile) return "Flexível";
+    
+    const socialScore = profile.preference_scores.social_level;
+    
+    if (socialScore >= 8) {
+      return "Grandes grupos";
+    } else if (socialScore >= 5) {
+      return "Pequenos grupos";
+    } else {
+      return "Solo ou casal";
+    }
+  };
+
+  const getDurationStyle = () => {
+    if (!profile) return "7-14 dias";
+    
+    const intensityScore = profile.preference_scores.activity_intensity;
+    
+    if (intensityScore >= 8) {
+      return "5-10 dias (intenso)";
+    } else if (intensityScore >= 5) {
+      return "7-14 dias";
+    } else {
+      return "14+ dias (relaxado)";
+    }
+  };
+
+  const getRhythmLabel = () => {
+    if (!profile) return "Equilibrado";
+    
+    const rhythm = profile.travel_rhythm;
+    
+    if (rhythm === 'agitado') {
+      return "Agitado";
+    } else if (rhythm === 'tranquilo') {
+      return "Tranquilo";
+    } else {
+      return "Equilibrado";
+    }
+  };
+
+  const getClimatePreference = () => {
+    if (!profile) return "Temperado";
+    
+    const urbanVsNature = profile.preference_scores.urban_vs_nature;
+    const adventureLevel = profile.preference_scores.adventure_level;
+    
+    if (urbanVsNature <= 3 && adventureLevel >= 7) {
+      return "Variado";
+    } else if (urbanVsNature >= 7) {
+      return "Urbano";
+    } else {
+      return "Temperado";
+    }
+  };
+
+  const getMainInterests = () => {
+    if (!profile) return [];
+    
+    const scores = profile.preference_scores;
+    const interests: Array<{ label: string; highlighted: boolean }> = [];
+    
+    // Determinar interesses baseado nos scores mais altos
+    if (scores.adventure_level >= 7) {
+      interests.push({ label: "Aventura", highlighted: true });
+    }
+    
+    if (scores.urban_vs_nature <= 3) {
+      interests.push({ label: "Ecoturismo", highlighted: true });
+    }
+    
+    if (scores.food_sophistication >= 7) {
+      interests.push({ label: "Gastronomia", highlighted: true });
+    }
+    
+    if (scores.cultural_interest >= 7) {
+      interests.push({ label: "História", highlighted: interests.length < 2 });
+    }
+    
+    if (scores.exploration_desire >= 7) {
+      interests.push({ label: "Fotografia", highlighted: interests.length < 2 });
+    }
+    
+    if (scores.nightlife_interest >= 7) {
+      interests.push({ label: "Vida noturna", highlighted: interests.length < 2 });
+    }
+    
+    if (scores.fitness_priority >= 7) {
+      interests.push({ label: "Bem-estar", highlighted: interests.length < 2 });
+    }
+    
+    // Adicionar interesses padrão se não tiver suficientes
+    if (interests.length < 6) {
+      const defaultInterests = ["Arte local", "Cultura", "Natureza", "Relaxamento"];
+      for (const interest of defaultInterests) {
+        if (interests.length >= 6) break;
+        if (!interests.find(i => i.label === interest)) {
+          interests.push({ label: interest, highlighted: false });
+        }
+      }
+    }
+    
+    return interests.slice(0, 6);
+  };
+
+  const accommodationInfo = getAccommodationInfo();
+  const budgetInfo = getBudgetInfo();
+  const mainInterests = getMainInterests();
 
   if (loading) {
     return (
@@ -266,17 +469,17 @@ export default function QuizAllReadyPage() {
                 Tipo de Destino
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                {profile.preference_scores.urban_vs_nature < 0.4 ? "Natureza e montanhas" : profile.preference_scores.urban_vs_nature > 0.7 ? "Urbano e cidade" : "Mix de natureza e cidade"}
+                {profile.preference_scores.urban_vs_nature <= 3 ? "Natureza e montanhas" : profile.preference_scores.urban_vs_nature >= 7 ? "Urbano e cidade" : "Mix de natureza e cidade"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
                   <div 
                     className="h-full bg-[#FF5F38] rounded-[20px]" 
-                    style={{ width: `${Math.round((1 - profile.preference_scores.urban_vs_nature) * 100)}%` }}
+                    style={{ width: `${Math.round((10 - profile.preference_scores.urban_vs_nature) * 10)}%` }}
                   />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  {Math.round((1 - profile.preference_scores.urban_vs_nature) * 100)}%
+                  {Math.round((10 - profile.preference_scores.urban_vs_nature) * 10)}%
                 </span>
               </div>
             </div>
@@ -298,17 +501,17 @@ export default function QuizAllReadyPage() {
                 Atividades
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                {profile.preference_scores.adventure_level > 0.7 ? "Aventura e esportes" : profile.preference_scores.adventure_level > 0.4 ? "Moderadas" : "Relaxantes"}
+                {profile.preference_scores.adventure_level >= 8 ? "Aventura e esportes" : profile.preference_scores.adventure_level >= 4 ? "Moderadas" : "Relaxantes"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
                   <div 
                     className="h-full bg-[#FF5F38] rounded-[20px]" 
-                    style={{ width: `${Math.round(profile.preference_scores.adventure_level * 100)}%` }}
+                    style={{ width: `${Math.round(profile.preference_scores.adventure_level * 10)}%` }}
                   />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  {Math.round(profile.preference_scores.adventure_level * 100)}%
+                  {Math.round(profile.preference_scores.adventure_level * 10)}%
                 </span>
               </div>
             </div>
@@ -330,23 +533,23 @@ export default function QuizAllReadyPage() {
                 Gastronomia
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                {profile.preference_scores.food_sophistication > 0.7 ? "Gourmet e sofisticada" : profile.preference_scores.food_sophistication > 0.4 ? "Culinária local autêntica" : "Casual e prática"}
+                {profile.preference_scores.food_sophistication >= 8 ? "Gourmet e sofisticada" : profile.preference_scores.food_sophistication >= 4 ? "Culinária local autêntica" : "Casual e prática"}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
                   <div 
                     className="h-full bg-[#FF5F38] rounded-[20px]" 
-                    style={{ width: `${Math.round(profile.preference_scores.food_sophistication * 100)}%` }}
+                    style={{ width: `${Math.round(profile.preference_scores.food_sophistication * 10)}%` }}
                   />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  {Math.round(profile.preference_scores.food_sophistication * 100)}%
+                  {Math.round(profile.preference_scores.food_sophistication * 10)}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Acomodação */}
+          {/* Acomodação - DINÂMICO */}
           <div className="w-full max-w-[285px] h-[71px] bg-[#F6F7F9] rounded-[15px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative flex items-center px-[10px] gap-3">
             <div className="w-[64px] h-[59px] flex-shrink-0">
               <Image
@@ -363,20 +566,23 @@ export default function QuizAllReadyPage() {
                 Acomodação
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                Hospedagens Únicas
+                {accommodationInfo.label}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div className="w-[78%] h-full bg-[#FF5F38] rounded-[20px]" />
+                  <div 
+                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                    style={{ width: `${accommodationInfo.score}%` }}
+                  />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  78%
+                  {accommodationInfo.score}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Orçamento */}
+          {/* Orçamento - DINÂMICO */}
           <div className="w-full max-w-[285px] h-[71px] bg-[#F6F7F9] rounded-[15px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative flex items-center px-[10px] gap-3">
             <div className="w-[64px] h-[59px] flex-shrink-0">
               <Image
@@ -393,14 +599,17 @@ export default function QuizAllReadyPage() {
                 Orçamento
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] mb-2">
-                Médio-Alto
+                {budgetInfo.label}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div className="w-[70%] h-full bg-[#FF5F38] rounded-[20px]" />
+                  <div 
+                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                    style={{ width: `${budgetInfo.score}%` }}
+                  />
                 </div>
                 <span className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px] whitespace-nowrap">
-                  70%
+                  {budgetInfo.score}%
                 </span>
               </div>
             </div>
@@ -416,7 +625,7 @@ export default function QuizAllReadyPage() {
           </h2>
         </div>
         <div className="flex flex-row justify-center items-center gap-5 px-[10px] py-[5px]">
-          {/* Companhia */}
+          {/* Companhia - DINÂMICO */}
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -430,12 +639,12 @@ export default function QuizAllReadyPage() {
                 Companhia
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px]">
-                Pequenos grupos
+                {getCompanyStyle()}
               </p>
             </div>
           </div>
 
-          {/* Duração */}
+          {/* Duração - DINÂMICO */}
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -450,13 +659,13 @@ export default function QuizAllReadyPage() {
                 Duração
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px]">
-                7-14 dias
+                {getDurationStyle()}
               </p>
             </div>
           </div>
         </div>
         <div className="flex flex-row justify-center items-center gap-5 px-[10px] py-[5px]">
-          {/* Ritmo */}
+          {/* Ritmo - DINÂMICO */}
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -469,12 +678,12 @@ export default function QuizAllReadyPage() {
                 Ritmo
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px]">
-                Moderado
+                {getRhythmLabel()}
               </p>
             </div>
           </div>
 
-          {/* Clima */}
+          {/* Clima - DINÂMICO */}
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -487,7 +696,7 @@ export default function QuizAllReadyPage() {
                 Clima
               </h3>
               <p className="text-[#64748B] font-roboto-condensed font-normal text-[10px] leading-[12px]">
-                Temperado
+                {getClimatePreference()}
               </p>
             </div>
           </div>
@@ -502,93 +711,32 @@ export default function QuizAllReadyPage() {
           </h2>
         </div>
         <div className="w-full flex flex-col gap-[11px] py-[76px]">
-          {/* Primeira linha */}
-          <div className="flex flex-row gap-[12px] px-[12px]">
-            <div className="w-[155px] h-[47px] bg-[rgba(255,95,56,0.25)] border border-[#FF5F38] rounded-[40px] flex items-center justify-center gap-[18px]">
-              <Image
-                src="/icons/Icon-Contato-com-a-natureza.svg"
-                alt="Ecoturismo"
-                width={16}
-                height={21}
-                className="object-contain"
-              />
-              <span className="text-[#FF5F38] font-roboto-condensed font-normal text-xl leading-[23px]">
-                Ecoturismo
-              </span>
+          {/* Interesses DINÂMICOS - renderiza em pares de 2 */}
+          {mainInterests.reduce((rows: any[], interest, index) => {
+            if (index % 2 === 0) {
+              rows.push(mainInterests.slice(index, index + 2));
+            }
+            return rows;
+          }, []).map((row, rowIndex) => (
+            <div key={rowIndex} className="flex flex-row gap-[12px] px-[12px]">
+              {row.map((interest: any, colIndex: number) => (
+                <div 
+                  key={colIndex}
+                  className={`min-w-[120px] h-[47px] rounded-[40px] flex items-center justify-center gap-[11px] px-4 ${
+                    interest.highlighted 
+                      ? 'bg-[rgba(255,95,56,0.25)] border border-[#FF5F38]' 
+                      : 'bg-white border border-[#1E293B]'
+                  }`}
+                >
+                  <span className={`font-roboto-condensed font-normal text-xl leading-[23px] ${
+                    interest.highlighted ? 'text-[#FF5F38]' : 'text-[#1E293B]'
+                  }`}>
+                    {interest.label}
+                  </span>
+                </div>
+              ))}
             </div>
-            <div className="w-[143px] h-[47px] bg-[rgba(255,95,56,0.25)] border border-[#FF5F38] rounded-[40px] flex items-center justify-center gap-[11px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="6" width="16" height="12" rx="2" stroke="#FF5F38" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" stroke="#FF5F38" strokeWidth="2"/>
-                <path d="M8 6L9 4H15L16 6" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <span className="text-[#FF5F38] font-roboto-condensed font-normal text-xl leading-[23px]">
-                Fotografia
-              </span>
-            </div>
-          </div>
-
-          {/* Segunda linha */}
-          <div className="flex flex-row gap-[12px] px-[12px]">
-            <div className="w-[128px] h-[47px] bg-white border border-[#1E293B] rounded-[40px] flex items-center justify-center gap-[12px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 20H20V8H4V20Z" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M8 8V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V8" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 10V12" stroke="#1E293B" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M10 14H14" stroke="#1E293B" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M6 16H18" stroke="#1E293B" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <span className="text-[#1E293B] font-roboto-condensed font-normal text-xl leading-[23px]">
-                História
-              </span>
-            </div>
-            <div className="w-[142px] h-[47px] bg-white border border-[#1E293B] rounded-[40px] flex items-center justify-center gap-[12px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="12" cy="16" rx="8" ry="4" fill="#1E293B" opacity="0.2"/>
-                <circle cx="8" cy="12" r="2" fill="#FF5F38"/>
-                <circle cx="12" cy="10" r="2" fill="#FF896F"/>
-                <circle cx="16" cy="12" r="2" fill="#E6502C"/>
-                <path d="M12 2L14 8L12 10L10 8L12 2Z" fill="#1E293B"/>
-                <path d="M8 6L10 8L8 10L6 8L8 6Z" fill="#1E293B"/>
-                <path d="M16 6L18 8L16 10L14 8L16 6Z" fill="#1E293B"/>
-              </svg>
-              <span className="text-[#1E293B] font-roboto-condensed font-normal text-xl leading-[23px]">
-                Arte local
-              </span>
-            </div>
-          </div>
-
-          {/* Terceira linha */}
-          <div className="flex flex-row gap-[12px] px-[12px]">
-            <div className="w-[183px] h-[47px] bg-white border border-[#1E293B] rounded-[40px] flex items-center justify-center gap-[12px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 8C10.5 8 9.5 9 9.5 10.5C9.5 12 10.5 13 12 13C13.5 13 14.5 12 14.5 10.5C14.5 9 13.5 8 12 8Z" fill="#1E293B"/>
-                <path d="M8 14C7 14 6.5 14.5 6.5 15.5C6.5 16.5 7 17 8 17C9 17 9.5 16.5 9.5 15.5C9.5 14.5 9 14 8 14Z" fill="#1E293B"/>
-                <path d="M16 14C15 14 14.5 14.5 14.5 15.5C14.5 16.5 15 17 16 17C17 17 17.5 16.5 17.5 15.5C17.5 14.5 17 14 16 14Z" fill="#1E293B"/>
-                <path d="M6 18C5 18 4.5 18.5 4.5 19.5C4.5 20.5 5 21 6 21C7 21 7.5 20.5 7.5 19.5C7.5 18.5 7 18 6 18Z" fill="#1E293B"/>
-                <path d="M18 18C17 18 16.5 18.5 16.5 19.5C16.5 20.5 17 21 18 21C19 21 19.5 20.5 19.5 19.5C19.5 18.5 19 18 18 18Z" fill="#1E293B"/>
-                <path d="M12 20C11 20 10.5 20.5 10.5 21.5C10.5 22.5 11 23 12 23C13 23 13.5 22.5 13.5 21.5C13.5 20.5 13 20 12 20Z" fill="#1E293B"/>
-                <ellipse cx="12" cy="10" rx="6" ry="4" stroke="#1E293B" strokeWidth="1.5" opacity="0.3"/>
-              </svg>
-              <span className="text-[#1E293B] font-roboto-condensed font-normal text-xl leading-[23px]">
-                Vida selvagem
-              </span>
-            </div>
-            <div className="w-[133px] h-[47px] bg-white border border-[#1E293B] rounded-[40px] flex items-center justify-center gap-[8px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4C10 4 8.5 5.5 8.5 7.5C8.5 9.5 10 11 12 11C14 11 15.5 9.5 15.5 7.5C15.5 5.5 14 4 12 4Z" fill="#1E293B"/>
-                <path d="M8 14C7 14 6.5 14.5 6.5 15.5C6.5 16.5 7 17 8 17C9 17 9.5 16.5 9.5 15.5C9.5 14.5 9 14 8 14Z" fill="#1E293B"/>
-                <path d="M16 14C15 14 14.5 14.5 14.5 15.5C14.5 16.5 15 17 16 17C17 17 17.5 16.5 17.5 15.5C17.5 14.5 17 14 16 14Z" fill="#1E293B"/>
-                <path d="M12 18C11 18 10.5 18.5 10.5 19.5C10.5 20.5 11 21 12 21C13 21 13.5 20.5 13.5 19.5C13.5 18.5 13 18 12 18Z" fill="#1E293B"/>
-                <path d="M6 20C5 20 4.5 20.5 4.5 21.5C4.5 22.5 5 23 6 23C7 23 7.5 22.5 7.5 21.5C7.5 20.5 7 20 6 20Z" fill="#1E293B"/>
-                <path d="M18 20C17 20 16.5 20.5 16.5 21.5C16.5 22.5 17 23 18 23C19 23 19.5 22.5 19.5 21.5C19.5 20.5 19 20 18 20Z" fill="#1E293B"/>
-                <path d="M12 8L10 12L12 14L14 12L12 8Z" fill="#1E293B" opacity="0.5"/>
-              </svg>
-              <span className="text-[#1E293B] font-roboto-condensed font-normal text-xl leading-[23px]">
-                Bem-estar
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 

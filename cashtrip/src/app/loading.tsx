@@ -1,3 +1,5 @@
+'use client'
+
 export default function Loading() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1E293B] to-[#0f172a] flex items-center justify-center">
@@ -8,5 +10,13 @@ export default function Loading() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
 
 

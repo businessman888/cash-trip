@@ -13,70 +13,69 @@ export default function QuizTransitionFinalPage() {
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
-      {/* Progress Bar Section */}
+      {/* Indicador de Níveis - Com ícones SVG e espaçamento de 10px */}
       <div className="w-full flex flex-col justify-center items-center gap-[18px] px-[41px] h-[133px]">
-        {/* Progress Component */}
-        <div className="relative w-[307px] h-[31px]">
-          {/* Progress Bar Background */}
-          <div className="absolute left-0 top-[5px] w-[307px] h-[5px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-            {/* Progress Fill - 100% (todos completos) */}
-            <div className="absolute left-0 top-0 w-[291px] h-[5px] bg-white rounded-[20px]" />
+        {/* Barra de Níveis */}
+        <div className="flex items-start justify-center gap-[10px]">
+          {/* Nível 1 - Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Nível 1"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 1
+            </span>
           </div>
-
-          {/* Nível 1 */}
-          <div className="absolute left-[38px] top-0 w-[15px] h-[15px]">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="7.5" cy="7.5" r="7.5" fill="white" filter="drop-shadow(1px 1px 9px rgba(0,0,0,0.25))"/>
-              <path d="M4 7.97L6 9.97L11 4.97" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          
+          {/* Nível 2 - Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Nível 2"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 2
+            </span>
           </div>
-          <span className="absolute left-[29px] top-[17px] text-white font-roboto-condensed font-black text-xs leading-[14px]">
-            Nível 1
-          </span>
-
-          {/* Nível 2 */}
-          <div className="absolute left-[104px] top-0 w-[15px] h-[15px]">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="7.5" cy="7.5" r="7.5" fill="white" filter="drop-shadow(1px 1px 4px rgba(0,0,0,0.25))"/>
-              <path d="M4 7.97L6 9.97L11 4.97" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          
+          {/* Nível 3 - Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Nível 3"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 3
+            </span>
           </div>
-          <span className="absolute left-[95px] top-[17px] text-white font-roboto-condensed font-black text-xs leading-[14px]">
-            Nível 2
-          </span>
-
-          {/* Nível 3 */}
-          <div className="absolute left-[171px] top-0 w-[15px] h-[15px]">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="7.5" cy="7.5" r="7.5" fill="white" filter="drop-shadow(1px 1px 4px rgba(0,0,0,0.25))"/>
-              <path d="M4 7.97L6 9.97L11 4.97" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          
+          {/* Nível 4 - Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Nível 4"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 4
+            </span>
           </div>
-          <span className="absolute left-[162px] top-[17px] text-white font-roboto-condensed font-black text-xs leading-[14px]">
-            Nível 3
-          </span>
-
-          {/* Nível 4 */}
-          <div className="absolute left-[237px] top-0 w-[15px] h-[15px]">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="7.5" cy="7.5" r="7.5" fill="white" filter="drop-shadow(1px 1px 4px rgba(0,0,0,0.25))"/>
-              <path d="M4 7.97L6 9.97L11 4.97" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          
+          {/* Bônus - Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Bônus"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Bônus
+            </span>
           </div>
-          <span className="absolute left-[227px] top-[17px] text-white font-roboto-condensed font-black text-xs leading-[14px]">
-            Nível 4
-          </span>
-
-          {/* Bônus */}
-          <div className="absolute left-[284px] top-[3px] w-[10px] h-[10px]">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="5" cy="5" r="5" fill="white" filter="drop-shadow(1px 1px 4px rgba(0,0,0,0.25))"/>
-              <path d="M3 5L4.5 6.5L7 3.5" stroke="#FF5F38" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <span className="absolute left-[274px] top-[17px] text-white font-roboto-condensed font-black text-xs leading-[14px]">
-            Bônus
-          </span>
         </div>
 
         {/* Title */}

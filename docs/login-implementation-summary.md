@@ -265,3 +265,11 @@ A implementação atual é sólida e pronta para produção em MVP. Para escala,
 
 
 
+
+
+
+
+
+
+
+

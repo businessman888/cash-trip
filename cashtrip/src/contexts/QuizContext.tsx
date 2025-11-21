@@ -17,14 +17,11 @@ const IS_DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true';
 export function QuizProvider({ children }: { children: ReactNode }) {
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
-
-  // Load existing responses on mount
-  useEffect(() => {
-    loadResponses();
-  }, []);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const loadResponses = async () => {
+    if (isInitialized) return; // Prevenir carregamento múltiplo
+    
     try {
       if (IS_DEV_MODE) {
         // Modo dev: carregar do localStorage
@@ -32,12 +29,17 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         if (stored) {
           setResponses(JSON.parse(stored));
         }
+        setIsInitialized(true);
         return;
       }
 
       // Produção: carregar do Supabase
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setIsInitialized(true);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('quiz_responses')
@@ -46,6 +48,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Error loading responses:', error);
+        setIsInitialized(true);
         return;
       }
 
@@ -55,11 +58,18 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       }, {} as Record<string, any>) || {};
 
       setResponses(responsesObj);
+      setIsInitialized(true);
     } catch (error) {
       console.error('Error loading responses:', error);
+      setIsInitialized(true);
       // Não lançar erro, apenas logar
     }
   };
+
+  // Load existing responses on mount (apenas uma vez)
+  useEffect(() => {
+    loadResponses();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveResponse = async (key: string, value: any) => {
     setIsLoading(true);
@@ -76,6 +86,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       }
       
       // Produção: salvar no Supabase
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {

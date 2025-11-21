@@ -12,47 +12,69 @@ export default function TransitionAccommodationPage() {
 
   return (
     <div className="min-h-screen bg-[#FF5F38] flex flex-col py-[30px]">
-      {/* Indicador de Níveis */}
+      {/* Indicador de Níveis - Com ícones SVG e espaçamento de 10px */}
       <div className="w-full flex flex-col items-center justify-center gap-[18px] py-[30px] px-[10px]">
-        {/* Barra de Progresso com Níveis */}
-        <div className="relative w-[307px] h-[31px]">
-          {/* Barra cinza de fundo */}
-          <div className="absolute left-0 top-[5px] w-full h-[5px] bg-[rgba(100,116,139,0.1)] rounded-[20px]" />
+        {/* Barra de Níveis */}
+        <div className="flex items-start justify-center gap-[10px]">
+          {/* Nível 1 - Atual/Completo */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level.svg" 
+              alt="Nível 1"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 1
+            </span>
+          </div>
           
-          {/* Barra de progresso branca - 15% (Nível 1 completo) */}
-          <div className="absolute left-0 top-[5px] w-[46px] h-[5px] bg-white rounded-[20px]" />
+          {/* Nível 2 - Não selecionado */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level não selecionado.svg" 
+              alt="Nível 2"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white/70 font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 2
+            </span>
+          </div>
           
-          {/* Círculo Nível 1 - Completo */}
-          <div className="absolute left-[38px] top-0 w-[15px] h-[15px] rounded-full bg-white shadow-[1px_1px_9px_0px_rgba(0,0,0,0.25)]" />
+          {/* Nível 3 - Não selecionado */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level não selecionado.svg" 
+              alt="Nível 3"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white/70 font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 3
+            </span>
+          </div>
           
-          {/* Círculo Nível 2 - Pendente */}
-          <div className="absolute left-[104px] top-0 w-[15px] h-[15px] rounded-full bg-white shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)]" />
+          {/* Nível 4 - Não selecionado */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level não selecionado.svg" 
+              alt="Nível 4"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white/70 font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Nível 4
+            </span>
+          </div>
           
-          {/* Círculo Nível 3 - Pendente */}
-          <div className="absolute left-[171px] top-0 w-[15px] h-[15px] rounded-full bg-white shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)]" />
-          
-          {/* Círculo Nível 4 - Pendente */}
-          <div className="absolute left-[237px] top-0 w-[15px] h-[15px] rounded-full bg-white shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)]" />
-          
-          {/* Círculo Bônus - Menor */}
-          <div className="absolute left-[284px] top-[3px] w-[10px] h-[10px] rounded-full bg-white shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)]" />
-          
-          {/* Labels dos Níveis */}
-          <span className="absolute left-[29px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
-            Nível 1
-          </span>
-          <span className="absolute left-[95px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
-            Nível 2
-          </span>
-          <span className="absolute left-[162px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
-            Nível 3
-          </span>
-          <span className="absolute left-[227px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
-            Nível 4
-          </span>
-          <span className="absolute left-[274px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
-            Bônus
-          </span>
+          {/* Bônus - Não selecionado */}
+          <div className="flex flex-col items-center gap-[4px]">
+            <img 
+              src="/illustrations/icone level não selecionado.svg" 
+              alt="Bônus"
+              className="w-[60px] h-[15px]"
+            />
+            <span className="text-white/70 font-roboto-condensed font-bold text-[11px] leading-tight whitespace-nowrap">
+              Bônus
+            </span>
+          </div>
         </div>
 
         {/* Título */}
@@ -61,12 +83,12 @@ export default function TransitionAccommodationPage() {
         </h1>
       </div>
 
-      {/* Seção de Imagens - Fotos de Hospedagens Sobrepostas em Leque */}
+      {/* Seção de Imagem - Resort Paradisíaco */}
       <div className="w-full flex items-center justify-center pt-[40px] pb-[30px] px-[14px]">
         <div className="w-[347px] h-[304px] flex items-center justify-center">
           <img 
-            src="/illustrations/Frame 259.svg" 
-            alt="Hospedagens em destaque"
+            src="/illustrations/resort.svg" 
+            alt="Resort paradisíaco"
             className="w-full h-full object-contain"
           />
         </div>
