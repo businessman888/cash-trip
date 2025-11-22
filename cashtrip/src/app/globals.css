@@ -1,41 +1,88 @@
 @import "tailwindcss";
 
+/* Light Theme (Default) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface & Background Colors */
+  --surface-main: #FFFFFF;
+  --surface-card: #F8F9FA;
+  --surface-header: #F6F7F9;
+  --surface-section: #FAFBFB;
+  --surface-todos: #F1F1F1;
+  --surface-nav: #FFFFFF;
+  --surface-trip-card: #F6F7F9;
+  --border-line: #D9D9D9;
+
+  /* Text Colors */
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-on-primary: #FFFFFF;
+
+  /* Status & Functional Colors */
+  --status-success: #10B981;
+  --status-filter: #FF896F;
+  --status-complete: rgba(100, 116, 139, 0.4);
+  --bg-info-opacity: rgba(230, 92, 44, 0.3);
+  --bg-return-opacity: rgba(255, 255, 255, 0.6);
+  --border-transparent: rgba(217, 217, 217, 0.8);
+
+  /* Brand Colors */
+  --color-primary: #FF5F38;
+  --color-border: #E2E8F0;
+}
+
+/* Dark Theme */
+.dark {
+  /* Surface & Background Colors */
+  --surface-main: #1E293B;
+  --surface-card: #313F56;
+  --surface-header: #313F56;
+  --surface-section: #1E293B;
+  --surface-todos: #313F56;
+  --surface-nav: #1E293B;
+  --surface-trip-card: #313F56;
+  --border-line: #FFFFFF;
+
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #F8F9FA;
+  --text-on-primary: #FFFFFF;
+
+  /* Status & Functional Colors */
+  --status-success: #10B981;
+  --status-filter: #FF896F;
+  --status-complete: rgba(255, 255, 255, 0.4);
+  --bg-info-opacity: rgba(230, 92, 44, 0.3);
+  --bg-return-opacity: rgba(100, 116, 139, 0.4);
+  --border-transparent: rgba(255, 255, 255, 0.8);
+
+  /* Brand Colors */
+  --color-primary: #FF5F38;
+  --color-border: #313F56;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-roboto-condensed);
   --font-roboto-condensed: var(--font-roboto-condensed);
   --font-inria-sans: var(--font-inria-sans);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
 }
 
 html {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  background: #ffffff !important;
+  transition: background-color 0.3s ease;
 }
 
 body {
-  background: #ffffff !important;
-  color: var(--foreground);
+  background: var(--surface-main) !important;
+  color: var(--text-primary);
   font-family: var(--font-roboto-condensed), Arial, Helvetica, sans-serif;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 *:focus {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto_Condensed, Inria_Sans } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const robotoCondensed = Roboto_Condensed({
   variable: "--font-roboto-condensed",
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${robotoCondensed.variable} ${inriaSans.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
