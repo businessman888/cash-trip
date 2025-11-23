@@ -9,8 +9,8 @@ interface ExpenseChartProps {
 export function ExpenseChart({ data }: ExpenseChartProps) {
   if (data.length === 0) {
     return (
-      <div className="border border-[#D9D9D9] rounded-[10px] p-6">
-        <div className="flex items-center justify-center h-48 text-[#FFFFFF]">
+      <div className="border border-[var(--border-line)] rounded-[10px] p-6">
+        <div className="flex items-center justify-center h-48 text-[var(--text-primary)]">
           Nenhum dado disponível
         </div>
       </div>
@@ -21,8 +21,8 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
   const barHeight = 200 // altura máxima do gráfico em pixels
 
   return (
-    <div className="border border-[#D9D9D9] rounded-[10px] p-6">
-      <h3 className="font-inria-sans font-bold text-lg text-[#FFFFFF] mb-6">
+    <div className="border border-[var(--border-line)] rounded-[10px] p-6">
+      <h3 className="font-inria-sans font-bold text-lg text-[var(--text-primary)] mb-6">
         Evolução dos gastos
       </h3>
       <div className="flex items-end justify-between gap-2 h-[200px]">
@@ -44,7 +44,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
               </div>
               <span className={`
                 font-inria-sans font-bold text-[13px] leading-[1.199]
-                ${isActive ? 'text-[#E6502C]' : 'text-[#FFFFFF]'}
+                ${isActive ? 'text-[#E6502C]' : 'text-[var(--text-primary)]'}
               `}>
                 {item.month}
               </span>

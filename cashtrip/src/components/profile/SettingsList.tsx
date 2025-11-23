@@ -1,0 +1,47 @@
+'use client'
+
+import { FiUser, FiHelpCircle, FiShield, FiUsers, FiFileText, FiLogOut, FiChevronRight } from 'react-icons/fi'
+
+const settingsItems = [
+    { icon: FiUser, label: 'Configurações da conta', color: 'bg-[#FFD7D7] text-[#E6502C]' },
+    { icon: FiHelpCircle, label: 'Ajuda', color: 'bg-[#FFD7D7] text-[#E6502C]' },
+    { icon: FiShield, label: 'Privacidade', color: 'bg-[#FFD7D7] text-[#E6502C]' },
+    { icon: FiUsers, label: 'Convidar um amigo', color: 'bg-[#FFD7D7] text-[#E6502C]' },
+    { icon: FiFileText, label: 'Legal', color: 'bg-[#FFD7D7] text-[#E6502C]' },
+]
+
+export function SettingsList() {
+    return (
+        <div className="flex flex-col gap-4 mb-8">
+            <h2 className="font-inria-sans font-bold text-[18px] text-[#FF5F38] mb-2">
+                Configurações
+            </h2>
+
+            {settingsItems.map((item, index) => (
+                <button
+                    key={index}
+                    className="flex items-center justify-between w-full group"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className={`w-[48px] h-[48px] rounded-[12px] ${item.color} flex items-center justify-center`}>
+                            <item.icon className="text-[24px]" />
+                        </div>
+                        <span className="font-inria-sans text-[16px] text-[#64748B] dark:text-[#94A3B8] group-hover:text-[var(--text-primary)] transition-colors">
+                            {item.label}
+                        </span>
+                    </div>
+                    <FiChevronRight className="text-[#94A3B8] text-xl" />
+                </button>
+            ))}
+
+            <button className="flex items-center gap-4 mt-2 w-full">
+                <div className="w-[48px] h-[48px] rounded-[12px] bg-[#FFD7D7] text-[#E6502C] flex items-center justify-center">
+                    <FiLogOut className="text-[24px]" />
+                </div>
+                <span className="font-inria-sans text-[16px] text-[#64748B] dark:text-[#94A3B8]">
+                    Sair
+                </span>
+            </button>
+        </div>
+    )
+}
