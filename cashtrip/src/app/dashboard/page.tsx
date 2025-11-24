@@ -109,12 +109,14 @@ export default function DashboardPage() {
         {/* Carrossel de Métricas */}
         {metrics && (
           <div className="relative w-full max-w-[343px] mx-auto">
-            <button
-              onClick={prevMetric}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 text-[#FF5F38] hover:bg-orange-50 rounded-full transition-colors"
-            >
-              <FaChevronLeft size={24} />
-            </button>
+            {currentMetricIndex > 0 && (
+              <button
+                onClick={prevMetric}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-colors"
+              >
+                <FaChevronLeft size={20} />
+              </button>
+            )}
 
             <div className="overflow-hidden rounded-[20px]">
               <div
@@ -156,12 +158,14 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              onClick={nextMetric}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-colors"
-            >
-              <FaChevronRight size={20} />
-            </button>
+            {currentMetricIndex < 2 && (
+              <button
+                onClick={nextMetric}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-colors"
+              >
+                <FaChevronRight size={20} />
+              </button>
+            )}
           </div>
         )}
 

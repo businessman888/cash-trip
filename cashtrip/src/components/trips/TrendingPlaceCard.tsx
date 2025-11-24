@@ -17,7 +17,7 @@ export function TrendingPlaceCard({
     imageUrl
 }: TrendingPlaceCardProps) {
     return (
-        <div className="bg-[var(--surface-card)] rounded-[20px] p-3 flex gap-4 items-center shadow-sm border border-[var(--border-line)] mb-4">
+        <div className="bg-[var(--surface-card)] rounded-[20px] p-3 flex gap-4 items-center shadow-sm border border-[var(--border-line)] dark:border-transparent mb-4">
             <div className="relative w-[100px] h-[100px] rounded-[15px] overflow-hidden flex-shrink-0">
                 <Image
                     src={imageUrl}

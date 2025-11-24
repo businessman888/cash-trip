@@ -5,7 +5,7 @@ import { FiEdit2, FiCompass } from 'react-icons/fi'
 
 export function ProfileInfo() {
     return (
-        <div className="bg-[var(--surface-card)] rounded-[20px] p-6 flex flex-col items-center shadow-sm border border-[var(--border-line)] mb-8">
+        <div className="bg-[var(--surface-card)] rounded-[20px] p-6 flex flex-col items-center shadow-sm border border-[var(--border-line)] dark:border-transparent mb-8">
             <div className="relative mb-4">
                 <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-white dark:border-[#1E293B] shadow-md">
                     <Image

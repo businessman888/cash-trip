@@ -1,17 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TripsHeader } from '@/components/trips/TripsHeader'
 import { ActiveTripCard } from '@/components/trips/ActiveTripCard'
 import { RecommendedTripCard } from '@/components/trips/RecommendedTripCard'
 import { TrendingPlaceCard } from '@/components/trips/TrendingPlaceCard'
 import { BottomNav } from '@/components/dashboard/BottomNav'
 import { getPhotos, getRandomPhoto } from '@/services/unsplash'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 export default function TripsPage() {
     const [activeTripImage, setActiveTripImage] = useState('')
     const [recommendedImages, setRecommendedImages] = useState<string[]>([])
     const [trendingImages, setTrendingImages] = useState<string[]>([])
+    const recommendedScrollRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -30,6 +32,16 @@ export default function TripsPage() {
 
         fetchImages()
     }, [])
+
+    const scrollRecommended = (direction: 'left' | 'right') => {
+        if (recommendedScrollRef.current) {
+            const scrollAmount = 300
+            recommendedScrollRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            })
+        }
+    }
 
     return (
         <div className="min-h-screen bg-[var(--surface-main)] pb-24">
@@ -58,10 +70,29 @@ export default function TripsPage() {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="font-inria-sans font-bold text-[20px] text-[#64748B] dark:text-[#94A3B8] mb-4">
-                        Viagens Recomendadas
-                    </h2>
-                    <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="font-inria-sans font-bold text-[20px] text-[#64748B] dark:text-[#94A3B8]">
+                            Viagens Recomendadas
+                        </h2>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => scrollRecommended('left')}
+                                className="w-10 h-10 rounded-full bg-white dark:bg-[var(--surface-card)] border border-[#E2E8F0] dark:border-transparent flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <FiChevronLeft className="text-[#94A3B8]" />
+                            </button>
+                            <button
+                                onClick={() => scrollRecommended('right')}
+                                className="w-10 h-10 rounded-full bg-[#FF5F38] flex items-center justify-center shadow-lg shadow-[#FF5F38]/20 hover:shadow-xl transition-shadow"
+                            >
+                                <FiChevronRight className="text-white" />
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        ref={recommendedScrollRef}
+                        className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide"
+                    >
                         <RecommendedTripCard
                             destination="Patagônia"
                             country="Argentina"

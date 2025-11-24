@@ -10,6 +10,7 @@ interface PlaceCardProps {
     imageUrl: string
     hasActionButton?: boolean
     actionLabel?: string
+    showArrowOverlay?: boolean
 }
 
 export function PlaceCard({
@@ -17,10 +18,11 @@ export function PlaceCard({
     subtitle,
     imageUrl,
     hasActionButton = true,
-    actionLabel = "Conhecer mais"
+    actionLabel = "Conhecer mais",
+    showArrowOverlay = true
 }: PlaceCardProps) {
     return (
-        <div className="min-w-[200px] w-[200px] bg-[var(--surface-card)] rounded-[20px] p-3 shadow-sm border border-[var(--border-line)] snap-center flex flex-col h-[320px]">
+        <div className="min-w-[200px] w-[200px] bg-[var(--surface-card)] rounded-[20px] p-3 shadow-sm border border-[var(--border-line)] dark:border-transparent snap-center flex flex-col h-[320px]">
             <div className="relative w-full h-[200px] rounded-[15px] overflow-hidden mb-3 flex-shrink-0">
                 <Image
                     src={imageUrl}
@@ -29,7 +31,7 @@ export function PlaceCard({
                     className="object-cover"
                 />
                 {/* Overlay arrow button if needed, based on design it might be separate or over image */}
-                {!hasActionButton && (
+                {!hasActionButton && showArrowOverlay && (
                     <div className="absolute bottom-2 right-2 w-8 h-8 bg-[#FF5F38] rounded-full flex items-center justify-center shadow-lg">
                         <FiChevronRight className="text-white" />
                     </div>

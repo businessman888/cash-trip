@@ -41,7 +41,7 @@ export function BottomNav() {
                     )}
                 </Link>
 
-                <button className="flex flex-col items-center gap-1 hover:opacity-80 transition-opacity">
+                <Link href="/trips/new" className="flex flex-col items-center gap-1 hover:opacity-80 transition-opacity">
                     <Image
                         src="/icons/icon central down bar.svg"
                         alt="Central Action"
@@ -49,7 +49,7 @@ export function BottomNav() {
                         height={20}
                         className="w-5 h-5"
                     />
-                </button>
+                </Link>
 
                 <Link href="/explore" className="flex flex-col items-center gap-1">
                     {isActive('/explore') ? (

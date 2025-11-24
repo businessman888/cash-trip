@@ -4,6 +4,7 @@ import { FiCalendar, FiUser, FiMapPin, FiCheckCircle, FiCircle, FiMessageSquare,
 import { FaBed } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface ActiveTripCardProps {
     destination: string
@@ -32,8 +33,13 @@ export function ActiveTripCard({
     status,
     progress
 }: ActiveTripCardProps) {
+    const { theme } = useTheme()
+
+    // Progress bar background color
+    const progressBarBg = theme === 'light' ? '#E5E7EB' : '#1E293B'
+
     return (
-        <div className="bg-[var(--surface-card)] rounded-[20px] p-4 shadow-sm border border-[var(--border-line)] mb-8">
+        <div className="bg-[var(--surface-card)] rounded-[20px] p-4 shadow-sm border border-[var(--border-line)] dark:border-transparent mb-8">
             <div className="relative w-full h-[180px] rounded-[15px] overflow-hidden mb-4">
                 <Image
                     src={imageUrl}
@@ -101,7 +107,10 @@ export function ActiveTripCard({
                     <span className="text-[11px] font-inria-sans font-bold text-[var(--text-primary)]">Conclusão do roteiro</span>
                     <span className="text-[11px] font-inria-sans font-bold text-[#FF5F38]">{progress}%</span>
                 </div>
-                <div className="w-full h-2 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-full overflow-hidden">
+                <div
+                    className="w-full h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: progressBarBg }}
+                >
                     <div
                         className="h-full bg-[#FF896F] rounded-full"
                         style={{ width: `${progress}%` }}

@@ -10,7 +10,7 @@ interface TrendingListItemProps {
 
 export function TrendingListItem({ rank, destination, country }: TrendingListItemProps) {
     return (
-        <div className="bg-[var(--surface-card)] rounded-[15px] p-4 flex items-center justify-between border border-[var(--border-line)] mb-3">
+        <div className="bg-[var(--surface-card)] rounded-[15px] p-4 flex items-center justify-between border border-[var(--border-line)] dark:border-transparent mb-3">
             <div className="flex items-center gap-4">
                 <div className={`
           w-[40px] h-[40px] rounded-full flex items-center justify-center font-inria-sans font-bold text-[20px] border

@@ -3,6 +3,7 @@
 import { FiMap } from 'react-icons/fi'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface RecommendedTripCardProps {
     destination: string
@@ -21,8 +22,15 @@ export function RecommendedTripCard({
     description,
     imageUrl
 }: RecommendedTripCardProps) {
+    const { theme } = useTheme()
+
+    // Define colors based on theme
+    const mapButtonBg = theme === 'light' ? '#EAEDEF' : '#1E293B'
+    const mapButtonTextColor = theme === 'light' ? '#1E293B' : '#94A3B8'
+    const progressBarBg = theme === 'light' ? '#F1F5F9' : '#1E293B'
+
     return (
-        <div className="min-w-[280px] bg-[var(--surface-card)] rounded-[20px] p-4 shadow-sm border border-[var(--border-line)] snap-center">
+        <div className="min-w-[280px] bg-[var(--surface-card)] rounded-[20px] p-4 shadow-sm border border-[var(--border-line)] dark:border-transparent snap-center">
             <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-4">
                 <Image
                     src={imageUrl}
@@ -46,7 +54,10 @@ export function RecommendedTripCard({
                     <span className="text-[11px] font-inria-sans text-[#64748B] dark:text-[#94A3B8]">Compatibilidade</span>
                     <span className="text-[11px] font-inria-sans font-bold text-[#FF5F38]">{compatibility}%</span>
                 </div>
-                <div className="w-full h-2 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-full overflow-hidden">
+                <div
+                    className="w-full h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: progressBarBg }}
+                >
                     <div
                         className="h-full bg-[#FF5F38] rounded-full"
                         style={{ width: `${compatibility}%` }}
@@ -58,9 +69,17 @@ export function RecommendedTripCard({
                 {description}
             </p>
 
-            <div className="bg-[#F1F5F9] dark:bg-[#1E293B] rounded-[12px] p-3 flex items-center justify-between mb-4">
+            <div
+                className="rounded-[12px] p-3 flex items-center justify-between mb-4"
+                style={{ backgroundColor: mapButtonBg }}
+            >
                 <div className="flex flex-col">
-                    <span className="font-inria-sans font-bold text-[13px] text-[#64748B] dark:text-[#94A3B8]">Ver no mapa</span>
+                    <span
+                        className="font-inria-sans font-bold text-[13px]"
+                        style={{ color: mapButtonTextColor }}
+                    >
+                        Ver no mapa
+                    </span>
                     <span className="font-inria-sans text-[10px] text-[#94A3B8]">Clique para Explorar</span>
                 </div>
                 <div className="w-[36px] h-[36px] bg-[#FF896F]/20 rounded-[8px] flex items-center justify-center">

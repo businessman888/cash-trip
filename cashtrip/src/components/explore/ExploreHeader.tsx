@@ -19,9 +19,9 @@ export function ExploreHeader() {
                 <input
                     type="text"
                     placeholder="Para onde você deseja ir?"
-                    className="w-full h-full bg-[var(--surface-card)] rounded-full pl-14 pr-6 border border-[var(--border-line)] outline-none text-[14px] text-[var(--text-primary)] placeholder:text-[#94A3B8] font-inria-sans shadow-sm"
+                    className="w-full h-full bg-white dark:bg-[var(--surface-card)] rounded-full pl-14 pr-6 outline-none text-[14px] text-[var(--text-primary)] placeholder:text-[#94A3B8] font-inria-sans shadow-lg shadow-[#FF5F38]/30"
                 />
-                <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[38px] h-[38px] bg-[#FF5F38] rounded-full flex items-center justify-center shadow-lg shadow-[#FF5F38]/20">
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[38px] h-[38px] bg-[#FF896F] rounded-full flex items-center justify-center shadow-lg shadow-[#FF896F]/20">
                     <FiSearch className="text-white text-lg" />
                 </div>
             </div>

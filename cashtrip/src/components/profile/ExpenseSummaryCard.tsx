@@ -1,10 +1,19 @@
 'use client'
 
 import { FiTrendingUp } from 'react-icons/fi'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export function ExpenseSummaryCard() {
+    const { theme } = useTheme()
+
+    // Special treatment: keep white border but adjust background to #1E293B in dark mode
+    const cardBg = theme === 'light' ? 'var(--surface-card)' : '#1E293B'
+
     return (
-        <div className="bg-[var(--surface-card)] rounded-[20px] p-6 border border-[var(--border-line)] shadow-sm mb-8">
+        <div
+            className="rounded-[20px] p-6 border border-[var(--border-line)] shadow-sm mb-8"
+            style={{ backgroundColor: cardBg }}
+        >
             <div className="flex justify-between items-start mb-2">
                 <span className="font-inria-sans text-[14px] text-[#64748B] dark:text-[#94A3B8]">
                     Total Gasto em 2024
