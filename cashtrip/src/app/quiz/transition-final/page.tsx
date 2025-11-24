@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 
 export default function QuizTransitionFinalPage() {
   const router = useRouter();
@@ -12,15 +13,15 @@ export default function QuizTransitionFinalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#FF5F38] flex flex-col gap-5 py-[58px]">
       {/* Indicador de Níveis - Com ícones SVG e espaçamento de 10px */}
       <div className="w-full flex flex-col justify-center items-center gap-[18px] px-[41px] h-[133px]">
         {/* Barra de Níveis */}
         <div className="flex items-start justify-center gap-[10px]">
           {/* Nível 1 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 1"
               className="w-[60px] h-[15px]"
             />
@@ -28,11 +29,11 @@ export default function QuizTransitionFinalPage() {
               Nível 1
             </span>
           </div>
-          
+
           {/* Nível 2 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 2"
               className="w-[60px] h-[15px]"
             />
@@ -40,11 +41,11 @@ export default function QuizTransitionFinalPage() {
               Nível 2
             </span>
           </div>
-          
+
           {/* Nível 3 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 3"
               className="w-[60px] h-[15px]"
             />
@@ -52,11 +53,11 @@ export default function QuizTransitionFinalPage() {
               Nível 3
             </span>
           </div>
-          
+
           {/* Nível 4 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 4"
               className="w-[60px] h-[15px]"
             />
@@ -64,11 +65,11 @@ export default function QuizTransitionFinalPage() {
               Nível 4
             </span>
           </div>
-          
+
           {/* Bônus - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Bônus"
               className="w-[60px] h-[15px]"
             />
@@ -98,7 +99,7 @@ export default function QuizTransitionFinalPage() {
       {/* Message Section */}
       <div className="w-full flex flex-col justify-center items-center px-[51px] pt-6 pb-20">
         <p className="text-white font-roboto-condensed font-normal text-[32px] leading-[37px] text-left">
-          Estamos a um passo de termos tudo pronto para as suas viagens dos 
+          Estamos a um passo de termos tudo pronto para as suas viagens dos
           sonhos e no seu orçamento ideal!
           <br />
           <br />
@@ -111,7 +112,6 @@ export default function QuizTransitionFinalPage() {
         onClick={handleContinue}
         variant="orange-background"
       />
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

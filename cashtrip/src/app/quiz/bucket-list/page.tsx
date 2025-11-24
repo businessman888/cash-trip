@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 export default function QuizBucketListPage() {
   const router = useRouter();
@@ -60,13 +62,13 @@ export default function QuizBucketListPage() {
 
     // Salvar no localStorage
     localStorage.setItem("bucketList", JSON.stringify(selectedItems));
-    
+
     // Redirecionar para a página de transição final
     router.push("/quiz/transition-final");
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col">
       {/* Progress Bar */}
       <div className="w-full px-[15px] py-[10px] flex justify-center items-center">
         <div className="w-full max-w-[345px] relative h-[31px]">
@@ -119,228 +121,144 @@ export default function QuizBucketListPage() {
       <div className="w-full flex-1 pb-20 px-0 flex flex-col gap-[5px]">
         {/* Line 1 */}
         <div className="w-full px-[22px] py-[5px] flex justify-between items-center gap-2.5">
-          {/* Option 1 */}
-          <button
-            onClick={() => toggleOption(options[0].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[0].id)
+          {options.slice(0, 2).map((option, index) => (
+            <QuizOption
+              key={option.id}
+              index={index}
+              onClick={() => toggleOption(option.id)}
+              isSelected={selectedItems.includes(option.id)}
+              className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${selectedItems.includes(option.id)
                 ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
                 : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            {/* Check area */}
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[0].id)} />
-            </div>
-            {/* Card body */}
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[0].icon}
-                alt={options[0].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[0].id)
+                }`}
+            >
+              {/* Check area */}
+              <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+                <SelectionIcon isSelected={selectedItems.includes(option.id)} />
+              </div>
+              {/* Card body */}
+              <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
+                <img
+                  src={option.icon}
+                  alt={option.label}
+                  className="w-[70px] h-[70px] mb-3"
+                />
+                <p
+                  className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${selectedItems.includes(option.id)
                     ? "text-[#E6502C]"
                     : "text-[#1E293B]"
-                }`}
-              >
-                {options[0].label}
-              </p>
-            </div>
-          </button>
-
-          {/* Option 2 */}
-          <button
-            onClick={() => toggleOption(options[1].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[1].id)
-                ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
-                : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            {/* Check area */}
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[1].id)} />
-            </div>
-            {/* Card body */}
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[1].icon}
-                alt={options[1].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[1].id)
-                    ? "text-[#E6502C]"
-                    : "text-[#1E293B]"
-                }`}
-              >
-                {options[1].label}
-              </p>
-            </div>
-          </button>
+                    }`}
+                >
+                  {option.label}
+                </p>
+              </div>
+            </QuizOption>
+          ))}
         </div>
 
         {/* Line 2 */}
         <div className="w-full px-[22px] py-[5px] flex justify-between items-center gap-2.5">
-          {/* Option 3 */}
-          <button
-            onClick={() => toggleOption(options[2].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[2].id)
+          {options.slice(2, 4).map((option, index) => (
+            <QuizOption
+              key={option.id}
+              index={index + 2}
+              onClick={() => toggleOption(option.id)}
+              isSelected={selectedItems.includes(option.id)}
+              className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${selectedItems.includes(option.id)
                 ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
                 : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[2].id)} />
-            </div>
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[2].icon}
-                alt={options[2].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[2].id)
+                }`}
+            >
+              <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+                <SelectionIcon isSelected={selectedItems.includes(option.id)} />
+              </div>
+              <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
+                <img
+                  src={option.icon}
+                  alt={option.label}
+                  className="w-[70px] h-[70px] mb-3"
+                />
+                <p
+                  className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${selectedItems.includes(option.id)
                     ? "text-[#E6502C]"
                     : "text-[#1E293B]"
-                }`}
-              >
-                {options[2].label}
-              </p>
-            </div>
-          </button>
-
-          {/* Option 4 */}
-          <button
-            onClick={() => toggleOption(options[3].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[3].id)
-                ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
-                : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[3].id)} />
-            </div>
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[3].icon}
-                alt={options[3].label}
-                className="w-[70px] h-[60px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[3].id)
-                    ? "text-[#E6502C]"
-                    : "text-[#1E293B]"
-                }`}
-              >
-                {options[3].label}
-              </p>
-            </div>
-          </button>
+                    }`}
+                >
+                  {option.label}
+                </p>
+              </div>
+            </QuizOption>
+          ))}
         </div>
 
         {/* Line 3 */}
         <div className="w-full px-[22px] py-[5px] flex justify-between items-center gap-2.5">
-          {/* Option 5 */}
-          <button
-            onClick={() => toggleOption(options[4].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[4].id)
+          {options.slice(4, 6).map((option, index) => (
+            <QuizOption
+              key={option.id}
+              index={index + 4}
+              onClick={() => toggleOption(option.id)}
+              isSelected={selectedItems.includes(option.id)}
+              className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${selectedItems.includes(option.id)
                 ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
                 : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[4].id)} />
-            </div>
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[4].icon}
-                alt={options[4].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[4].id)
+                }`}
+            >
+              <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+                <SelectionIcon isSelected={selectedItems.includes(option.id)} />
+              </div>
+              <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
+                <img
+                  src={option.icon}
+                  alt={option.label}
+                  className="w-[70px] h-[70px] mb-3"
+                />
+                <p
+                  className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${selectedItems.includes(option.id)
                     ? "text-[#E6502C]"
                     : "text-[#1E293B]"
-                }`}
-              >
-                {options[4].label}
-              </p>
-            </div>
-          </button>
-
-          {/* Option 6 */}
-          <button
-            onClick={() => toggleOption(options[5].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[5].id)
-                ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
-                : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[5].id)} />
-            </div>
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[5].icon}
-                alt={options[5].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center whitespace-pre-line ${
-                  selectedItems.includes(options[5].id)
-                    ? "text-[#E6502C]"
-                    : "text-[#1E293B]"
-                }`}
-              >
-                {options[5].label}
-              </p>
-            </div>
-          </button>
+                    }`}
+                >
+                  {option.label}
+                </p>
+              </div>
+            </QuizOption>
+          ))}
         </div>
 
         {/* Line 4 - Centered */}
         <div className="w-full px-[22px] py-[5px] flex justify-center items-center">
-          {/* Option 7 */}
-          <button
-            onClick={() => toggleOption(options[6].id)}
-            className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${
-              selectedItems.includes(options[6].id)
+          {options.slice(6, 7).map((option, index) => (
+            <QuizOption
+              key={option.id}
+              index={index + 6}
+              onClick={() => toggleOption(option.id)}
+              isSelected={selectedItems.includes(option.id)}
+              className={`w-[156px] h-[227px] rounded-[15px] relative transition-all ${selectedItems.includes(option.id)
                 ? "bg-[#E6502C]/30 border-[3px] border-[#E6502C]"
                 : "border-[3px] border-[#1E293B]"
-            }`}
-          >
-            <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
-              <SelectionIcon isSelected={selectedItems.includes(options[6].id)} />
-            </div>
-            <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
-              <img
-                src={options[6].icon}
-                alt={options[6].label}
-                className="w-[70px] h-[70px] mb-3"
-              />
-              <p
-                className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center ${
-                  selectedItems.includes(options[6].id)
+                }`}
+            >
+              <div className="absolute top-2.5 left-[9px] w-[138px] h-[43px] flex justify-end items-start z-10">
+                <SelectionIcon isSelected={selectedItems.includes(option.id)} />
+              </div>
+              <div className="absolute top-[63px] left-[9px] w-[138px] h-[154px] flex flex-col items-center">
+                <img
+                  src={option.icon}
+                  alt={option.label}
+                  className="w-[70px] h-[70px] mb-3"
+                />
+                <p
+                  className={`font-roboto-condensed font-bold text-xl leading-[23px] text-center ${selectedItems.includes(option.id)
                     ? "text-[#E6502C]"
                     : "text-[#1E293B]"
-                }`}
-              >
-                {options[6].label}
-              </p>
-            </div>
-          </button>
+                    }`}
+                >
+                  {option.label}
+                </p>
+              </div>
+            </QuizOption>
+          ))}
         </div>
       </div>
 
@@ -349,9 +267,9 @@ export default function QuizBucketListPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type AccommodationType = "airbnb" | "hotel" | "resort" | "hostel";
 
@@ -21,7 +23,7 @@ export default function AccommodationTypePage() {
 
   const handleContinue = () => {
     if (selected.length === 0) return;
-    
+
     localStorage.setItem("accommodationTypes", JSON.stringify(selected));
     router.push("/quiz/accommodation-location");
   };
@@ -54,7 +56,7 @@ export default function AccommodationTypePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[21px] py-[48px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[21px] py-[48px]">
       {/* Barra de Progresso Superior - Nível 2 */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-[28px] px-[15px]">
         <div className="relative w-[345px] h-[41px]">
@@ -65,20 +67,20 @@ export default function AccommodationTypePage() {
           <span className="absolute right-[18px] top-0 text-[#E6502C] font-roboto font-black text-[15px] leading-[1.17em]">
             10%
           </span>
-          
+
           {/* Barra de Progresso - 10% */}
           <div className="absolute left-0 top-[31px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-            <div 
+            <div
               className="h-full bg-[#E6502C] rounded-[20px] transition-all duration-300"
               style={{ width: '100px' }}
             />
           </div>
-          
+
           {/* Ícone de Hotel */}
           <div className="absolute right-0 top-[22px] w-[18px] h-[18px]">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="18" height="18" rx="9" fill="#E6502C" fillOpacity="0.3"/>
-              <path d="M4 8H14M4 8V14H14V8M4 8V4H14V8M7 11H11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              <rect width="18" height="18" rx="9" fill="#E6502C" fillOpacity="0.3" />
+              <path d="M4 8H14M4 8V14H14V8M4 8V4H14V8M7 11H11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -88,8 +90,8 @@ export default function AccommodationTypePage() {
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px]">
         {/* Ícone Hospedagens */}
         <div className="w-[90px] h-[90px] flex items-center justify-center">
-          <img 
-            src="/icons/Icon-superior-página-quais-hospedagens-combinam-com-seu-estilo.svg" 
+          <img
+            src="/icons/Icon-superior-página-quais-hospedagens-combinam-com-seu-estilo.svg"
             alt="Ícone Quais hospedagens combinam com seu estilo"
             className="w-full h-full object-contain"
           />
@@ -109,11 +111,13 @@ export default function AccommodationTypePage() {
       <div className="w-full flex flex-col items-center gap-[17px] py-[26px] px-[16px] pb-24">
         {options.map((option, index) => {
           const isSelected = selected.includes(option.id);
-          
+
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleSelect(option.id)}
+              isSelected={isSelected}
               className={`
                 relative w-[355px] h-[64px] flex items-center rounded-[20px]
                 transition-all duration-200 overflow-hidden
@@ -125,8 +129,8 @@ export default function AccommodationTypePage() {
             >
               {/* Imagem à esquerda - 64px de altura preenchendo a borda */}
               <div className="w-[80px] h-[64px] rounded-l-[20px] overflow-hidden flex-shrink-0">
-                <img 
-                  src={option.image} 
+                <img
+                  src={option.image}
                   alt={option.title}
                   className="w-full h-full object-cover"
                 />
@@ -136,14 +140,12 @@ export default function AccommodationTypePage() {
               <div className="relative flex-1 h-full flex items-center justify-between px-4">
                 {/* Textos centralizados verticalmente */}
                 <div className="flex flex-col items-start justify-center flex-1">
-                  <h3 className={`font-roboto-condensed font-semibold text-[20px] leading-[1.17em] ${
-                    isSelected ? "text-[#FF5F38]" : "text-[#1E293B]"
-                  }`}>
+                  <h3 className={`font-roboto-condensed font-semibold text-[20px] leading-[1.17em] ${isSelected ? "text-[#FF5F38]" : "text-[#1E293B]"
+                    }`}>
                     {option.title}
                   </h3>
-                  <p className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] whitespace-pre-line ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <p className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] whitespace-pre-line ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.subtitle}
                   </p>
                 </div>
@@ -153,7 +155,7 @@ export default function AccommodationTypePage() {
                   <SelectionIcon isSelected={isSelected} />
                 </div>
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -165,7 +167,6 @@ export default function AccommodationTypePage() {
           variant="white-background"
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

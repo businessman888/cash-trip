@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import { motion } from "framer-motion";
 
 interface UserProfile {
   preference_scores: {
@@ -44,11 +46,11 @@ export default function QuizAllReadyPage() {
         setLoading(false);
         return;
       }
-      
+
       // Se não encontrar no localStorage, tentar buscar do Supabase
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         // Se não tem perfil no localStorage e não está autenticado, erro
         console.error("No profile found and user not authenticated");
@@ -73,15 +75,15 @@ export default function QuizAllReadyPage() {
   }
 
   const handleContinue = () => {
-    router.push("/quiz/video-demo");
+    router.push("/quiz/unlock-achievement");
   };
 
   // Determinar tipo de viajante baseado em scores (0-10)
   const getTravelerType = () => {
     if (!profile) return null;
-    
+
     const scores = profile.preference_scores;
-    
+
     // Aventureiro Intenso
     if (scores.adventure_level >= 8 && scores.urban_vs_nature <= 3) {
       return {
@@ -91,7 +93,7 @@ export default function QuizAllReadyPage() {
         tags: ["Aventura extrema", "Natureza selvagem", "Trilhas e expedições"]
       };
     }
-    
+
     // Aventureiro Moderado
     if (scores.adventure_level >= 6 && scores.urban_vs_nature <= 5) {
       return {
@@ -101,7 +103,7 @@ export default function QuizAllReadyPage() {
         tags: ["Ecoturismo", "Trilhas moderadas", "Contato com natureza"]
       };
     }
-    
+
     // Gourmet Sofisticado
     if (scores.food_sophistication >= 8 && scores.luxury_preference >= 6) {
       return {
@@ -111,7 +113,7 @@ export default function QuizAllReadyPage() {
         tags: ["Alta gastronomia", "Restaurantes premiados", "Degustações exclusivas"]
       };
     }
-    
+
     // Gourmet Cultural
     if (scores.food_sophistication >= 7) {
       return {
@@ -121,7 +123,7 @@ export default function QuizAllReadyPage() {
         tags: ["Gastronomia local", "Experiências culinárias", "Cultura através da comida"]
       };
     }
-    
+
     // Cultural Profundo
     if (scores.cultural_interest >= 8) {
       return {
@@ -131,7 +133,7 @@ export default function QuizAllReadyPage() {
         tags: ["Museus e história", "Arte local", "Patrimônio cultural"]
       };
     }
-    
+
     // Luxo Premium
     if (scores.luxury_preference >= 8) {
       return {
@@ -141,7 +143,7 @@ export default function QuizAllReadyPage() {
         tags: ["Luxo exclusivo", "Experiências VIP", "Conforto premium"]
       };
     }
-    
+
     // Social e Festivo
     if (scores.nightlife_interest >= 8 && scores.social_level >= 7) {
       return {
@@ -151,7 +153,7 @@ export default function QuizAllReadyPage() {
         tags: ["Vida noturna", "Socialização", "Festas e eventos"]
       };
     }
-    
+
     // Zen e Relaxamento
     if (scores.activity_intensity <= 3 && scores.nightlife_interest <= 4) {
       return {
@@ -161,7 +163,7 @@ export default function QuizAllReadyPage() {
         tags: ["Relaxamento profundo", "Bem-estar", "Tranquilidade"]
       };
     }
-    
+
     // Urbano Explorador
     if (scores.urban_vs_nature >= 8 && scores.exploration_desire >= 6) {
       return {
@@ -171,7 +173,7 @@ export default function QuizAllReadyPage() {
         tags: ["Exploração urbana", "Arquitetura", "Cultura de cidade"]
       };
     }
-    
+
     // Equilibrado
     return {
       name: "Viajante Versátil e Equilibrado",
@@ -186,9 +188,9 @@ export default function QuizAllReadyPage() {
   // Funções auxiliares para tornar seções dinâmicas
   const getAccommodationInfo = () => {
     if (!profile) return { label: "Padrão", score: 50 };
-    
+
     const luxuryScore = profile.preference_scores.luxury_preference;
-    
+
     if (luxuryScore >= 8) {
       return { label: "Luxo e exclusividade", score: Math.round(luxuryScore * 10) };
     } else if (luxuryScore >= 6) {
@@ -202,9 +204,9 @@ export default function QuizAllReadyPage() {
 
   const getBudgetInfo = () => {
     if (!profile) return { label: "Médio", score: 50 };
-    
+
     const luxuryScore = profile.preference_scores.luxury_preference;
-    
+
     if (luxuryScore >= 8) {
       return { label: "Alto", score: 90 };
     } else if (luxuryScore >= 6) {
@@ -218,9 +220,9 @@ export default function QuizAllReadyPage() {
 
   const getCompanyStyle = () => {
     if (!profile) return "Flexível";
-    
+
     const socialScore = profile.preference_scores.social_level;
-    
+
     if (socialScore >= 8) {
       return "Grandes grupos";
     } else if (socialScore >= 5) {
@@ -232,9 +234,9 @@ export default function QuizAllReadyPage() {
 
   const getDurationStyle = () => {
     if (!profile) return "7-14 dias";
-    
+
     const intensityScore = profile.preference_scores.activity_intensity;
-    
+
     if (intensityScore >= 8) {
       return "5-10 dias (intenso)";
     } else if (intensityScore >= 5) {
@@ -246,9 +248,9 @@ export default function QuizAllReadyPage() {
 
   const getRhythmLabel = () => {
     if (!profile) return "Equilibrado";
-    
+
     const rhythm = profile.travel_rhythm;
-    
+
     if (rhythm === 'agitado') {
       return "Agitado";
     } else if (rhythm === 'tranquilo') {
@@ -260,10 +262,10 @@ export default function QuizAllReadyPage() {
 
   const getClimatePreference = () => {
     if (!profile) return "Temperado";
-    
+
     const urbanVsNature = profile.preference_scores.urban_vs_nature;
     const adventureLevel = profile.preference_scores.adventure_level;
-    
+
     if (urbanVsNature <= 3 && adventureLevel >= 7) {
       return "Variado";
     } else if (urbanVsNature >= 7) {
@@ -275,39 +277,39 @@ export default function QuizAllReadyPage() {
 
   const getMainInterests = () => {
     if (!profile) return [];
-    
+
     const scores = profile.preference_scores;
     const interests: Array<{ label: string; highlighted: boolean }> = [];
-    
+
     // Determinar interesses baseado nos scores mais altos
     if (scores.adventure_level >= 7) {
       interests.push({ label: "Aventura", highlighted: true });
     }
-    
+
     if (scores.urban_vs_nature <= 3) {
       interests.push({ label: "Ecoturismo", highlighted: true });
     }
-    
+
     if (scores.food_sophistication >= 7) {
       interests.push({ label: "Gastronomia", highlighted: true });
     }
-    
+
     if (scores.cultural_interest >= 7) {
       interests.push({ label: "História", highlighted: interests.length < 2 });
     }
-    
+
     if (scores.exploration_desire >= 7) {
       interests.push({ label: "Fotografia", highlighted: interests.length < 2 });
     }
-    
+
     if (scores.nightlife_interest >= 7) {
       interests.push({ label: "Vida noturna", highlighted: interests.length < 2 });
     }
-    
+
     if (scores.fitness_priority >= 7) {
       interests.push({ label: "Bem-estar", highlighted: interests.length < 2 });
     }
-    
+
     // Adicionar interesses padrão se não tiver suficientes
     if (interests.length < 6) {
       const defaultInterests = ["Arte local", "Cultura", "Natureza", "Relaxamento"];
@@ -318,7 +320,7 @@ export default function QuizAllReadyPage() {
         }
       }
     }
-    
+
     return interests.slice(0, 6);
   };
 
@@ -350,8 +352,13 @@ export default function QuizAllReadyPage() {
     );
   }
 
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F1F1F1] pb-8">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] pb-8">
       {/* Header */}
       <div className="w-full flex flex-row justify-center items-center gap-5 px-[27px] py-[41px] border-b border-[rgba(100,116,139,0.4)]">
         <div className="flex flex-row justify-center items-center gap-[10px] px-[10px] flex-1">
@@ -361,16 +368,21 @@ export default function QuizAllReadyPage() {
         </div>
         <button className="w-[30px] h-[30px] flex items-center justify-center hover:opacity-80 transition-opacity">
           <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="7.5" r="2.5" fill="#64748B"/>
-            <circle cx="10" cy="17.5" r="2.5" fill="#64748B"/>
-            <circle cx="20" cy="17.5" r="2.5" fill="#64748B"/>
-            <path d="M12.5 17.5L17.5 12.5" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="20" cy="7.5" r="2.5" fill="#64748B" />
+            <circle cx="10" cy="17.5" r="2.5" fill="#64748B" />
+            <circle cx="20" cy="17.5" r="2.5" fill="#64748B" />
+            <path d="M12.5 17.5L17.5 12.5" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
 
       {/* Perfil Completo Section */}
-      <div className="w-full flex flex-col justify-center items-center gap-2 px-[7px] py-[9px] mt-10">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full flex flex-col justify-center items-center gap-2 px-[7px] py-[9px] mt-10"
+      >
         <div className="w-[180px] h-[180px] relative">
           <Image
             src="/icons/Icon check perfil.svg"
@@ -388,10 +400,16 @@ export default function QuizAllReadyPage() {
             Descobrimos o seu estilo de viajante
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Análise Completa Card */}
-      <div className="mx-auto mt-8 w-[312px] flex flex-col items-center gap-[9px] px-[8px] py-[9px] bg-[#F6F7F9] border border-[#FF5F38] rounded-[20px]">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.1 }}
+        className="mx-auto mt-8 w-[312px] flex flex-col items-center gap-[9px] px-[8px] py-[9px] bg-[#F6F7F9] border border-[#FF5F38] rounded-[20px]"
+      >
         <div className="w-full h-8 flex items-center justify-between px-[10px] py-[11px]">
           <span className="text-[#64748B] font-roboto-condensed font-normal text-[15px] leading-[18px]">
             Análise completa
@@ -403,10 +421,16 @@ export default function QuizAllReadyPage() {
         <div className="w-[278px] h-[21px] relative">
           <div className="absolute left-[3px] top-[8px] w-[271px] h-[5px] bg-gradient-to-r from-[#FF896F] via-[#FF5F38] to-[#E6502C] rounded-[20px]" />
         </div>
-      </div>
+      </motion.div>
 
       {/* Tipo de Viajante Card - DINÂMICO */}
-      <div className="mx-auto mt-6 w-[312px] flex flex-col gap-[3px] px-[10px] py-[5px] bg-[rgba(255,95,56,0.25)] border border-[#FF5F38] rounded-[20px]">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.2 }}
+        className="mx-auto mt-6 w-[312px] flex flex-col gap-[3px] px-[10px] py-[5px] bg-[rgba(255,95,56,0.25)] border border-[#FF5F38] rounded-[20px]"
+      >
         <div className="w-full flex items-start gap-3 p-[10px]">
           {/* Ícone no topo-esquerda */}
           <div className="w-[50px] h-[50px] flex-shrink-0 bg-[rgba(255,95,56,0.6)] rounded-[10px] flex items-center justify-center p-2">
@@ -418,19 +442,19 @@ export default function QuizAllReadyPage() {
               className="object-contain"
             />
           </div>
-          
+
           {/* Conteúdo à direita do ícone */}
           <div className="flex-1 flex flex-col gap-[6px] min-w-0">
             {/* Título */}
             <h3 className="text-[#1E293B] font-roboto-condensed font-semibold text-sm leading-[16px]">
               {travelerType.name}
             </h3>
-            
+
             {/* Descrição */}
             <p className="text-[#E6502C] font-roboto-condensed font-normal text-[11px] leading-[13px]">
               {travelerType.description}
             </p>
-            
+
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mt-[6px]">
               {travelerType.tags.map((tag, i) => (
@@ -443,10 +467,16 @@ export default function QuizAllReadyPage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Suas Preferências Section */}
-      <div className="mx-auto mt-8 w-full max-w-[355px] flex flex-col gap-2 px-[10px]">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.3 }}
+        className="mx-auto mt-8 w-full max-w-[355px] flex flex-col gap-2 px-[10px]"
+      >
         <div className="flex flex-row justify-center items-center gap-[10px] px-[17px] py-3">
           <h2 className="text-[#1E293B] font-roboto-condensed font-semibold text-2xl leading-[28px]">
             Suas preferências
@@ -473,8 +503,8 @@ export default function QuizAllReadyPage() {
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                  <div
+                    className="h-full bg-[#FF5F38] rounded-[20px]"
                     style={{ width: `${Math.round((10 - profile.preference_scores.urban_vs_nature) * 10)}%` }}
                   />
                 </div>
@@ -505,8 +535,8 @@ export default function QuizAllReadyPage() {
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                  <div
+                    className="h-full bg-[#FF5F38] rounded-[20px]"
                     style={{ width: `${Math.round(profile.preference_scores.adventure_level * 10)}%` }}
                   />
                 </div>
@@ -537,8 +567,8 @@ export default function QuizAllReadyPage() {
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                  <div
+                    className="h-full bg-[#FF5F38] rounded-[20px]"
                     style={{ width: `${Math.round(profile.preference_scores.food_sophistication * 10)}%` }}
                   />
                 </div>
@@ -570,8 +600,8 @@ export default function QuizAllReadyPage() {
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                  <div
+                    className="h-full bg-[#FF5F38] rounded-[20px]"
                     style={{ width: `${accommodationInfo.score}%` }}
                   />
                 </div>
@@ -603,8 +633,8 @@ export default function QuizAllReadyPage() {
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px] overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FF5F38] rounded-[20px]" 
+                  <div
+                    className="h-full bg-[#FF5F38] rounded-[20px]"
                     style={{ width: `${budgetInfo.score}%` }}
                   />
                 </div>
@@ -615,10 +645,16 @@ export default function QuizAllReadyPage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Estilo de Viagem Section */}
-      <div className="mx-auto mt-8 w-full max-w-[355px] flex flex-col gap-[19px] px-[10px]">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.4 }}
+        className="mx-auto mt-8 w-full max-w-[355px] flex flex-col gap-[19px] px-[10px]"
+      >
         <div className="flex flex-row justify-center items-center gap-[10px] px-[17px] py-3">
           <h2 className="text-[#1E293B] font-roboto-condensed font-semibold text-2xl leading-[28px]">
             Estilo de viagem
@@ -629,9 +665,9 @@ export default function QuizAllReadyPage() {
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="16" r="4" fill="#FF5F38"/>
-                <circle cx="28" cy="16" r="4" fill="#FF5F38"/>
-                <path d="M8 28C8 24 10 22 12 22C14 22 16 24 16 28M24 28C24 24 26 22 28 22C30 22 32 24 32 28" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="16" r="4" fill="#FF5F38" />
+                <circle cx="28" cy="16" r="4" fill="#FF5F38" />
+                <path d="M8 28C8 24 10 22 12 22C14 22 16 24 16 28M24 28C24 24 26 22 28 22C30 22 32 24 32 28" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
             <div className="absolute left-[5px] top-[62px] w-[105px] h-[43px]">
@@ -648,10 +684,10 @@ export default function QuizAllReadyPage() {
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="8" y="10" width="24" height="22" rx="2" stroke="#FF5F38" strokeWidth="2"/>
-                <path d="M8 16H32" stroke="#FF5F38" strokeWidth="2"/>
-                <path d="M18 6V10M22 6V10" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
-                <circle cx="20" cy="24" r="3" fill="#FF5F38"/>
+                <rect x="8" y="10" width="24" height="22" rx="2" stroke="#FF5F38" strokeWidth="2" />
+                <path d="M8 16H32" stroke="#FF5F38" strokeWidth="2" />
+                <path d="M18 6V10M22 6V10" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="20" cy="24" r="3" fill="#FF5F38" />
               </svg>
             </div>
             <div className="absolute left-[5px] top-[62px] w-[105px] h-[43px]">
@@ -669,8 +705,8 @@ export default function QuizAllReadyPage() {
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="9" stroke="#FF5F38" strokeWidth="2"/>
-                <path d="M20 12V20L25 25" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="20" cy="20" r="9" stroke="#FF5F38" strokeWidth="2" />
+                <path d="M20 12V20L25 25" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
             <div className="absolute left-[5px] top-[62px] w-[105px] h-[43px]">
@@ -687,8 +723,8 @@ export default function QuizAllReadyPage() {
           <div className="w-[114px] h-[112px] bg-[#F6F7F9] rounded-[10px] shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)] relative">
             <div className="absolute left-[5px] top-[7px] w-[105px] h-[48px] flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="8" fill="#FF5F38"/>
-                <path d="M20 4V8M20 32V36M36 20H32M8 20H4M30.928 9.072L28.314 11.686M11.686 28.314L9.072 30.928M30.928 30.928L28.314 28.314M11.686 11.686L9.072 9.072" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="20" cy="20" r="8" fill="#FF5F38" />
+                <path d="M20 4V8M20 32V36M36 20H32M8 20H4M30.928 9.072L28.314 11.686M11.686 28.314L9.072 30.928M30.928 30.928L28.314 28.314M11.686 11.686L9.072 9.072" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
             <div className="absolute left-[5px] top-[62px] w-[105px] h-[43px]">
@@ -701,10 +737,16 @@ export default function QuizAllReadyPage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Principais Interesses Section */}
-      <div className="mx-auto mt-8 w-full max-w-[355px] flex flex-col px-[10px] pb-8">
+      <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.5 }}
+        className="mx-auto mt-8 w-full max-w-[355px] flex flex-col px-[10px] pb-8"
+      >
         <div className="w-full h-[53px] flex items-center justify-center py-[13px]">
           <h2 className="text-[#1E293B] font-roboto-condensed font-semibold text-2xl leading-[28px]">
             Principais interesses
@@ -720,17 +762,15 @@ export default function QuizAllReadyPage() {
           }, []).map((row, rowIndex) => (
             <div key={rowIndex} className="flex flex-row gap-[12px] px-[12px]">
               {row.map((interest: any, colIndex: number) => (
-                <div 
+                <div
                   key={colIndex}
-                  className={`min-w-[120px] h-[47px] rounded-[40px] flex items-center justify-center gap-[11px] px-4 ${
-                    interest.highlighted 
-                      ? 'bg-[rgba(255,95,56,0.25)] border border-[#FF5F38]' 
-                      : 'bg-white border border-[#1E293B]'
-                  }`}
+                  className={`min-w-[120px] h-[47px] rounded-[40px] flex items-center justify-center gap-[11px] px-4 ${interest.highlighted
+                    ? 'bg-[rgba(255,95,56,0.25)] border border-[#FF5F38]'
+                    : 'bg-white border border-[#1E293B]'
+                    }`}
                 >
-                  <span className={`font-roboto-condensed font-normal text-xl leading-[23px] ${
-                    interest.highlighted ? 'text-[#FF5F38]' : 'text-[#1E293B]'
-                  }`}>
+                  <span className={`font-roboto-condensed font-normal text-xl leading-[23px] ${interest.highlighted ? 'text-[#FF5F38]' : 'text-[#1E293B]'
+                    }`}>
                     {interest.label}
                   </span>
                 </div>
@@ -738,7 +778,7 @@ export default function QuizAllReadyPage() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Botão Continuar Flutuante */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -755,6 +795,6 @@ export default function QuizAllReadyPage() {
           />
         </button>
       </div>
-    </div>
+    </QuizAnimationWrapper>
   );
 }

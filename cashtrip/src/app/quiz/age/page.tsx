@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuiz } from "@/contexts/QuizContext";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import { motion } from "framer-motion";
 
 export default function QuizAgePage() {
   const router = useRouter();
@@ -37,11 +39,22 @@ export default function QuizAgePage() {
   const handleContinue = async () => {
     const birthDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const age = new Date().getFullYear() - year;
-    
+
     await saveResponse("age", age);
     await saveResponse("birthDate", birthDate);
-    
+
     router.push("/quiz/income");
+  };
+
+  const scrollToCenter = (ref: React.RefObject<HTMLDivElement | null>, index: number, itemHeight: number) => {
+    if (ref.current) {
+      const containerHeight = ref.current.clientHeight;
+      const scrollPosition = index * itemHeight - (containerHeight / 2) + (itemHeight / 2);
+      ref.current.scrollTo({
+        top: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
   };
 
   const handleScroll = (type: 'day' | 'month' | 'year', index: number) => {
@@ -57,23 +70,12 @@ export default function QuizAgePage() {
     }
   };
 
-  const scrollToCenter = (ref: React.RefObject<HTMLDivElement>, index: number, itemHeight: number) => {
-    if (ref.current) {
-      const containerHeight = ref.current.clientHeight;
-      const scrollPosition = index * itemHeight - (containerHeight / 2) + (itemHeight / 2);
-      ref.current.scrollTo({
-        top: Math.max(0, scrollPosition),
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  const handleScrollEvent = (type: 'day' | 'month' | 'year', ref: React.RefObject<HTMLDivElement>) => {
+  const handleScrollEvent = (type: 'day' | 'month' | 'year', ref: React.RefObject<HTMLDivElement | null>) => {
     if (ref.current) {
       const scrollTop = ref.current.scrollTop;
       const itemHeight = 54;
       const index = Math.round(scrollTop / itemHeight);
-      
+
       if (type === 'day') {
         setDay(Math.max(1, Math.min(31, index + 1)));
       } else if (type === 'month') {
@@ -90,11 +92,11 @@ export default function QuizAgePage() {
     const dayIndex = day - 1;
     const monthIndex = month - 1;
     const yearIndex = years.findIndex(y => y === year);
-    
+
     setTimeout(() => {
       const itemHeight = 54;
       const paddingTop = 65;
-      
+
       if (dayRef.current) {
         dayRef.current.scrollTop = dayIndex * itemHeight;
       }
@@ -108,7 +110,7 @@ export default function QuizAgePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[10px] px-4 py-[25px] pb-[80px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[10px] px-4 py-[25px] pb-[80px]">
       {/* Header com Progresso */}
       <div className="w-full flex flex-col items-center gap-[21px]">
         {/* Barra de Progresso */}
@@ -121,7 +123,7 @@ export default function QuizAgePage() {
               99%
             </span>
             <div className="absolute left-0 top-[25px] w-[325px] h-[6px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-              <div 
+              <div
                 className="h-full bg-[#FF5F38] rounded-[20px] transition-all duration-300"
                 style={{ width: '316px' }}
               />
@@ -142,22 +144,27 @@ export default function QuizAgePage() {
       </div>
 
       {/* Seletores de Data */}
-      <div className="w-full flex flex-col items-center gap-[10px] px-[2px] py-[15px]">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="w-full flex flex-col items-center gap-[10px] px-[2px] py-[15px]"
+      >
         <div className="flex items-center justify-center gap-[15px] px-[10px] py-[7px]">
           {/* Seletor de Dia */}
           <div className="relative w-[96px] h-[185px] overflow-hidden">
-            <div 
+            <div
               ref={dayRef}
               onScroll={() => handleScrollEvent('day', dayRef)}
               className="w-full h-full overflow-y-scroll scrollbar-hide"
-              style={{ 
+              style={{
                 paddingTop: '65px',
                 paddingBottom: '65px',
               }}
             >
               {days.map((d, index) => {
                 const isSelected = d === day;
-                
+
                 return (
                   <div
                     key={d}
@@ -184,18 +191,18 @@ export default function QuizAgePage() {
 
           {/* Seletor de Mês */}
           <div className="relative w-[96px] h-[185px] overflow-hidden">
-            <div 
+            <div
               ref={monthRef}
               onScroll={() => handleScrollEvent('month', monthRef)}
               className="w-full h-full overflow-y-scroll scrollbar-hide"
-              style={{ 
+              style={{
                 paddingTop: '65px',
                 paddingBottom: '65px',
               }}
             >
               {months.map((m, index) => {
                 const isSelected = m.value === month;
-                
+
                 return (
                   <div
                     key={m.value}
@@ -222,18 +229,18 @@ export default function QuizAgePage() {
 
           {/* Seletor de Ano */}
           <div className="relative w-[96px] h-[185px] overflow-hidden">
-            <div 
+            <div
               ref={yearRef}
               onScroll={() => handleScrollEvent('year', yearRef)}
               className="w-full h-full overflow-y-scroll scrollbar-hide"
-              style={{ 
+              style={{
                 paddingTop: '65px',
                 paddingBottom: '65px',
               }}
             >
               {years.map((y, index) => {
                 const isSelected = y === year;
-                
+
                 return (
                   <div
                     key={y}
@@ -258,25 +265,27 @@ export default function QuizAgePage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Botão Próxima Pergunta */}
       <div className="w-full flex justify-center items-center py-[28px] px-[67px]">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleContinue}
           className="relative w-[240px] h-[51px] rounded-[30px] bg-[#FF896F] flex items-center justify-center gap-2 hover:bg-[#FF7A5C] transition-colors cursor-pointer"
         >
           <span className="text-white font-inria-sans font-bold text-[20px] leading-[1.2em]">
             Próxima pergunta
           </span>
-          <img 
-            src="/icons/icon seta para direita.svg" 
-            alt="Seta para direita" 
-            width={32} 
+          <img
+            src="/icons/icon seta para direita.svg"
+            alt="Seta para direita"
+            width={32}
             height={18}
             className="object-contain"
           />
-        </button>
+        </motion.button>
       </div>
 
       <style jsx global>{`
@@ -288,6 +297,6 @@ export default function QuizAgePage() {
           display: none;
         }
       `}</style>
-    </div>
+    </QuizAnimationWrapper>
   );
 }

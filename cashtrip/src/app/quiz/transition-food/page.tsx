@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 
 export default function TransitionFoodPage() {
   const router = useRouter();
@@ -11,15 +12,15 @@ export default function TransitionFoodPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-[32px] py-[22px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#FF5F38] flex flex-col gap-[32px] py-[22px]">
       {/* Indicador de Níveis - Com ícones SVG e espaçamento de 10px */}
       <div className="w-full flex flex-col items-center justify-center gap-[18px] py-[35px] px-[33px]">
         {/* Barra de Níveis */}
         <div className="flex items-start justify-center gap-[10px]">
           {/* Nível 1 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 1"
               className="w-[60px] h-[15px]"
             />
@@ -27,11 +28,11 @@ export default function TransitionFoodPage() {
               Nível 1
             </span>
           </div>
-          
+
           {/* Nível 2 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 2"
               className="w-[60px] h-[15px]"
             />
@@ -39,11 +40,11 @@ export default function TransitionFoodPage() {
               Nível 2
             </span>
           </div>
-          
+
           {/* Nível 3 - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Nível 3"
               className="w-[60px] h-[15px]"
             />
@@ -51,11 +52,11 @@ export default function TransitionFoodPage() {
               Nível 3
             </span>
           </div>
-          
+
           {/* Nível 4 - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Nível 4"
               className="w-[60px] h-[15px]"
             />
@@ -63,11 +64,11 @@ export default function TransitionFoodPage() {
               Nível 4
             </span>
           </div>
-          
+
           {/* Bônus - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Bônus"
               className="w-[60px] h-[15px]"
             />
@@ -86,8 +87,8 @@ export default function TransitionFoodPage() {
       {/* Seção de Imagem - Pizza */}
       <div className="w-full flex items-center justify-center px-[87px]">
         <div className="w-[200px] h-[200px]">
-          <img 
-            src="/icons/Icon-pizza-página-a-comida-dos-sonhos.svg" 
+          <img
+            src="/icons/Icon-pizza-página-a-comida-dos-sonhos.svg"
             alt="Pizza"
             className="w-full h-full object-contain"
           />
@@ -115,7 +116,6 @@ export default function TransitionFoodPage() {
         onClick={handleContinue}
         variant="orange-background"
       />
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

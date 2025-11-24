@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import { motion } from "framer-motion";
 
 export default function QuizTransitionPage() {
   const router = useRouter();
@@ -11,14 +13,14 @@ export default function QuizTransitionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col items-center justify-center gap-[30px] py-[52px] px-4">
+    <QuizAnimationWrapper className="min-h-screen bg-[#FF5F38] flex flex-col items-center justify-center gap-[30px] py-[52px] px-4">
       {/* Seção Superior com Níveis e Texto */}
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-[18px] py-[26px] px-[21px]">
         {/* Indicador de Níveis */}
         <div className="relative w-[307px] h-[31px]">
           {/* Barra de progresso base */}
           <div className="absolute left-0 top-[5px] w-full h-[5px] bg-[rgba(100,116,139,0.1)] rounded-[20px]" />
-          
+
           {/* Nível 1 */}
           <div className="absolute left-[38px] top-0 w-[15px] h-[15px] bg-white rounded-full shadow-[1px_1px_4px_0px_rgba(0,0,0,0.25)]" />
           <span className="absolute left-[29px] top-[17px] text-white font-roboto-condensed font-black text-[12px] leading-[1.17em]">
@@ -71,16 +73,18 @@ export default function QuizTransitionPage() {
 
       {/* Botão Continuar */}
       <div className="w-full max-w-md flex justify-center items-center py-[15px] px-[40px]">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleContinue}
           className="w-[232px] h-[61px] rounded-[40px] bg-[#1E293B] shadow-[2px_2px_9px_0px_rgba(0,0,0,0.25)] flex items-center justify-center hover:bg-[#2d3f5f] transition-all duration-200"
         >
           <span className="text-white font-roboto font-bold text-[20px] leading-[1.17em]">
             Sim estou
           </span>
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </QuizAnimationWrapper>
   );
 }
 

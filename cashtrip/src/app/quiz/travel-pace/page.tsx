@@ -6,6 +6,8 @@ import Image from "next/image";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
 import { useQuiz } from "@/contexts/QuizContext";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type TravelPace = "agitado" | "equilibrado" | "tranquilo";
 
@@ -27,29 +29,29 @@ export default function QuizTravelPacePage() {
 
   const handleContinue = async () => {
     if (!selected) return;
-    
+
     // Save to Supabase via Context
     await saveResponse("travelPace", selected);
-    
+
     // Redirect to next question
     router.push("/quiz/daytime-places");
   };
 
   const options = [
-    { 
-      id: "agitado" as TravelPace, 
+    {
+      id: "agitado" as TravelPace,
       label: "Agitado",
       description: "(Máximo de atividades por dia)",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.agitado}.svg`
     },
-    { 
-      id: "equilibrado" as TravelPace, 
+    {
+      id: "equilibrado" as TravelPace,
       label: "Equilibrado",
       description: "(Mescla atividades e pausas)",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.equilibrado}.svg`
     },
-    { 
-      id: "tranquilo" as TravelPace, 
+    {
+      id: "tranquilo" as TravelPace,
       label: "Tranquilo/zen",
       description: "(Tempo livre, poucas atividades)",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.tranquilo}.svg`
@@ -57,7 +59,7 @@ export default function QuizTravelPacePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[36px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[36px]">
       {/* Barra de Progresso Superior */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-5 px-[25px]">
         <div className="relative w-[325px] h-[41px]">
@@ -71,7 +73,7 @@ export default function QuizTravelPacePage() {
           {/* Barra de Progresso */}
           <div className="absolute left-0 top-[26px] w-full h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[5px]">
             {/* 90px de 325px = ~27.7% */}
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-[#FF896F] via-[#FF5F38] to-[#E6502C] rounded-[5px] transition-all duration-300"
               style={{ width: '27.7%' }}
             />
@@ -93,11 +95,12 @@ export default function QuizTravelPacePage() {
 
       {/* Opções de Ritmo */}
       <div className="w-full flex flex-col items-center justify-center gap-[17px] py-[21px] px-4 pb-[80px]">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selected === option.id;
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleSelect(option.id)}
               className={`
                 relative w-[355px] h-[64px] rounded-[20px] border-[3px]
@@ -113,7 +116,7 @@ export default function QuizTravelPacePage() {
                 <div className="absolute right-[8px] top-[8px] z-10">
                   <div className="w-[32px] h-[32px] rounded-full bg-[#E6502C] shadow-[0.6px_0.6px_4px_0px_rgba(230,80,44,1)] flex items-center justify-center">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -129,7 +132,7 @@ export default function QuizTravelPacePage() {
                     width={35}
                     height={37.5}
                     className={`object-contain transition-all duration-200`}
-                    style={isSelected ? { 
+                    style={isSelected ? {
                       filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)"
                     } : {}}
                   />
@@ -137,19 +140,17 @@ export default function QuizTravelPacePage() {
 
                 {/* Textos */}
                 <div className="flex flex-col">
-                  <span className={`font-roboto-condensed font-bold text-[20px] leading-[1.17em] ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <span className={`font-roboto-condensed font-bold text-[20px] leading-[1.17em] ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.label}
                   </span>
-                  <span className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <span className={`font-roboto-condensed font-normal text-[15px] leading-[1.17em] ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.description}
                   </span>
                 </div>
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -161,7 +162,6 @@ export default function QuizTravelPacePage() {
           variant="white-background"
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

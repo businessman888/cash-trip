@@ -6,6 +6,8 @@ import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 import Image from "next/image";
 import { QUIZ_ICONS } from "@/lib/quiz-icons";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type DaytimePlaceType = "touristSpots" | "quietPlaces" | "urbanCenters" | "restaurantsCafe" | "adventureSports" | "parksNature";
 
@@ -25,46 +27,46 @@ export default function QuizDaytimePlacesPage() {
 
   const handleContinue = () => {
     if (selected.length === 0) return;
-    
+
     localStorage.setItem("daytimePlaces", JSON.stringify(selected));
     router.push("/quiz/nighttime-preferences");
   };
 
   const options = [
-    { 
-      id: "touristSpots" as DaytimePlaceType, 
+    {
+      id: "touristSpots" as DaytimePlaceType,
       label: "Pontos Turísticos",
       icon: `/icons/${QUIZ_ICONS.outros.pontosturisticos}.svg`
     },
-    { 
-      id: "quietPlaces" as DaytimePlaceType, 
+    {
+      id: "quietPlaces" as DaytimePlaceType,
       label: "Lugares silenciosos",
       icon: `/icons/${QUIZ_ICONS.outros.lugarSilenciosos}.svg`
     },
-    { 
-      id: "urbanCenters" as DaytimePlaceType, 
+    {
+      id: "urbanCenters" as DaytimePlaceType,
       label: "Centros urbanos",
       icon: `/icons/${QUIZ_ICONS.outros.centrosUrbanos}.svg`
     },
-    { 
-      id: "restaurantsCafe" as DaytimePlaceType, 
+    {
+      id: "restaurantsCafe" as DaytimePlaceType,
       label: "Restaurantes, café",
       icon: `/icons/${QUIZ_ICONS.outros.restaurantesCafe}.svg`
     },
-    { 
-      id: "adventureSports" as DaytimePlaceType, 
+    {
+      id: "adventureSports" as DaytimePlaceType,
       label: "Aventura e esportes",
       icon: `/icons/${QUIZ_ICONS.outros.aventuraEsportes}.svg`
     },
-    { 
-      id: "parksNature" as DaytimePlaceType, 
+    {
+      id: "parksNature" as DaytimePlaceType,
       label: "Parques e natureza",
       icon: `/icons/${QUIZ_ICONS.outros.parquesNatureza}.svg`
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[36px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[36px]">
       {/* Barra de Progresso Superior */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-5 px-[25px]">
         <div className="relative w-[325px] h-[41px]">
@@ -75,7 +77,7 @@ export default function QuizDaytimePlacesPage() {
             60%
           </span>
           <div className="absolute left-0 top-[26px] w-full h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[5px]">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-[#FF896F] via-[#FF5F38] to-[#E6502C] rounded-[5px] transition-all duration-300"
               style={{ width: '40%' }}
             />
@@ -97,12 +99,14 @@ export default function QuizDaytimePlacesPage() {
 
       {/* Opções de Lugares */}
       <div className="w-full flex flex-col items-center justify-center gap-[17px] py-[21px] px-5 pb-20">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selected.includes(option.id);
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleToggle(option.id)}
+              isSelected={isSelected}
               className={`
                 relative w-[355px] h-[64px] rounded-[20px] border-[3px]
                 transition-all duration-200 flex items-center
@@ -127,20 +131,19 @@ export default function QuizDaytimePlacesPage() {
                     width={35}
                     height={37.5}
                     className={`object-contain transition-all duration-200`}
-                    style={isSelected ? { 
+                    style={isSelected ? {
                       filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)"
                     } : {}}
                   />
                 </div>
 
                 {/* Texto */}
-                <span className={`font-roboto-condensed font-bold text-[20px] ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <span className={`font-roboto-condensed font-bold text-[20px] ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.label}
                 </span>
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -150,9 +153,9 @@ export default function QuizDaytimePlacesPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

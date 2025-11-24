@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type MusicStyle = "jazz" | "rock" | "sertanejo" | "pop" | "hiphop" | "classical" | "electronic" | "world";
 
@@ -70,7 +72,7 @@ export default function QuizMusicStylesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[55px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[55px]">
       {/* Barra de Progresso - 30% */}
       <div className="w-full flex flex-col justify-center items-center gap-[10px] px-[15px] py-[10px] h-[51px]">
         <div className="relative w-full h-[31px]">
@@ -83,19 +85,19 @@ export default function QuizMusicStylesPage() {
               30%
             </span>
           </div>
-          
+
           {/* Área da barra */}
           <div className="absolute left-0 top-[13px] w-full h-[18px]">
             {/* Barra cinza de fundo */}
             <div className="absolute left-0 top-[9px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[10px]" />
-            
+
             {/* Barra de progresso laranja - 30% (120px) */}
             <div className="absolute left-0 top-[9px] w-[120px] h-[4px] bg-[#E6502C] rounded-[10px]" />
-            
+
             {/* Ícone de academia */}
             <div className="absolute left-[327px] top-0 w-[18px] h-[18px]">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1.5" y="1.5" width="15" height="15" fill="white"/>
+                <rect x="1.5" y="1.5" width="15" height="15" fill="white" />
               </svg>
             </div>
           </div>
@@ -122,12 +124,14 @@ export default function QuizMusicStylesPage() {
 
       {/* Opções de Música */}
       <div className="w-full flex flex-col justify-center items-center gap-[14px] px-[16px] pb-[80px] pt-[11px]">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selected.includes(option.id);
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleSelect(option.id)}
+              isSelected={isSelected}
               className={`
                 relative w-[342px] h-[113px] rounded-[20px] border-[2px] flex items-center
                 transition-all duration-200
@@ -149,9 +153,8 @@ export default function QuizMusicStylesPage() {
                 </div>
 
                 {/* Título */}
-                <h3 className={`font-roboto-condensed font-bold text-[36px] leading-[1.17em] text-left ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`font-roboto-condensed font-bold text-[36px] leading-[1.17em] text-left ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
               </div>
@@ -160,7 +163,7 @@ export default function QuizMusicStylesPage() {
               <div className="absolute right-[14px] top-[17px] z-10">
                 <SelectionIcon isSelected={isSelected} />
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -170,9 +173,9 @@ export default function QuizMusicStylesPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

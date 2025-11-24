@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type LocationType = "downtown" | "beach" | "nature" | "publicTransport" | "touristSpots" | "flexible";
 
@@ -21,7 +23,7 @@ export default function AccommodationLocationPage() {
 
   const handleContinue = () => {
     if (selected.length === 0) return;
-    
+
     localStorage.setItem("accommodationLocation", JSON.stringify(selected));
     router.push("/quiz/accommodation-essentials");
   };
@@ -67,7 +69,7 @@ export default function AccommodationLocationPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[21px] py-[48px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[21px] py-[48px]">
       {/* Barra de Progresso - 60% */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-[28px] px-[15px] h-[97px]">
         <div className="relative w-[345px] h-[41px]">
@@ -77,18 +79,18 @@ export default function AccommodationLocationPage() {
           <span className="absolute right-[18px] top-0 text-[#E6502C] font-roboto font-black text-[15px] leading-[1.17em]">
             60%
           </span>
-          
+
           <div className="absolute left-0 top-[31px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-            <div 
+            <div
               className="h-full bg-[#E6502C] rounded-[20px] transition-all duration-300"
               style={{ width: '190px' }}
             />
           </div>
-          
+
           <div className="absolute right-0 top-[22px] w-[18px] h-[18px]">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="18" height="18" rx="9" fill="#FF896F"/>
-              <path d="M4 8H14M4 8V14H14V8M4 8V4H14V8M7 11H11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              <rect width="18" height="18" rx="9" fill="#FF896F" />
+              <path d="M4 8H14M4 8V14H14V8M4 8V4H14V8M7 11H11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -97,8 +99,8 @@ export default function AccommodationLocationPage() {
       {/* Seção de Título */}
       <div className="w-full flex flex-col items-center gap-[20px] py-[13px] px-[46px] h-[310px]">
         <div className="w-[90px] h-[90px] flex items-center justify-center">
-          <img 
-            src="/icons/Icon-superior-página-qual-a-localização-ideal-da-hospedagem.svg" 
+          <img
+            src="/icons/Icon-superior-página-qual-a-localização-ideal-da-hospedagem.svg"
             alt="Ícone Qual localização ideal da hospedagem"
             className="w-full h-full object-contain"
           />
@@ -118,13 +120,15 @@ export default function AccommodationLocationPage() {
       <div className="w-full flex flex-col gap-[5px]">
         {/* Linha 1 */}
         <div className="flex justify-center items-center px-[22px] gap-[10px]">
-          {options.slice(0, 2).map((option) => {
+          {options.slice(0, 2).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] border-[3px] transition-all duration-200
                   ${isSelected
@@ -140,42 +144,42 @@ export default function AccommodationLocationPage() {
 
                 {/* Ícone */}
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-full h-full object-contain"
                   />
                 </div>
 
                 {/* Título */}
-                <h3 className={`absolute left-[21px] top-[147px] w-[114px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-[21px] top-[147px] w-[114px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
 
                 {/* Subtítulo */}
                 {option.subtitle && (
-                  <p className={`absolute left-[33px] top-[175px] w-[89px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <p className={`absolute left-[33px] top-[175px] w-[89px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.subtitle}
                   </p>
                 )}
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 2 */}
         <div className="flex justify-center items-center px-[22px] gap-[10px]">
-          {options.slice(2, 4).map((option) => {
+          {options.slice(2, 4).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 2}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] border-[3px] transition-all duration-200
                   ${isSelected
@@ -190,40 +194,40 @@ export default function AccommodationLocationPage() {
                 </div>
 
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-full h-full object-contain"
                   />
                 </div>
 
-                <h3 className={`absolute left-[24px] top-[138px] w-[108px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-[24px] top-[138px] w-[108px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
 
                 {option.subtitle && (
-                  <p className={`absolute left-[51px] top-[189px] w-[53px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <p className={`absolute left-[51px] top-[189px] w-[53px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.subtitle}
                   </p>
                 )}
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 3 */}
         <div className="flex justify-center items-center px-[22px] gap-[10px] pb-24">
-          {options.slice(4, 6).map((option) => {
+          {options.slice(4, 6).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 4}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] border-[3px] transition-all duration-200
                   ${isSelected
@@ -238,27 +242,25 @@ export default function AccommodationLocationPage() {
                 </div>
 
                 <div className="absolute left-[43px] top-[63px] w-[70px] h-[70px]">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-full h-full object-contain"
                   />
                 </div>
 
-                <h3 className={`absolute left-[17px] top-[147px] w-[122px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-[17px] top-[147px] w-[122px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
 
                 {option.subtitle && (
-                  <p className={`absolute left-[27px] top-[178px] w-[101px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${
-                    isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                  }`}>
+                  <p className={`absolute left-[27px] top-[178px] w-[101px] font-roboto-condensed font-normal text-[15px] leading-[1.17em] text-center ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                    }`}>
                     {option.subtitle}
                   </p>
                 )}
-              </button>
+              </QuizOption>
             );
           })}
         </div>
@@ -269,9 +271,9 @@ export default function AccommodationLocationPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

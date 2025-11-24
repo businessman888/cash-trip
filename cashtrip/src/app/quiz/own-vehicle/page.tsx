@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { CheckIcon } from "@/components/quiz/CheckIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type VehicleOption = "yes" | "no";
 
@@ -36,7 +38,7 @@ export default function QuizOwnVehiclePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[52px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[23px] py-[52px]">
       {/* Barra de Progresso - 10% */}
       <div className="w-full flex flex-col gap-[10px] px-[13px] h-[60px]">
         <div className="relative w-full h-[32px]">
@@ -44,18 +46,18 @@ export default function QuizOwnVehiclePage() {
           <div className="absolute left-0 top-[14px] w-[348px] h-[18px]">
             {/* Barra cinza de fundo */}
             <div className="absolute left-0 top-[9px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[10px]" />
-            
+
             {/* Barra de progresso laranja - 10% (80px) */}
             <div className="absolute left-0 top-[9px] w-[80px] h-[4px] bg-[#E6502C] rounded-[10px]" />
-            
+
             {/* Ícone de carro */}
             <div className="absolute left-[330px] top-0 w-[18px] h-[18px]">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0.74 6.29L9 0L17.26 6.29V18H0.74V6.29Z" fill="white"/>
+                <path d="M0.74 6.29L9 0L17.26 6.29V18H0.74V6.29Z" fill="white" />
               </svg>
             </div>
           </div>
-          
+
           {/* Texto 10% */}
           <span className="absolute left-[295px] top-[3px] text-[#FF5F38] font-roboto font-black text-[14px] leading-[1.17em]">
             10%
@@ -82,12 +84,14 @@ export default function QuizOwnVehiclePage() {
 
       {/* Opções lado a lado */}
       <div className="w-full flex justify-center items-center gap-[10px] px-[5px] pb-[80px] pt-[25px]">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selected === option.id;
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleSelect(option.id)}
+              isSelected={isSelected}
               className={`
                 relative w-[166px] h-[250px] rounded-[15px] border-[3px] flex flex-col items-center
                 transition-all duration-200
@@ -115,13 +119,12 @@ export default function QuizOwnVehiclePage() {
 
               {/* Título */}
               <div className="absolute left-[7px] top-[175px] w-[152px] h-[53px]">
-                <h3 className={`text-center font-roboto-condensed font-extrabold text-[20px] leading-[1.17em] whitespace-pre-line ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`text-center font-roboto-condensed font-extrabold text-[20px] leading-[1.17em] whitespace-pre-line ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -133,7 +136,6 @@ export default function QuizOwnVehiclePage() {
           variant="white-background"
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

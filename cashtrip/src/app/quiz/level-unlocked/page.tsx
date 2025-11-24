@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import Lottie from "lottie-react";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 
 export default function LevelUnlockedPage() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function LevelUnlockedPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center justify-center py-[58px] px-[10px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col items-center justify-center py-[58px] px-[10px]">
       {/* Conteúdo Central */}
       <div className="w-full max-w-[355px] flex flex-col items-center gap-[60px]">
         {/* Título no topo */}
@@ -26,8 +27,8 @@ export default function LevelUnlockedPage() {
             path="/animations/lock-unlock.json"
             loop={false}
             autoplay={true}
-            style={{ 
-              width: "200px", 
+            style={{
+              width: "200px",
               height: "200px",
               backgroundColor: "transparent",
             }}
@@ -48,7 +49,6 @@ export default function LevelUnlockedPage() {
         onClick={handleContinue}
         variant="white-background"
       />
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

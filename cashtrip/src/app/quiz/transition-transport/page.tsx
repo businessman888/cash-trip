@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import Lottie from "lottie-react";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 
 export default function TransitionTransportPage() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function TransitionTransportPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-[7px] py-[58px]" style={{
+    <QuizAnimationWrapper className="min-h-screen bg-[#FF5F38] flex flex-col gap-[7px] py-[58px]" style={{
       backgroundImage: "url('/path-to-background-image.jpg')",
       backgroundSize: "cover",
       backgroundRepeat: "no-repeat"
@@ -71,8 +72,8 @@ export default function TransitionTransportPage() {
         <div className="flex items-start justify-center gap-[10px]">
           {/* Nível 1 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 1"
               className="w-[60px] h-[15px]"
             />
@@ -80,11 +81,11 @@ export default function TransitionTransportPage() {
               Nível 1
             </span>
           </div>
-          
+
           {/* Nível 2 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 2"
               className="w-[60px] h-[15px]"
             />
@@ -92,11 +93,11 @@ export default function TransitionTransportPage() {
               Nível 2
             </span>
           </div>
-          
+
           {/* Nível 3 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 3"
               className="w-[60px] h-[15px]"
             />
@@ -104,11 +105,11 @@ export default function TransitionTransportPage() {
               Nível 3
             </span>
           </div>
-          
+
           {/* Nível 4 - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Nível 4"
               className="w-[60px] h-[15px]"
             />
@@ -116,11 +117,11 @@ export default function TransitionTransportPage() {
               Nível 4
             </span>
           </div>
-          
+
           {/* Bônus - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Bônus"
               className="w-[60px] h-[15px]"
             />
@@ -140,7 +141,7 @@ export default function TransitionTransportPage() {
 
       {/* Seção de Imagem - Carro - Animação Lottie */}
       <div className="w-full h-[200px] flex items-center justify-center">
-        <div 
+        <div
           ref={lottieRef}
           className="w-[200px] h-[200px]"
           style={{ backgroundColor: "transparent" }}
@@ -149,9 +150,9 @@ export default function TransitionTransportPage() {
             path="/animations/car-animation.json"
             loop={true}
             autoplay={true}
-            style={{ 
-              width: "200px", 
-              height: "200px", 
+            style={{
+              width: "200px",
+              height: "200px",
               backgroundColor: "transparent",
             }}
             rendererSettings={{
@@ -176,7 +177,6 @@ export default function TransitionTransportPage() {
         onClick={handleContinue}
         variant="orange-background"
       />
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

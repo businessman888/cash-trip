@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuiz } from "@/contexts/QuizContext";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import { motion } from "framer-motion";
 
 export default function QuizIncomePage() {
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function QuizIncomePage() {
   const sliderPosition = ((income - minIncome) / (maxIncome - minIncome)) * 100;
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[10px] px-4 py-[25px] pb-[80px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[10px] px-4 py-[25px] pb-[80px]">
       {/* Header com Progresso */}
       <div className="w-full flex flex-col items-center gap-[21px]">
         {/* Barra de Progresso */}
@@ -54,7 +56,7 @@ export default function QuizIncomePage() {
               100%
             </span>
             <div className="absolute left-0 top-[25px] w-[325px] h-[6px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-              <div 
+              <div
                 className="h-full bg-[#FF5F38] rounded-[20px] transition-all duration-300"
                 style={{ width: '325px' }}
               />
@@ -75,7 +77,12 @@ export default function QuizIncomePage() {
       </div>
 
       {/* Slider de Renda */}
-      <div className="w-full flex flex-col items-center gap-[10px] px-[2px] py-[15px]">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="w-full flex flex-col items-center gap-[10px] px-[2px] py-[15px]"
+      >
         <div className="w-[339px] flex flex-col items-center gap-[22px] py-[14px]">
           {/* Valor Exibido */}
           <div className="flex flex-col items-center gap-[16px] px-[92px] py-[19px]">
@@ -89,15 +96,15 @@ export default function QuizIncomePage() {
             <div className="relative w-[330px] h-[43px]">
               {/* Barra de Fundo */}
               <div className="absolute left-0 top-[7px] w-[330px] h-[10px] bg-[rgba(100,116,139,0.1)] rounded-[20px]" />
-              
+
               {/* Barra de Progresso */}
-              <div 
+              <div
                 className="absolute left-0 top-[7px] h-[10px] bg-[#E6502C] rounded-[20px] transition-all duration-200"
                 style={{ width: `${sliderPosition}%` }}
               />
 
               {/* Círculo do Slider */}
-              <div 
+              <div
                 className="absolute top-0 w-[22px] h-[22px] bg-[#1E293B] border-[1px] border-white rounded-full cursor-pointer transition-all duration-200"
                 style={{ left: `calc(${sliderPosition}% - 11px)` }}
               />
@@ -127,26 +134,28 @@ export default function QuizIncomePage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Botão Próxima Pergunta */}
       <div className="w-full flex justify-center items-center py-[28px] px-[67px]">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleContinue}
           className="relative w-[240px] h-[51px] rounded-[30px] bg-[#FF896F] flex items-center justify-center gap-2 hover:bg-[#FF7A5C] transition-colors cursor-pointer"
         >
           <span className="text-white font-inria-sans font-bold text-[20px] leading-[1.2em]">
             Próxima pergunta
           </span>
-          <img 
-            src="/icons/icon seta para direita.svg" 
-            alt="Seta para direita" 
-            width={32} 
+          <img
+            src="/icons/icon seta para direita.svg"
+            alt="Seta para direita"
+            width={32}
             height={18}
             className="object-contain"
           />
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </QuizAnimationWrapper>
   );
 }

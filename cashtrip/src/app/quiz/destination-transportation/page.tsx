@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { CheckIcon } from "@/components/quiz/CheckIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type TransportationType = "rentalCar" | "uberTaxi" | "public" | "bikeScooter" | "walking" | "boat";
 
@@ -66,7 +68,7 @@ export default function QuizDestinationTransportationPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[20px] py-[52px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[20px] py-[52px]">
       {/* Barra de Progresso - 30% */}
       <div className="w-full flex flex-col gap-[10px] px-[13px]">
         <div className="relative w-full h-[32px]">
@@ -74,18 +76,18 @@ export default function QuizDestinationTransportationPage() {
           <div className="absolute left-0 top-[14px] w-[348px] h-[18px]">
             {/* Barra cinza de fundo */}
             <div className="absolute left-0 top-[9px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[10px]" />
-            
+
             {/* Barra de progresso laranja - 30% (120px) */}
             <div className="absolute left-0 top-[9px] w-[120px] h-[4px] bg-[#E6502C] rounded-[10px]" />
-            
+
             {/* Ícone de carro */}
             <div className="absolute left-[330px] top-0 w-[18px] h-[18px]">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0.74 6.29L9 0L17.26 6.29V18H0.74V6.29Z" fill="white"/>
+                <path d="M0.74 6.29L9 0L17.26 6.29V18H0.74V6.29Z" fill="white" />
               </svg>
             </div>
           </div>
-          
+
           {/* Texto 30% */}
           <span className="absolute left-[295px] top-[3px] text-[#FF5F38] font-roboto font-black text-[14px] leading-[1.17em]">
             30%
@@ -114,12 +116,14 @@ export default function QuizDestinationTransportationPage() {
       <div className="w-full flex flex-col gap-[10px] px-0 pb-[80px] pt-[8px]">
         {[0, 2, 4].map((startIndex, lineIndex) => (
           <div key={lineIndex} className="flex justify-center items-center gap-[10px] py-[5px] px-[17px]">
-            {options.slice(startIndex, startIndex + 2).map((option) => {
+            {options.slice(startIndex, startIndex + 2).map((option, index) => {
               const isSelected = selected.includes(option.id);
               return (
-                <button
+                <QuizOption
                   key={option.id}
+                  index={startIndex + index}
                   onClick={() => handleSelect(option.id)}
+                  isSelected={isSelected}
                   className={`
                     relative w-[157px] h-[200px] rounded-[15px] border-[3px] flex flex-col items-center
                     transition-all duration-200
@@ -147,20 +151,18 @@ export default function QuizDestinationTransportationPage() {
 
                   {/* Título e Subtítulo */}
                   <div className="absolute left-[11px] top-[140px] w-[137px] h-[52px]">
-                    <h3 className={`font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-left ${
-                      isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                    }`}>
+                    <h3 className={`font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-left ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                      }`}>
                       {option.title}
                     </h3>
                     {option.subtitle && (
-                      <p className={`font-roboto-condensed font-normal text-[12px] leading-[1.17em] text-left ${
-                        isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                      }`}>
+                      <p className={`font-roboto-condensed font-normal text-[12px] leading-[1.17em] text-left ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                        }`}>
                         {option.subtitle}
                       </p>
                     )}
                   </div>
-                </button>
+                </QuizOption>
               );
             })}
           </div>
@@ -172,9 +174,9 @@ export default function QuizDestinationTransportationPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

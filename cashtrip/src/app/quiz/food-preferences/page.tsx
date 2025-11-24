@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type FoodType = "italian" | "brazilian" | "japanese" | "french" | "mexican" | "local" | "everything" | "healthy" | "premium";
 
@@ -21,7 +23,7 @@ export default function FoodPreferencesPage() {
 
   const handleContinue = () => {
     if (selected.length === 0) return;
-    
+
     localStorage.setItem("foodPreferences", JSON.stringify(selected));
     router.push("/quiz/dietary-restrictions");
   };
@@ -75,7 +77,7 @@ export default function FoodPreferencesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[16px] py-[52px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col items-center gap-[16px] py-[52px]">
       {/* Barra de Progresso - 10% */}
       <div className="flex flex-col items-center justify-center gap-[10px] py-[31px] px-[16px]">
         <div className="relative w-[343px] h-[36px]">
@@ -88,20 +90,20 @@ export default function FoodPreferencesPage() {
               10%
             </span>
           </div>
-          
+
           {/* Barra de Progresso */}
           <div className="absolute left-0 top-[27px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-            <div 
+            <div
               className="h-full bg-[#FF5F38] rounded-[20px] transition-all duration-300"
               style={{ width: '100px' }}
             />
           </div>
-          
+
           {/* Ícone de Comida */}
           <div className="absolute right-0 top-[18px] w-[18px] h-[18px]">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="18" height="18" rx="9" fill="rgba(255,95,56,0.6)"/>
-              <path d="M9 3 L9 15 M6 6 L9 3 L12 6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <rect width="18" height="18" rx="9" fill="rgba(255,95,56,0.6)" />
+              <path d="M9 3 L9 15 M6 6 L9 3 L12 6" stroke="white" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -110,8 +112,8 @@ export default function FoodPreferencesPage() {
       {/* Seção de Título */}
       <div className="w-[375px] flex flex-col items-center gap-[20px] py-[13px] px-[46px]">
         <div className="w-[90px] h-[90px] flex items-center justify-center">
-          <img 
-            src="/icons/Icon-superior-pagina-o-que-você-mais-gosta-de-comer.svg" 
+          <img
+            src="/icons/Icon-superior-pagina-o-que-você-mais-gosta-de-comer.svg"
             alt="Ícone O que você mais gosta de comer"
             className="w-full h-full object-contain"
           />
@@ -131,13 +133,15 @@ export default function FoodPreferencesPage() {
       <div className="w-full flex flex-col gap-[16px]">
         {/* Linha 1 */}
         <div className="flex justify-center items-center gap-[15px] px-[16px]">
-          {options.slice(0, 2).map((option) => {
+          {options.slice(0, 2).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] transition-all duration-200
                   ${isSelected
@@ -148,8 +152,8 @@ export default function FoodPreferencesPage() {
               >
                 {/* Ícone/Bandeira */}
                 <div className="absolute left-0 top-[60px] w-full h-[70px] flex items-center justify-center">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-[70px] h-[70px] object-contain"
                   />
@@ -161,25 +165,26 @@ export default function FoodPreferencesPage() {
                 </div>
 
                 {/* Título */}
-                <h3 className={`absolute left-0 top-[164px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-0 top-[164px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 2 */}
         <div className="flex justify-center items-center gap-[15px] px-[16px]">
-          {options.slice(2, 4).map((option) => {
+          {options.slice(2, 4).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 2}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] transition-all duration-200
                   ${isSelected
@@ -189,8 +194,8 @@ export default function FoodPreferencesPage() {
                 `}
               >
                 <div className="absolute left-0 top-[60px] w-full h-[70px] flex items-center justify-center">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-[70px] h-[70px] object-contain"
                   />
@@ -201,25 +206,26 @@ export default function FoodPreferencesPage() {
                   <SelectionIcon isSelected={isSelected} />
                 </div>
 
-                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 3 */}
         <div className="flex justify-center items-center gap-[15px] px-[16px]">
-          {options.slice(4, 6).map((option) => {
+          {options.slice(4, 6).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 4}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] transition-all duration-200
                   ${isSelected
@@ -229,8 +235,8 @@ export default function FoodPreferencesPage() {
                 `}
               >
                 <div className="absolute left-0 top-[60px] w-full h-[70px] flex items-center justify-center">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-[70px] h-[70px] object-contain"
                   />
@@ -241,25 +247,26 @@ export default function FoodPreferencesPage() {
                   <SelectionIcon isSelected={isSelected} />
                 </div>
 
-                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 4 */}
         <div className="flex justify-center gap-[15px] px-[16px]">
-          {options.slice(6, 8).map((option) => {
+          {options.slice(6, 8).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 6}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] transition-all duration-200
                   ${isSelected
@@ -269,8 +276,8 @@ export default function FoodPreferencesPage() {
                 `}
               >
                 <div className="absolute left-0 top-[60px] w-full h-[70px] flex items-center justify-center">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-[70px] h-[70px] object-contain"
                   />
@@ -281,25 +288,26 @@ export default function FoodPreferencesPage() {
                   <SelectionIcon isSelected={isSelected} />
                 </div>
 
-                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-4 ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
-              </button>
+              </QuizOption>
             );
           })}
         </div>
 
         {/* Linha 5 - Apenas 1 card centralizado */}
         <div className="flex justify-center items-center px-[109px] pb-24">
-          {options.slice(8, 9).map((option) => {
+          {options.slice(8, 9).map((option, index) => {
             const isSelected = selected.includes(option.id);
-            
+
             return (
-              <button
+              <QuizOption
                 key={option.id}
+                index={index + 8}
                 onClick={() => handleSelect(option.id)}
+                isSelected={isSelected}
                 className={`
                   relative w-[156px] h-[227px] rounded-[15px] transition-all duration-200
                   ${isSelected
@@ -309,8 +317,8 @@ export default function FoodPreferencesPage() {
                 `}
               >
                 <div className="absolute left-0 top-[60px] w-full h-[70px] flex items-center justify-center">
-                  <img 
-                    src={option.icon} 
+                  <img
+                    src={option.icon}
                     alt={option.title}
                     className="w-[70px] h-[70px] object-contain"
                   />
@@ -321,12 +329,11 @@ export default function FoodPreferencesPage() {
                   <SelectionIcon isSelected={isSelected} />
                 </div>
 
-                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-2 ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <h3 className={`absolute left-0 top-[149px] w-full h-[54px] font-roboto-condensed font-bold text-[20px] leading-[1.17em] text-center whitespace-pre-line px-2 ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.title}
                 </h3>
-              </button>
+              </QuizOption>
             );
           })}
         </div>
@@ -337,9 +344,9 @@ export default function FoodPreferencesPage() {
         <NavigationButton
           onClick={handleContinue}
           variant="white-background"
+          isFixed={false}
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

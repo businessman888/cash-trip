@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import { motion } from "framer-motion";
 
 type FoodLevelType = "gourmet" | "casual" | "healthy" | "local" | "cooking";
 
@@ -63,8 +65,23 @@ export default function FoodLevelPage() {
 
   const hasAnyLevel = Object.values(levels).some(level => level > 0);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[37px] py-[52px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[37px] py-[52px]">
       {/* Barra de Progresso - 99% */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-[31px] px-[16px] h-[98px]">
         <div className="relative w-[343px] h-[36px]">
@@ -76,18 +93,18 @@ export default function FoodLevelPage() {
               99%
             </span>
           </div>
-          
+
           <div className="absolute left-0 top-[27px] w-[322px] h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-            <div 
+            <div
               className="h-full bg-[#FF5F38] rounded-[20px] transition-all duration-300"
               style={{ width: '319px' }}
             />
           </div>
-          
+
           <div className="absolute right-0 top-[18px] w-[18px] h-[18px]">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="18" height="18" rx="9" fill="white"/>
-              <path d="M9 3 L9 15 M6 6 L9 3 L12 6" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round"/>
+              <rect width="18" height="18" rx="9" fill="white" />
+              <path d="M9 3 L9 15 M6 6 L9 3 L12 6" stroke="#FF5F38" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -98,9 +115,9 @@ export default function FoodLevelPage() {
         <div className="w-[90px] h-[90px] flex items-center justify-center">
           <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g stroke="#FF5F38" strokeWidth="3">
-              <rect x="22.5" y="22.5" width="30" height="16.88" rx="2" fill="none"/>
-              <line x1="37.5" y1="39.38" x2="37.5" y2="67.5"/>
-              <line x1="22.5" y1="67.5" x2="52.5" y2="67.5"/>
+              <rect x="22.5" y="22.5" width="30" height="16.88" rx="2" fill="none" />
+              <line x1="37.5" y1="39.38" x2="37.5" y2="67.5" />
+              <line x1="22.5" y1="67.5" x2="52.5" y2="67.5" />
             </g>
           </svg>
         </div>
@@ -113,9 +130,18 @@ export default function FoodLevelPage() {
       </div>
 
       {/* Opções com Sliders */}
-      <div className="w-full flex flex-col gap-[37px] px-[11px] pb-24">
+      <motion.div
+        className="w-full flex flex-col gap-[37px] px-[11px] pb-24"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {options.map((option) => (
-          <div key={option.id} className="flex flex-col w-full rounded-[20px]">
+          <motion.div
+            key={option.id}
+            className="flex flex-col w-full rounded-[20px]"
+            variants={itemVariants}
+          >
             {/* Título */}
             <div className="w-[352px] h-[54px] flex items-center">
               <span className="text-[#64748B] font-roboto-condensed font-normal text-[20px] leading-[1.17em] pl-[37px]">
@@ -126,7 +152,7 @@ export default function FoodLevelPage() {
             {/* Área do Slider */}
             <div className="w-[352px] h-[56px] relative">
               <div className="absolute left-[50px] top-[19px] w-[260px] h-[18px] bg-[rgba(100,116,139,0.1)] rounded-[20px]">
-                <div 
+                <div
                   className="h-full bg-[#E6502C] rounded-[20px] transition-all duration-300"
                   style={{ width: `${getProgressWidth(levels[option.id])}px` }}
                 />
@@ -139,7 +165,7 @@ export default function FoodLevelPage() {
                 disabled={levels[option.id] === 0}
               >
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="0" y="13.44" width="30" height="5" fill="white"/>
+                  <rect x="0" y="13.44" width="30" height="5" fill="#1E293B" />
                 </svg>
               </button>
 
@@ -150,13 +176,13 @@ export default function FoodLevelPage() {
                 disabled={levels[option.id] === 5}
               >
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M15 6.25 L15 23.75 M6.25 15 L23.75 15" stroke="#1E293B" strokeWidth="3" strokeLinecap="round"/>
+                  <path d="M15 6.25 L15 23.75 M6.25 15 L23.75 15" stroke="#1E293B" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Botão Flutuante */}
       {hasAnyLevel && (
@@ -165,7 +191,6 @@ export default function FoodLevelPage() {
           variant="white-background"
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

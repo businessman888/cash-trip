@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 
 export default function TransitionLifestylePage() {
   const router = useRouter();
@@ -11,15 +12,15 @@ export default function TransitionLifestylePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FF5F38] flex flex-col gap-[16px] py-[58px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#FF5F38] flex flex-col gap-[16px] py-[58px]">
       {/* Indicador de Níveis - Com ícones SVG e espaçamento de 10px */}
       <div className="w-full flex flex-col items-center justify-center gap-[18px] px-[41px]">
         {/* Barra de Níveis */}
         <div className="flex items-start justify-center gap-[10px]">
           {/* Nível 1 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 1"
               className="w-[60px] h-[15px]"
             />
@@ -27,11 +28,11 @@ export default function TransitionLifestylePage() {
               Nível 1
             </span>
           </div>
-          
+
           {/* Nível 2 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 2"
               className="w-[60px] h-[15px]"
             />
@@ -39,11 +40,11 @@ export default function TransitionLifestylePage() {
               Nível 2
             </span>
           </div>
-          
+
           {/* Nível 3 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 3"
               className="w-[60px] h-[15px]"
             />
@@ -51,11 +52,11 @@ export default function TransitionLifestylePage() {
               Nível 3
             </span>
           </div>
-          
+
           {/* Nível 4 - Completo */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level.svg" 
+            <img
+              src="/illustrations/icone level.svg"
               alt="Nível 4"
               className="w-[60px] h-[15px]"
             />
@@ -63,11 +64,11 @@ export default function TransitionLifestylePage() {
               Nível 4
             </span>
           </div>
-          
+
           {/* Bônus - Não selecionado */}
           <div className="flex flex-col items-center gap-[4px]">
-            <img 
-              src="/illustrations/icone level não selecionado.svg" 
+            <img
+              src="/illustrations/icone level não selecionado.svg"
               alt="Bônus"
               className="w-[60px] h-[15px]"
             />
@@ -107,7 +108,6 @@ export default function TransitionLifestylePage() {
         onClick={handleContinue}
         variant="orange-background"
       />
-    </div>
+    </QuizAnimationWrapper>
   );
 }
-

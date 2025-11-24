@@ -7,6 +7,8 @@ import { QUIZ_ICONS } from "@/lib/quiz-icons";
 import { NavigationButton } from "@/components/quiz/NavigationButton";
 import { SelectionIcon } from "@/components/quiz/SelectionIcon";
 import { useQuiz } from "@/contexts/QuizContext";
+import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
+import QuizOption from "@/components/quiz/QuizOption";
 
 type TravelerType = "adventurer" | "cultural" | "relax" | "luxury" | "economic" | "balanced" | "gastronomic";
 
@@ -37,49 +39,49 @@ export default function QuizTravelerTypePage() {
 
   const handleContinue = async () => {
     if (selected.length === 0) return;
-    
+
     // Save to Supabase via Context
     await saveResponse("travelerType", selected);
-    
+
     // Redirect to next question
     router.push("/quiz/travel-pace");
   };
 
   const options = [
-    { 
-      id: "adventurer" as TravelerType, 
+    {
+      id: "adventurer" as TravelerType,
       label: "Aventureiro",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.aventureiro}.svg`
     },
-    { 
-      id: "cultural" as TravelerType, 
+    {
+      id: "cultural" as TravelerType,
       label: "Cultural",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.cultural}.svg`
     },
-    { 
-      id: "relax" as TravelerType, 
+    {
+      id: "relax" as TravelerType,
       label: "Relax",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.relax}.svg`
     },
-    { 
-      id: "luxury" as TravelerType, 
+    {
+      id: "luxury" as TravelerType,
       label: "Luxo",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.luxo}.svg`
     },
-    { 
-      id: "economic" as TravelerType, 
+    {
+      id: "economic" as TravelerType,
       label: "Econômico",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.economico}.svg`
     },
-    { 
-      id: "balanced" as TravelerType, 
+    {
+      id: "balanced" as TravelerType,
       label: "Equilibrado",
       icon: `/icons/${QUIZ_ICONS.estiloViagem.equilibrado}.svg`
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[11px] py-[36px]">
+    <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] flex flex-col gap-[11px] py-[36px]">
       {/* Barra de Progresso Superior */}
       <div className="w-full flex flex-col items-center justify-center gap-[10px] py-5 px-[25px]">
         <div className="relative w-[325px] h-[41px]">
@@ -92,7 +94,7 @@ export default function QuizTravelerTypePage() {
           </span>
           {/* Barra de Progresso */}
           <div className="absolute left-0 top-[26px] w-full h-[4px] bg-[rgba(100,116,139,0.1)] rounded-[5px]">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-[#FF896F] via-[#FF5F38] to-[#E6502C] rounded-[5px] transition-all duration-300"
               style={{ width: '10%' }}
             />
@@ -113,12 +115,14 @@ export default function QuizTravelerTypePage() {
 
       {/* Opções de Estilo */}
       <div className="w-full flex flex-col items-center justify-center gap-[17px] py-[21px] px-5 pb-20">
-        {options.map((option) => {
+        {options.map((option, index) => {
           const isSelected = selected.includes(option.id);
           return (
-            <button
+            <QuizOption
               key={option.id}
+              index={index}
               onClick={() => handleToggle(option.id)}
+              isSelected={isSelected}
               className={`
                 relative w-[355px] h-[64px] rounded-[20px] border-[3px]
                 transition-all duration-200 flex items-center
@@ -142,21 +146,19 @@ export default function QuizTravelerTypePage() {
                     alt={option.label}
                     width={35}
                     height={37.5}
-                    className={`object-contain transition-all duration-200 ${
-                      isSelected ? "brightness-0 saturate-100" : ""
-                    }`}
+                    className={`object-contain transition-all duration-200 ${isSelected ? "brightness-0 saturate-100" : ""
+                      }`}
                     style={isSelected ? { filter: "invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(118%) contrast(119%)" } : {}}
                   />
                 </div>
 
                 {/* Texto */}
-                <span className={`font-roboto-condensed font-bold text-[20px] ${
-                  isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
-                }`}>
+                <span className={`font-roboto-condensed font-bold text-[20px] ${isSelected ? "text-[#E6502C]" : "text-[#1E293B]"
+                  }`}>
                   {option.label}
                 </span>
               </div>
-            </button>
+            </QuizOption>
           );
         })}
       </div>
@@ -168,7 +170,7 @@ export default function QuizTravelerTypePage() {
           variant="white-background"
         />
       )}
-    </div>
+    </QuizAnimationWrapper>
   );
 }
 
