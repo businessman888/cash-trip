@@ -67,11 +67,11 @@ export default function NotificationsPage() {
     const getIcon = (type: string) => {
         switch (type) {
             case 'warning':
-                return <PiWarningCircleBold size={24} className="text-[#FF5F38]" />
+                return <PiWarningCircleBold size={24} style={{ color: 'var(--color-primary)' }} />
             case 'checklist':
-                return <FaListUl size={20} className="text-[#FF5F38]" />
+                return <FaListUl size={20} style={{ color: 'var(--color-primary)' }} />
             case 'weather':
-                return <FaCloudShowersHeavy size={20} className="text-[#FF5F38]" />
+                return <FaCloudShowersHeavy size={20} style={{ color: 'var(--color-primary)' }} />
             default:
                 return null
         }
@@ -81,7 +81,13 @@ export default function NotificationsPage() {
         <div key={notification.id} className="flex gap-4">
             {/* Icon */}
             <div className="shrink-0">
-                <div className="w-12 h-12 rounded-full border border-[#FF5F38] bg-[#FFF5F2] flex items-center justify-center">
+                <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{
+                        border: '1px solid var(--color-primary)',
+                        background: 'rgba(255, 95, 56, 0.1)'
+                    }}
+                >
                     {getIcon(notification.type)}
                 </div>
             </div>
@@ -89,19 +95,31 @@ export default function NotificationsPage() {
             {/* Content */}
             <div className="flex-1">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-[#1E293B] text-[14px] leading-tight max-w-[80%]">
+                    <h3
+                        className="font-bold text-[14px] leading-tight max-w-[80%]"
+                        style={{ color: 'var(--text-primary)' }}
+                    >
                         {notification.title}
                     </h3>
                     <div className="flex flex-col items-end gap-1">
-                        <span className={`text-[10px] font-bold ${notification.isNew ? 'text-[#FF5F38]' : 'text-[#64748B]'}`}>
+                        <span
+                            className="text-[10px] font-bold"
+                            style={{ color: notification.isNew ? 'var(--color-primary)' : 'var(--text-secondary)' }}
+                        >
                             {notification.time}
                         </span>
                         {notification.isNew && (
-                            <div className="w-2 h-2 bg-[#FF5F38] rounded-full"></div>
+                            <div
+                                className="w-2 h-2 rounded-full"
+                                style={{ background: 'var(--color-primary)' }}
+                            />
                         )}
                     </div>
                 </div>
-                <p className="text-[#64748B] text-[14px] leading-relaxed">
+                <p
+                    className="text-[14px] leading-relaxed"
+                    style={{ color: 'var(--text-secondary)' }}
+                >
                     {notification.message}
                 </p>
             </div>
@@ -109,28 +127,40 @@ export default function NotificationsPage() {
     )
 
     return (
-        <div className="min-h-screen bg-white font-inria-sans pb-24">
+        <div
+            className="min-h-screen font-inria-sans pb-24"
+            style={{ background: 'var(--surface-main)' }}
+        >
             {/* Header */}
             <div className="pt-6 pb-4">
                 <div className="flex items-center justify-between max-w-md mx-auto px-4 mb-6">
                     <button
                         onClick={() => router.back()}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
                     >
-                        <FaChevronLeft size={24} className="text-[#1E293B]" />
+                        <FaChevronLeft size={24} style={{ color: 'var(--text-primary)' }} />
                     </button>
 
-                    <h1 className="font-bold text-[20px] text-[#1E293B]">
+                    <h1
+                        className="font-bold text-[20px]"
+                        style={{ color: 'var(--text-primary)' }}
+                    >
                         Notificações
                     </h1>
 
-                    <button className="w-10 h-10 flex items-center justify-center border border-[#1E293B] rounded-full hover:bg-gray-50 transition-colors">
-                        <BsThreeDots size={20} className="text-[#1E293B]" />
+                    <button
+                        className="w-10 h-10 flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                        style={{ border: '1px solid var(--text-primary)' }}
+                    >
+                        <BsThreeDots size={20} style={{ color: 'var(--text-primary)' }} />
                     </button>
                 </div>
 
                 {/* Divider Line */}
-                <div className="h-[1px] bg-[#E2E8F0] mx-[10px] mb-6"></div>
+                <div
+                    className="h-[1px] mx-[10px] mb-6"
+                    style={{ background: 'var(--border-line)' }}
+                />
 
                 {/* Filter Tabs */}
                 <div className="flex flex-wrap gap-3 max-w-md mx-auto px-4 mb-8">
@@ -138,10 +168,18 @@ export default function NotificationsPage() {
                         <button
                             key={index}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2 rounded-[20px] border transition-colors font-bold text-sm ${activeTab === tab && index === 0 // Hardcoded for demo to keep first 'Todas' active
-                                ? 'bg-[#FF5F38] text-white border-[#FF5F38]'
-                                : 'bg-white text-[#1E293B] border-[#1E293B]'
-                                }`}
+                            className="px-6 py-2 rounded-[20px] border transition-colors font-bold text-sm"
+                            style={{
+                                background: activeTab === tab && index === 0
+                                    ? 'var(--color-primary)'
+                                    : 'transparent',
+                                color: activeTab === tab && index === 0
+                                    ? '#FFFFFF'
+                                    : 'var(--text-primary)',
+                                borderColor: activeTab === tab && index === 0
+                                    ? 'var(--color-primary)'
+                                    : 'var(--text-primary)'
+                            }}
                         >
                             {tab}
                         </button>
@@ -153,7 +191,12 @@ export default function NotificationsPage() {
                     {/* Hoje Section */}
                     {todayNotifications.length > 0 && (
                         <div>
-                            <h2 className="text-[20px] font-bold text-[#1E293B] mb-6">Hoje</h2>
+                            <h2
+                                className="text-[20px] font-bold mb-6"
+                                style={{ color: 'var(--text-primary)' }}
+                            >
+                                Hoje
+                            </h2>
                             <div className="space-y-8">
                                 {todayNotifications.map(renderNotificationItem)}
                             </div>
@@ -163,7 +206,12 @@ export default function NotificationsPage() {
                     {/* Ontem Section */}
                     {yesterdayNotifications.length > 0 && (
                         <div>
-                            <h2 className="text-[20px] font-bold text-[#1E293B] mb-6">Ontem</h2>
+                            <h2
+                                className="text-[20px] font-bold mb-6"
+                                style={{ color: 'var(--text-primary)' }}
+                            >
+                                Ontem
+                            </h2>
                             <div className="space-y-8">
                                 {yesterdayNotifications.map(renderNotificationItem)}
                             </div>

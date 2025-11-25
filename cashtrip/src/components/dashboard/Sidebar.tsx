@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { FaTimes, FaHistory, FaFileAlt, FaCog, FaQuestionCircle, FaSignOutAlt, FaClock } from 'react-icons/fa'
 
 interface SidebarProps {
@@ -9,11 +10,11 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const menuItems = [
-        { icon: FaClock, label: 'Próximas Ações' },
-        { icon: FaHistory, label: 'Histórico' },
-        { icon: FaFileAlt, label: 'Rascunhos' },
-        { icon: FaCog, label: 'Configurações' },
-        { icon: FaQuestionCircle, label: 'Ajuda e docs' },
+        { icon: FaClock, label: 'Próximas Ações', href: '/next-actions' },
+        { icon: FaHistory, label: 'Histórico', href: '/history' },
+        { icon: FaFileAlt, label: 'Rascunhos', href: '#' },
+        { icon: FaCog, label: 'Configurações', href: '#' },
+        { icon: FaQuestionCircle, label: 'Ajuda e docs', href: '#' },
     ]
 
     return (
@@ -39,13 +40,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                     <div className="flex flex-col gap-6 flex-1">
                         {menuItems.map((item, index) => (
-                            <button
+                            <Link
                                 key={index}
+                                href={item.href}
+                                onClick={onClose}
                                 className="flex items-center gap-4 text-lg font-bold hover:bg-white/10 p-2 rounded-lg transition-colors"
                             >
                                 <item.icon size={20} />
                                 <span>{item.label}</span>
-                            </button>
+                            </Link>
                         ))}
                     </div>
 
