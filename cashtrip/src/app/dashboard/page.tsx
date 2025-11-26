@@ -106,64 +106,86 @@ export default function DashboardPage() {
       <div className="px-4 space-y-6 max-w-md mx-auto pb-24">
 
         {/* Carrossel de Métricas */}
-        {/* Carrossel de Métricas */}
         {metrics && (
           <div className="relative w-full max-w-[343px] mx-auto">
-            {currentMetricIndex > 0 && (
-              <button
-                onClick={prevMetric}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-colors"
-              >
-                <FaChevronLeft size={20} />
-              </button>
-            )}
-
-            <div className="overflow-hidden rounded-[20px]">
+            <div className="overflow-visible pl-4">
               <div
-                className="flex transition-transform duration-300 ease-in-out gap-[20px]"
-                style={{ transform: `translateX(calc(-${currentMetricIndex} * (100% + 20px)))` }}
+                className="flex transition-transform duration-300 ease-in-out gap-4"
+                style={{ transform: `translateX(-${currentMetricIndex * 85}%)` }}
               >
                 {/* Gasto Total */}
-                <div className="min-w-full rounded-[20px] p-6 flex flex-col items-center justify-center text-center min-h-[180px]" style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-secondary)' }}>Gasto total</h3>
-                  <span className="font-bold text-3xl mb-2" style={{ color: 'var(--text-primary)' }}>
-                    {formatCurrency(metrics.totalSpent)}
-                  </span>
-                  <span className="text-[#10B981] font-bold text-sm">
-                    +{metrics.totalSpentChange}%
-                  </span>
+                <div
+                  className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                  style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
+                >
+                  <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
+                    Gasto total
+                  </h3>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-bold text-[28px]" style={{ color: 'var(--text-primary)' }}>
+                      {formatCurrency(metrics.totalSpent)}
+                    </span>
+                    <span className="text-[#10B981] font-bold text-[12px]">
+                      +{metrics.totalSpentChange}%
+                    </span>
+                  </div>
                 </div>
 
                 {/* Média por Viagem */}
-                <div className="min-w-full rounded-[20px] p-6 flex flex-col items-center justify-center text-center min-h-[180px]" style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-secondary)' }}>Média por Viagem</h3>
-                  <span className="font-bold text-3xl mb-2" style={{ color: 'var(--text-primary)' }}>
-                    {formatCurrency(metrics.averagePerTrip)}
-                  </span>
-                  <span className="text-[#10B981] font-bold text-sm">
-                    +{metrics.averagePerTripChange}%
-                  </span>
+                <div
+                  className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                  style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
+                >
+                  <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
+                    Média por viagem
+                  </h3>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-bold text-[28px]" style={{ color: 'var(--text-primary)' }}>
+                      {formatCurrency(metrics.averagePerTrip)}
+                    </span>
+                    <span className="text-[#10B981] font-bold text-[12px]">
+                      +{metrics.averagePerTripChange}%
+                    </span>
+                  </div>
                 </div>
 
                 {/* Viagens Realizadas */}
-                <div className="min-w-full rounded-[20px] p-6 flex flex-col items-center justify-center text-center min-h-[180px]" style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-secondary)' }}>Viagens Realizadas</h3>
-                  <span className="font-bold text-3xl mb-2" style={{ color: 'var(--text-primary)' }}>
-                    {metrics.tripsCount}
-                  </span>
-                  <span className="text-[#10B981] font-bold text-sm">
-                    +{metrics.tripsCountChange}%
-                  </span>
+                <div
+                  className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                  style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
+                >
+                  <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
+                    Viagens realizadas
+                  </h3>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-bold text-[28px]" style={{ color: 'var(--text-primary)' }}>
+                      {metrics.tripsCount} viagens
+                    </span>
+                    <span className="text-[#10B981] font-bold text-[12px]">
+                      +{metrics.tripsCountChange}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Botão Anterior - Aparece apenas se não estiver no primeiro card */}
+            {currentMetricIndex > 0 && (
+              <button
+                onClick={prevMetric}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-all"
+              >
+                <FaChevronLeft size={16} />
+              </button>
+            )}
+
+            {/* Botão Próximo - Aparece apenas se não estiver no último card */}
             {currentMetricIndex < 2 && (
               <button
                 onClick={nextMetric}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#FF5F38] rounded-full flex items-center justify-center text-white shadow-md hover:bg-[#E6502C] transition-all"
               >
-                <FaChevronRight size={20} />
+                <FaChevronRight size={16} />
               </button>
             )}
           </div>

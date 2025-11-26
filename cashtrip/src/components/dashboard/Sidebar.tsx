@@ -12,7 +12,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const menuItems = [
         { icon: FaClock, label: 'Próximas Ações', href: '/next-actions' },
         { icon: FaHistory, label: 'Histórico', href: '/history' },
-        { icon: FaFileAlt, label: 'Rascunhos', href: '#' },
+        { icon: FaFileAlt, label: 'Rascunhos', href: '/rascunhos' },
         { icon: FaCog, label: 'Configurações', href: '#' },
         { icon: FaQuestionCircle, label: 'Ajuda e docs', href: '#' },
     ]
