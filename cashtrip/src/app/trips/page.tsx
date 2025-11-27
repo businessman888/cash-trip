@@ -5,7 +5,7 @@ import { TripsHeader } from '@/components/trips/TripsHeader'
 import { ActiveTripCard } from '@/components/trips/ActiveTripCard'
 import { RecommendedTripCard } from '@/components/trips/RecommendedTripCard'
 import { TrendingPlaceCard } from '@/components/trips/TrendingPlaceCard'
-import { BottomNav } from '@/components/dashboard/BottomNav'
+
 import { getPhotos, getRandomPhoto } from '@/services/unsplash'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
@@ -130,7 +130,7 @@ export default function TripsPage() {
                     />
                 </section>
             </div>
-            <BottomNav />
+
         </div>
     )
 }

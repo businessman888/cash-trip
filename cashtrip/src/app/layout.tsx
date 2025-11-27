@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto_Condensed, Inria_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { PageWrapper } from "@/components/navigation/PageWrapper";
 
 const robotoCondensed = Roboto_Condensed({
   variable: "--font-roboto-condensed",
@@ -32,7 +33,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          {children}
+          <PageWrapper>
+            {children}
+          </PageWrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -6,7 +6,7 @@ import { ProfileInfo } from '@/components/profile/ProfileInfo'
 import { PastTripCard } from '@/components/profile/PastTripCard'
 import { ExpenseSummaryCard } from '@/components/profile/ExpenseSummaryCard'
 import { SettingsList } from '@/components/profile/SettingsList'
-import { BottomNav } from '@/components/dashboard/BottomNav'
+
 import { getRandomPhoto } from '@/services/unsplash'
 
 export default function ProfilePage() {
@@ -44,7 +44,7 @@ export default function ProfilePage() {
                 <ExpenseSummaryCard />
                 <SettingsList />
             </div>
-            <BottomNav />
+
         </div>
     )
 }

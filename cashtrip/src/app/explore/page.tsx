@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ExploreHeader } from '@/components/explore/ExploreHeader'
 import { PlaceCard } from '@/components/explore/PlaceCard'
 import { TrendingListItem } from '@/components/explore/TrendingListItem'
-import { BottomNav } from '@/components/dashboard/BottomNav'
+
 import { getPhotos } from '@/services/unsplash'
 import { FiTrendingUp, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
@@ -129,7 +129,7 @@ export default function ExplorePage() {
                     </div>
                 </section>
             </div>
-            <BottomNav />
+
         </div>
     )
 }

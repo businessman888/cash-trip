@@ -13,7 +13,7 @@ export function BottomNav() {
     const isActive = (path: string) => pathname === path
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center pb-0 pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-[100] flex justify-center pb-4 pointer-events-none">
             <div
                 className={`pointer-events-auto rounded-tl-[30px] rounded-tr-[30px] pt-[6px] pr-[19px] pb-[6px] pl-[19px] gap-[10px] flex items-center justify-between w-full max-w-[320px] ${theme === 'light'
                     ? 'border-t border-r border-l border-[#E2E8F0] shadow-[0px_-2px_10px_rgba(0,0,0,0.1)]'
