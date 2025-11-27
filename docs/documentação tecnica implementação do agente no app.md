@@ -104,61 +104,135 @@ capturado do Modal de Orçamento
 
 3. Modelagem de Dados: O Perfil do Viajante (Quiz Mapping) 
 
-Este JSON é derivado das 25 perguntas do Quiz e deve ser injetado no System 
+Este JSON é derivado das 25 perguntas do Quiz e deve ser injetado no System Todas as respostas do Quiz devem ser convertidas em um objeto JSON estruturado. Este objeto será injetado no system_prompt de TODA interação com o agente.
 
 Prompt. 
 
-3.1 Schema JSON: Perfil de Lazer (leisure_profile) 
+{
 
-JSON 
+"user_type": "leisure",
+
+"basic_info": {
+
+"gender": "string (P1)",
+
+"location": { "city": "string", "state": "string" }, // P2
+
+"age": "integer (calculado de P3)",
+
+"monthly_income_range": "string (P4)"
+
+},
+
+"psychographics": {
+
+"travel_styles": ["string", "string"], // P5 (Max 2)
+
+"pace": "Agitado | Equilibrado | Relax", // P6
+
+"day_vibe": ["string", "string", "string"], // P7 (Max 3)
+
+"night_vibe": ["string", "string"], // P8 (Max 2)
+
+"social_mode": "string (P9)"
+
+},
+
+"accommodation_prefs": {
+
+"types": ["string", "string"], // P10
+
+"location_priority": ["string", "string"], // P11
+
+"amenities_required": ["string", "string", ...], // P12
+
+"budget_tier": "derived_from_income_and_style" // Lógica interna
+
+},
+
+"gastronomy": {
+
+"cuisines": ["string", "string", "string"], // P13
+
+"dietary_restrictions": ["string"], // P14
+
+"dining_style": "string (P15)"
+
+},
+
+"logistics": {
+
+"has_vehicle": "boolean (P16)",
+
+"local_transport_pref": "string (P17)",
+
+"flight_class": "string (P18)",
+
+"connection_tolerance": "string (P19)"
+
+},
+
+"lifestyle": {
+
+"gym_routine": "string (P20)",
+
+"music_genres": ["string", "string", "string"], // P21
+
+"attraction_types": ["string", "string", "string"], // P22
+
+"must_haves": "string (Free Text P23)",
+
+"splurge_willingness": "string (P24)",
+
+"pets": "string (P25)"
+
+}
+
+}
+
+2.2 Schema JSON: Perfil Corporativo (business_profile)
+
+JSON
+
+
 
 {
 
-"user_type": "leisure", "basic_info": { 
+"user_type": "business",
 
-"gender": "string (P 1)", 
+"basic_info": {
 
-"location_origin": { "city": "string", "state": "string" }, // P2 
+"gender": "string (P1)",
 
-"age": "integer (P3)" 
+"location": { "city": "string", "state": "string" }, // P2
 
-}, 
+"age": "integer (P3)",
 
-"psychographics": { 
+"income": "string (P4)"
 
-"travel_styles": ["string", "string"], // P5 (Max 2) 
+},
 
-"pace": "Agitado | Equilibrado | Relax", // P6 
+"trip_logistics": {
 
-"day_vibe": ["st ring"], // P7 
+"frequency": "string (P5)",
 
-"night_vibe": ["string"] // P8 
+"duration_avg": "string (P6)",
 
-}, 
+"daily_budget_hotel": "string (P7)", // Range em R$
 
-"accommodation_prefs": { 
+"flight_priorities": ["string", "string"], // P8 (Max 2)
 
-"types": ["string"], // P10 
+"transport_pref": "string (P10)"
 
-"amenities_required": ["string"], // P12 
+},
 
-"budget_tier": "derived_from_income" // Lógica interna 
+"work_needs": {
 
-}, 
+"intensity": "string (P9)",
 
-"gastronomy": { 
+"dining_needs": "string (P11)",
 
-"cuisines": ["string"], // P13 
-
-"restrictions": ["string"] // P14 
-
-}, 
-
-"logistics": { 
-
-"flight_class": "string (P18)", 
-
-"connections": "string (P19)" 
+"after_hours_pref": "string (P12)"
 
 }
 
