@@ -8,7 +8,17 @@ interface SidebarProps {
     onClose: () => void
 }
 
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
+
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+        return () => setMounted(false)
+    }, [])
+
     const menuItems = [
         { icon: FaClock, label: 'Próximas Ações', href: '/next-actions' },
         { icon: FaHistory, label: 'Histórico', href: '/history' },
@@ -17,18 +27,20 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { icon: FaQuestionCircle, label: 'Ajuda e docs', href: '#' },
     ]
 
-    return (
+    if (!mounted) return null
+
+    return createPortal(
         <>
             {/* Overlay */}
             <div
-                className={`fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                className={`fixed inset-0 bg-black/50 z-[110] transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={onClose}
             />
 
             {/* Sidebar */}
             <div
-                className={`fixed top-0 right-0 h-full w-[280px] bg-[#E6502C] z-[70] transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-full w-[280px] bg-[#E6502C] z-[120] transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="p-6 flex flex-col h-full text-white font-inria-sans">
@@ -60,6 +72,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </div>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     )
 }

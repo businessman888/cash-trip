@@ -1,15 +1,18 @@
 'use client'
 
 import { MonthlyExpense } from '@/hooks/useDashboardData'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface ExpenseChartProps {
   data: MonthlyExpense[]
 }
 
 export function ExpenseChart({ data }: ExpenseChartProps) {
+  const { theme } = useTheme()
+
   if (data.length === 0) {
     return (
-      <div className="border border-[var(--border-line)] rounded-[10px] p-6">
+      <div className="rounded-[10px] p-6" style={{ background: theme === 'light' ? '#F8F9FA' : '#313F56' }}>
         <div className="flex items-center justify-center h-48 text-[var(--text-primary)]">
           Nenhum dado disponível
         </div>
@@ -21,8 +24,8 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
   const barHeight = 200 // altura máxima do gráfico em pixels
 
   return (
-    <div className="border border-[var(--border-line)] rounded-[10px] p-6">
-      <h3 className="font-inria-sans font-bold text-lg text-[var(--text-primary)] mb-6">
+    <div className="rounded-[10px] p-6" style={{ background: theme === 'light' ? '#F8F9FA' : '#313F56' }}>
+      <h3 className="font-inria-sans font-bold text-[16px] text-[var(--text-primary)] mb-8">
         Evolução dos gastos
       </h3>
       <div className="flex items-end justify-between gap-2 h-[200px]">

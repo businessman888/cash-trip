@@ -13,11 +13,8 @@ export function CategoryChart({ data }: CategoryChartProps) {
   if (data.length === 0) {
     return (
       <div
-        className={`rounded-[20px] p-6 h-full ${theme === 'light'
-          ? 'border border-[#E2E8F0] bg-white'
-          : 'border border-white'
-          }`}
-        style={{ background: theme === 'dark' ? '#1E293B' : undefined }}
+        className="rounded-[20px] p-6 h-full"
+        style={{ background: theme === 'light' ? '#F8F9FA' : '#313F56' }}
       >
         <h3 className={`font-bold text-lg mb-6 ${theme === 'light' ? 'text-[#64748B]' : 'text-white'}`}>
           Despesas por Categoria
@@ -43,11 +40,8 @@ export function CategoryChart({ data }: CategoryChartProps) {
 
   return (
     <div
-      className={`rounded-[20px] p-6 h-full ${theme === 'light'
-          ? 'border border-[#E2E8F0] bg-white'
-          : 'border border-white'
-        }`}
-      style={{ background: theme === 'dark' ? '#1E293B' : undefined }}
+      className="rounded-[20px] p-6 h-full"
+      style={{ background: theme === 'light' ? '#F8F9FA' : '#313F56' }}
     >
       <h3 className={`font-bold text-lg mb-6 ${theme === 'light' ? 'text-[#64748B]' : 'text-white'}`}>
         Despesas por Categoria

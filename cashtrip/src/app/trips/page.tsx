@@ -5,6 +5,7 @@ import { TripsHeader } from '@/components/trips/TripsHeader'
 import { ActiveTripCard } from '@/components/trips/ActiveTripCard'
 import { RecommendedTripCard } from '@/components/trips/RecommendedTripCard'
 import { TrendingPlaceCard } from '@/components/trips/TrendingPlaceCard'
+import { FloatingActionButton } from '@/components/trips/FloatingActionButton'
 
 import { getPhotos, getRandomPhoto } from '@/services/unsplash'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
@@ -45,11 +46,11 @@ export default function TripsPage() {
 
     return (
         <div className="min-h-screen bg-[var(--surface-main)] pb-24">
-            <div className="p-6">
+            <div className="px-4 py-6">
                 <TripsHeader />
 
-                <section className="mb-8">
-                    <h2 className="font-inria-sans font-bold text-[20px] text-[#64748B] dark:text-[#94A3B8] mb-4">
+                <section className="mb-6">
+                    <h2 className="font-inria-sans font-bold text-[18px] text-[var(--text-primary)] mb-4">
                         Viagens Ativas
                     </h2>
                     <ActiveTripCard
@@ -69,9 +70,9 @@ export default function TripsPage() {
                     />
                 </section>
 
-                <section className="mb-8">
+                <section className="mb-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-inria-sans font-bold text-[20px] text-[#64748B] dark:text-[#94A3B8]">
+                        <h2 className="font-inria-sans font-bold text-[18px] text-[var(--text-primary)]">
                             Viagens Recomendadas
                         </h2>
                         <div className="flex gap-2">
@@ -91,7 +92,7 @@ export default function TripsPage() {
                     </div>
                     <div
                         ref={recommendedScrollRef}
-                        className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide"
+                        className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory"
                     >
                         <RecommendedTripCard
                             destination="Patagônia"
@@ -113,7 +114,7 @@ export default function TripsPage() {
                 </section>
 
                 <section>
-                    <h2 className="font-inria-sans font-bold text-[20px] text-[#64748B] dark:text-[#94A3B8] mb-4">
+                    <h2 className="font-inria-sans font-bold text-[18px] text-[var(--text-primary)] mb-4">
                         Lugares em Alta
                     </h2>
                     <TrendingPlaceCard
@@ -131,6 +132,7 @@ export default function TripsPage() {
                 </section>
             </div>
 
+            <FloatingActionButton />
         </div>
     )
 }

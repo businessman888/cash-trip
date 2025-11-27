@@ -40,7 +40,7 @@ export default function DashboardPage() {
 
       {/* Header Pill */}
       <div className="px-4 pt-6 mb-6">
-        <div className="rounded-[100px] px-4 py-4 flex items-center justify-between shadow-sm h-[111px] w-full max-w-[343px] mx-auto" style={{ background: 'var(--surface-header)' }}>
+        <div className="rounded-[100px] px-4 py-4 flex items-center justify-between h-[111px] w-full max-w-[343px] mx-auto">
           <div className="flex items-center">
             <Image
               src="/logo.svg"
@@ -51,7 +51,7 @@ export default function DashboardPage() {
               className="w-[106px] h-[43px]"
             />
           </div>
-          <div className="flex items-center gap-[15px]">
+          <div className="flex items-center gap-[12px]">
             <button onClick={toggleTheme} className="hover:opacity-80 transition-opacity">
               <Image
                 src={theme === 'dark' ? "/icons/icon dark mode white.svg" : "/icons/icon dark mode.svg"}
@@ -115,7 +115,7 @@ export default function DashboardPage() {
                 >
                   {/* Gasto Total */}
                   <div
-                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[185px]"
                     style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
                   >
                     <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
@@ -133,7 +133,7 @@ export default function DashboardPage() {
 
                   {/* Média por Viagem */}
                   <div
-                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[185px]"
                     style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
                   >
                     <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
@@ -151,7 +151,7 @@ export default function DashboardPage() {
 
                   {/* Viagens Realizadas */}
                   <div
-                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[160px]"
+                    className="flex-shrink-0 w-[85%] rounded-[20px] p-6 flex flex-col justify-center min-h-[185px]"
                     style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}
                   >
                     <h3 className="font-bold text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>
@@ -192,42 +192,22 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Card viagem mais cara - Refined to match Figma layout */}
+        {/* Card viagem mais cara - Simplified to match Figma layout */}
         {metrics?.mostExpensiveTrip && (
-          <div className="rounded-[20px] p-6 relative overflow-hidden" style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}>
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="font-bold text-[16px] mb-1" style={{ color: 'var(--text-secondary)' }}>
-                  Viagem mais cara
-                </h3>
-                <span className="font-bold text-[20px] text-[#FF5F38]">
-                  {metrics.mostExpensiveTrip.destination}
-                </span>
-              </div>
-              <div className="bg-[#FF5F38]/10 p-2 rounded-full">
-                <FaPlane className="text-[#FF5F38]" size={20} />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="font-bold">
-                  {new Date(metrics.mostExpensiveTrip.start_date).toLocaleDateString('pt-BR')}
-                </span>
-                <span>-</span>
-                <span className="font-bold">
-                  {new Date(metrics.mostExpensiveTrip.end_date).toLocaleDateString('pt-BR')}
-                </span>
-              </div>
-
-              <div className="flex items-end justify-between mt-2">
-                <span className="font-bold text-[24px]" style={{ color: 'var(--text-primary)' }}>
-                  {formatCurrency(Number(metrics.mostExpensiveTrip.total_cost))}
-                </span>
-                <span className="font-bold text-[14px] text-[#E33629] bg-[#FFE4E1] px-2 py-1 rounded-md">
-                  -2%
-                </span>
-              </div>
+          <div className="rounded-[20px] p-5 relative overflow-hidden" style={{ background: 'var(--surface-card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--color-border)' }}>
+            <h3 className="font-bold text-[14px] mb-2" style={{ color: 'var(--text-secondary)' }}>
+              Viagem mais cara
+            </h3>
+            <span className="font-bold text-[18px] text-[#FF5F38] block mb-3">
+              {metrics.mostExpensiveTrip.destination}
+            </span>
+            <div className="flex items-end justify-between">
+              <span className="font-bold text-[20px]" style={{ color: 'var(--text-primary)' }}>
+                {formatCurrency(Number(metrics.mostExpensiveTrip.total_cost))}
+              </span>
+              <span className="font-bold text-[14px] text-[#E33629] bg-[#FFE4E1] px-2 py-1 rounded-md">
+                -2%
+              </span>
             </div>
           </div>
         )}

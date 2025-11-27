@@ -30,32 +30,38 @@ export function RecommendedTripCard({
     const progressBarBg = theme === 'light' ? '#F1F5F9' : '#1E293B'
 
     return (
-        <div className="min-w-[280px] bg-[var(--surface-card)] rounded-[20px] p-4 shadow-sm border border-[var(--border-line)] dark:border-transparent snap-center">
-            <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-4">
+        <div className="min-w-[300px] bg-[var(--surface-card)] rounded-[24px] p-5 shadow-sm border border-[var(--border-line)] dark:border-transparent snap-center">
+            <div className="relative w-full h-[180px] rounded-[20px] overflow-hidden mb-5">
                 <Image
                     src={imageUrl}
                     alt={`${destination}, ${country}`}
                     fill
-                    className="object-cover"
+                    className="object-cover hover:scale-105 transition-transform duration-500"
                 />
-            </div>
-
-            <h3 className="font-inria-sans font-bold text-[18px] text-[var(--text-primary)] mb-1">
-                {destination}, {country}
-            </h3>
-
-            <div className="flex items-center gap-2 mb-4">
-                <span className="text-[#94A3B8]">🏔️</span>
-                <span className="font-inria-sans font-bold text-[13px] text-[#94A3B8]">{category}</span>
-            </div>
-
-            <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-[11px] font-inria-sans text-[#64748B] dark:text-[#94A3B8]">Compatibilidade</span>
-                    <span className="text-[11px] font-inria-sans font-bold text-[#FF5F38]">{compatibility}%</span>
+                <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
+                    <span className="text-[12px]">🏔️</span>
+                    <span className="font-inria-sans font-bold text-[12px] text-[#1E293B] dark:text-white">{category}</span>
                 </div>
+            </div>
+
+            <div className="flex justify-between items-start mb-2">
+                <div>
+                    <h3 className="font-inria-sans font-bold text-[20px] text-[var(--text-primary)] leading-tight">
+                        {destination}
+                    </h3>
+                    <span className="font-inria-sans text-[14px] text-[#64748B] dark:text-[#94A3B8]">
+                        {country}
+                    </span>
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="font-inria-sans font-bold text-[18px] text-[#FF5F38]">{compatibility}%</span>
+                    <span className="text-[10px] font-inria-sans text-[#64748B] dark:text-[#94A3B8]">Compatível</span>
+                </div>
+            </div>
+
+            <div className="mb-5">
                 <div
-                    className="w-full h-2 rounded-full overflow-hidden"
+                    className="w-full h-[6px] rounded-full overflow-hidden"
                     style={{ backgroundColor: progressBarBg }}
                 >
                     <div
@@ -65,33 +71,27 @@ export function RecommendedTripCard({
                 </div>
             </div>
 
-            <p className="font-inria-sans font-bold text-[13px] text-[#64748B] dark:text-[#94A3B8] mb-4 leading-tight">
+            <p className="font-inria-sans text-[13px] text-[#64748B] dark:text-[#94A3B8] mb-5 leading-relaxed line-clamp-2">
                 {description}
             </p>
 
-            <div
-                className="rounded-[12px] p-3 flex items-center justify-between mb-4"
-                style={{ backgroundColor: mapButtonBg }}
-            >
-                <div className="flex flex-col">
-                    <span
-                        className="font-inria-sans font-bold text-[13px]"
-                        style={{ color: mapButtonTextColor }}
-                    >
-                        Ver no mapa
-                    </span>
-                    <span className="font-inria-sans text-[10px] text-[#94A3B8]">Clique para Explorar</span>
-                </div>
-                <div className="w-[36px] h-[36px] bg-[#FF896F]/20 rounded-[8px] flex items-center justify-center">
-                    <FiMap className="text-[#FF5F38] text-lg" />
-                </div>
-            </div>
-
-            <Link href={`/destination/${destination.toLowerCase()}`} className="w-full block">
-                <button className="w-full h-[40px] bg-[#FF896F] text-white rounded-[20px] font-inria-sans font-bold text-[13px] shadow-lg shadow-[#FF896F]/20">
-                    Conhecer mais
+            <div className="flex gap-3">
+                <button
+                    className="w-[44px] h-[44px] rounded-[14px] flex items-center justify-center flex-shrink-0 transition-colors"
+                    style={{ backgroundColor: mapButtonBg }}
+                >
+                    <FiMap className="text-[#FF5F38] text-xl" />
                 </button>
-            </Link>
+
+                <Link href={`/destination/${destination.toLowerCase()}`} className="flex-1">
+                    <button className="w-full h-[44px] bg-[#FF5F38] text-white rounded-[14px] font-inria-sans font-bold text-[14px] shadow-lg shadow-[#FF5F38]/20 hover:bg-[#E6502C] transition-colors flex items-center justify-center gap-2">
+                        Conhecer mais
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 12L10 8L6 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </Link>
+            </div>
         </div>
     )
 }
