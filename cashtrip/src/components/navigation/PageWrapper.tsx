@@ -15,8 +15,9 @@ export function PageWrapper({ children }: PageWrapperProps) {
     const pathname = usePathname()
 
     // Verificar se a rota atual é swipeable ou se é uma sub-rota de profile
-    const isSwipeable = SWIPEABLE_ROUTES.some(route => pathname.startsWith(route))
-    const showBottomNav = SWIPEABLE_ROUTES.some(route => pathname.startsWith(route))
+    // Excluir explicitamente /trips/new pois é uma página standalone
+    const isSwipeable = SWIPEABLE_ROUTES.some(route => pathname.startsWith(route)) && pathname !== '/trips/new'
+    const showBottomNav = SWIPEABLE_ROUTES.some(route => pathname.startsWith(route)) && pathname !== '/trips/new'
 
     if (isSwipeable) {
         return (

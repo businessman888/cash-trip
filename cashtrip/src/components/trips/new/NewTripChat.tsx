@@ -1,5 +1,5 @@
 'use client'
-'use client'
+
 
 import { useState, useEffect, useRef } from 'react'
 import { NewTripChatBubble } from '@/components/trips/new/NewTripChatBubble'
