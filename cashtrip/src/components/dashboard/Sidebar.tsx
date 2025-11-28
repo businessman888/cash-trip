@@ -23,7 +23,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         { icon: FaClock, label: 'Próximas Ações', href: '/next-actions' },
         { icon: FaHistory, label: 'Histórico', href: '/history' },
         { icon: FaFileAlt, label: 'Rascunhos', href: '/rascunhos' },
-        { icon: FaCog, label: 'Configurações', href: '#' },
+        { icon: FaCog, label: 'Configurações', href: '/settings' },
         { icon: FaQuestionCircle, label: 'Ajuda e docs', href: '#' },
     ]
 

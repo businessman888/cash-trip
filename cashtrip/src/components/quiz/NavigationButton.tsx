@@ -1,3 +1,8 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
+
 interface NavigationButtonProps {
   onClick: () => void;
   disabled?: boolean;
@@ -13,14 +18,20 @@ export function NavigationButton({
   className = "",
   isFixed = true
 }: NavigationButtonProps) {
+  const [mounted, setMounted] = useState(false)
   const isWhiteBackground = variant === 'white-background';
 
-  return (
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
+  const buttonElement = (
     <button
       onClick={onClick}
       disabled={disabled}
       className={`
-        ${isFixed ? 'fixed bottom-4 right-4' : 'relative mt-8 self-end mr-4'}
+        ${isFixed ? 'fixed bottom-4 right-4 z-50' : 'relative mt-8 self-end mr-4'}
         w-20 h-20 rounded-full
         flex items-center justify-center
         transition-all shadow-[2px_2px_4px_0px_rgba(0,0,0,0.25)]
@@ -50,4 +61,11 @@ export function NavigationButton({
       </svg>
     </button>
   );
+
+  // Use Portal for fixed buttons to ensure they're always on top
+  if (isFixed && mounted) {
+    return createPortal(buttonElement, document.body)
+  }
+
+  return buttonElement
 }

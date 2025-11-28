@@ -9,7 +9,7 @@ const settingsItems = [
     { icon: FiUser, label: 'Configurações da conta', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/profile/account' },
     { icon: FiHelpCircle, label: 'Ajuda', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/profile/help' },
     { icon: FiShield, label: 'Privacidade', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/profile/privacy' },
-    { icon: FiUsers, label: 'Convidar um amigo', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/profile/invite' },
+    { icon: FiUsers, label: 'Convidar um amigo', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/invite' },
     { icon: FiFileText, label: 'Legal', color: 'bg-[#FFD7D7] text-[#E6502C]', href: '/profile/legal' },
 ]
 
