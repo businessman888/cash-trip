@@ -13,6 +13,8 @@ interface PlaceDetails {
     address: string;
 }
 
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
+
 export const useGoogleAutocomplete = () => {
     const [predictions, setPredictions] = useState<PlacePrediction[]>([]);
     const [autocompleteService, setAutocompleteService] =
@@ -22,29 +24,27 @@ export const useGoogleAutocomplete = () => {
     const sessionToken =
         useRef<google.maps.places.AutocompleteSessionToken | null>(null);
 
-    // 1. Initialize API using new functional API
+    // 1. Initialize API using @googlemaps/js-api-loader v2 functional API
     useEffect(() => {
         const initGoogleMaps = async () => {
             try {
-                // Load the Google Maps script
-                const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-                script.async = true;
-                script.defer = true;
+                // Set API options
+                setOptions({
+                    key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+                    v: "weekly",
+                });
 
-                script.onload = () => {
-                    // Initialize services after script loads
-                    if (window.google && window.google.maps) {
-                        setAutocompleteService(new google.maps.places.AutocompleteService());
-                        sessionToken.current = new google.maps.places.AutocompleteSessionToken();
+                // Import the places library
+                await importLibrary("places");
 
-                        // PlacesService needs an HTML element (even if dummy) or map.
-                        const virtualDiv = document.createElement('div');
-                        setPlacesService(new google.maps.places.PlacesService(virtualDiv));
-                    }
-                };
+                if (window.google && window.google.maps && window.google.maps.places) {
+                    setAutocompleteService(new google.maps.places.AutocompleteService());
+                    sessionToken.current = new google.maps.places.AutocompleteSessionToken();
 
-                document.head.appendChild(script);
+                    // PlacesService needs an HTML element (even if dummy) or map.
+                    const virtualDiv = document.createElement('div');
+                    setPlacesService(new google.maps.places.PlacesService(virtualDiv));
+                }
             } catch (error) {
                 console.error('Error loading Google Maps:', error);
             }

@@ -7,13 +7,36 @@ import { NewTripChatInput } from '@/components/trips/new/NewTripChatInput'
 import { LocationModal } from '@/components/trips/new/LocationModal'
 import { DateSelectionModal } from '@/components/trips/new/DateSelectionModal'
 import { BudgetTravelersModal } from '@/components/trips/new/BudgetTravelersModal'
-import { FiMapPin, FiCalendar, FiDollarSign } from 'react-icons/fi'
+import { SelectionButton } from '@/components/trips/new/SelectionButton'
+import { ItineraryModal } from '@/components/trips/new/ItineraryModal'
+import { FiMapPin, FiCalendar, FiDollarSign, FiCheckCircle } from 'react-icons/fi'
 
 interface Message {
     id: string
     sender: 'aurora' | 'user'
     text: string
-    type?: 'text' | 'action-location' | 'action-date' | 'action-budget' | 'action-view-itinerary' | 'action-approve-logistics'
+    type?: 'text' | 'action-location' | 'action-date' | 'action-budget' |
+    'action-select-flight' | 'action-select-hotel' |
+    'action-create-itinerary' | 'action-view-itinerary'
+}
+
+interface FlightOption {
+    id: number
+    airline: string
+    departure: string
+    arrival: string
+    duration: string
+    price: number
+    details: string
+}
+
+interface HotelOption {
+    id: number
+    name: string
+    rating: number
+    location: string
+    price: number
+    details: string
 }
 
 interface NewTripChatProps {
@@ -81,6 +104,15 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
         budget: '',
         travelers: 0
     })
+
+    // New state for flight/hotel selection and itinerary
+    const [flightOptions, setFlightOptions] = useState<FlightOption[]>([])
+    const [selectedFlight, setSelectedFlight] = useState<number | null>(null)
+    const [hotelOptions, setHotelOptions] = useState<HotelOption[]>([])
+    const [selectedHotel, setSelectedHotel] = useState<number | null>(null)
+    const [generatedItinerary, setGeneratedItinerary] = useState<any>(null)
+    const [isItineraryModalOpen, setIsItineraryModalOpen] = useState(false)
+    const [showCreateItineraryButton, setShowCreateItineraryButton] = useState(false)
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -251,6 +283,174 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleFlightSelect = async (optionId: number) => {
+        setSelectedFlight(optionId)
+        const selectedFlightData = flightOptions.find(f => f.id === optionId)
+
+        if (selectedFlightData) {
+            const userMessage = `Selecionei a opção ${optionId} de voo: ${selectedFlightData.airline} - ${selectedFlightData.details}`
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    sender: 'user',
+                    text: userMessage,
+                    type: 'text'
+                }
+            ])
+
+            // Send to agent to get hotel options
+            await handleSendMessage(userMessage)
+        }
+    }
+
+    const handleHotelSelect = async (optionId: number) => {
+        setSelectedHotel(optionId)
+        const selectedHotelData = hotelOptions.find(h => h.id === optionId)
+
+        if (selectedHotelData) {
+            const userMessage = `Selecionei a opção ${optionId} de hotel: ${selectedHotelData.name} - ${selectedHotelData.details}`
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    sender: 'user',
+                    text: userMessage,
+                    type: 'text'
+                }
+            ])
+
+            // Show create itinerary button
+            setShowCreateItineraryButton(true)
+
+            // Add agent confirmation message
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    sender: 'aurora',
+                    text: 'Perfeito! Tenho todas as informações necessárias. Quando quiser, posso criar um roteiro detalhado para sua viagem.',
+                    type: 'action-create-itinerary'
+                }
+            ])
+        }
+    }
+
+    const handleCreateItinerary = async () => {
+        setShowCreateItineraryButton(false)
+        setMessages(prev => [
+            ...prev,
+            {
+                id: Date.now().toString(),
+                sender: 'user',
+                text: 'Criar roteiro',
+                type: 'text'
+            }
+        ])
+
+        setIsLoading(true)
+
+        // Mock itinerary generation for testing
+        setTimeout(() => {
+            const mockItinerary = {
+                trip_title: `Viagem para ${tripDetails.location}`,
+                destination: tripDetails.location,
+                start_date: tripDetails.startDate,
+                end_date: tripDetails.endDate,
+                travelers: tripDetails.travelers,
+                budget: tripDetails.budget,
+                days: [
+                    {
+                        date: tripDetails.startDate,
+                        activities: [
+                            {
+                                time: '09:00',
+                                title: 'Check-in no Hotel',
+                                location: selectedHotel ? hotelOptions.find(h => h.id === selectedHotel)?.name || 'Hotel' : 'Hotel',
+                                type: 'morning' as const,
+                                cost: 0
+                            },
+                            {
+                                time: '12:30',
+                                title: 'Almoço no Restaurante Local',
+                                location: 'Centro Histórico',
+                                type: 'lunch' as const,
+                                cost: 80
+                            },
+                            {
+                                time: '15:00',
+                                title: 'Tour pela Cidade',
+                                location: 'Pontos Turísticos',
+                                type: 'afternoon' as const,
+                                cost: 120
+                            },
+                            {
+                                time: '19:30',
+                                title: 'Jantar com Vista',
+                                location: 'Restaurante Panorâmico',
+                                type: 'dinner' as const,
+                                cost: 150
+                            }
+                        ]
+                    }
+                ]
+            }
+
+            setGeneratedItinerary(mockItinerary)
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    sender: 'aurora',
+                    text: 'Seu roteiro está pronto! Clique no botão abaixo para visualizar todos os detalhes.',
+                    type: 'action-view-itinerary'
+                }
+            ])
+            setIsLoading(false)
+        }, 2000)
+    }
+
+    const handleViewItinerary = () => {
+        setIsItineraryModalOpen(true)
+    }
+
+    const handleApproveItinerary = async () => {
+        setIsItineraryModalOpen(false)
+        setMessages(prev => [
+            ...prev,
+            {
+                id: Date.now().toString(),
+                sender: 'user',
+                text: 'Aprovado',
+                type: 'text'
+            },
+            {
+                id: (Date.now() + 1).toString(),
+                sender: 'aurora',
+                text: 'Roteiro aprovado! Salvando os detalhes da sua viagem...',
+                type: 'text'
+            }
+        ])
+
+        // Redirect to trips page
+        setTimeout(() => {
+            router.push('/trips')
+        }, 2000)
+    }
+
+    const handleRejectItinerary = async () => {
+        setIsItineraryModalOpen(false)
+        setMessages(prev => [
+            ...prev,
+            {
+                id: Date.now().toString(),
+                sender: 'aurora',
+                text: 'Sem problemas! O que você gostaria de mudar no roteiro? Manterei as mesmas opções de voo e hotel que você escolheu.',
+                type: 'text'
+            }
+        ])
     }
 
     const handleSendMessage = async (text: string) => {
