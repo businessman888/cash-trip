@@ -7,9 +7,9 @@ import { NewTripChatInput } from '@/components/trips/new/NewTripChatInput'
 import { LocationModal } from '@/components/trips/new/LocationModal'
 import { DateSelectionModal } from '@/components/trips/new/DateSelectionModal'
 import { BudgetTravelersModal } from '@/components/trips/new/BudgetTravelersModal'
-import { SelectionButton } from '@/components/trips/new/SelectionButton'
 import { ItineraryModal } from '@/components/trips/new/ItineraryModal'
-import { FiMapPin, FiCalendar, FiDollarSign, FiCheckCircle } from 'react-icons/fi'
+import { FiMapPin, FiCalendar, FiDollarSign } from 'react-icons/fi'
+import { IoAirplane, IoBed, IoMap } from 'react-icons/io5'
 
 interface Message {
     id: string
@@ -17,7 +17,7 @@ interface Message {
     text: string
     type?: 'text' | 'action-location' | 'action-date' | 'action-budget' |
     'action-select-flight' | 'action-select-hotel' |
-    'action-create-itinerary' | 'action-view-itinerary'
+    'action-create-itinerary'
 }
 
 interface FlightOption {
@@ -107,12 +107,9 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
 
     // New state for flight/hotel selection and itinerary
     const [flightOptions, setFlightOptions] = useState<FlightOption[]>([])
-    const [selectedFlight, setSelectedFlight] = useState<number | null>(null)
     const [hotelOptions, setHotelOptions] = useState<HotelOption[]>([])
-    const [selectedHotel, setSelectedHotel] = useState<number | null>(null)
     const [generatedItinerary, setGeneratedItinerary] = useState<any>(null)
     const [isItineraryModalOpen, setIsItineraryModalOpen] = useState(false)
-    const [showCreateItineraryButton, setShowCreateItineraryButton] = useState(false)
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -242,6 +239,19 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
             { role: 'user', content: `Somos ${details.travelers} adultos com orçamento total de ${details.budget}` }
         ]
 
+        await sendMessageToAgent(agentMessages)
+    }
+
+    const sendMessageToAgent = async (agentMessages: any[]) => {
+        console.log('[sendMessageToAgent] Calling API with:', { messages: agentMessages, userProfile: mockUserProfile, totalBudget: tripDetails.budget })
+
+        // Create timeout controller
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => {
+            console.error('[sendMessageToAgent] Request timeout after 60 seconds')
+            controller.abort()
+        }, 60000) // 60 second timeout
+
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -249,12 +259,105 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 body: JSON.stringify({
                     messages: agentMessages,
                     userProfile: mockUserProfile,
-                    totalBudget: details.budget
-                })
+                    totalBudget: tripDetails.budget
+                }),
+                signal: controller.signal
             })
 
-            const data = await response.json()
+            clearTimeout(timeoutId)
 
+            if (!response.ok) {
+                console.error('[sendMessageToAgent] HTTP error:', response.status, response.statusText)
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            }
+
+            const data = await response.json()
+            console.log('[sendMessageToAgent] Received response:', data)
+
+            if (data.error) {
+                console.error('API Error:', data.error)
+                setMessages(prev => [
+                    ...prev,
+                    {
+                        id: Date.now().toString(),
+                        sender: 'aurora',
+                        text: `Erro no sistema: ${data.error}. Por favor, verifique as configurações (chaves de API).`,
+                        type: 'text'
+                    }
+                ])
+                return
+            }
+
+            // Handle Tool Calls
+            if (data.stop_reason === 'tool_use') {
+                const toolUse = data.tool_use
+
+                if (toolUse.name === 'search_flights') {
+                    // Mock flight options for now (in real app, these would come from the tool result)
+                    const mockFlights = [
+                        { id: 1, airline: 'Latam', departure: '10:00', arrival: '18:00', duration: '8h', price: 4500, details: 'Direto' },
+                        { id: 2, airline: 'Azul', departure: '14:00', arrival: '23:00', duration: '9h', price: 4200, details: '1 Parada' }
+                    ]
+                    setFlightOptions(mockFlights)
+
+                    // Add message with flight options
+                    setMessages(prev => [
+                        ...prev,
+                        {
+                            id: Date.now().toString(),
+                            sender: 'aurora',
+                            text: 'Encontrei algumas opções de voos para você. Qual prefere?',
+                            type: 'action-select-flight'
+                        }
+                    ])
+                } else if (toolUse.name === 'search_hotels') {
+                    // Mock hotel options
+                    const mockHotels = [
+                        { id: 1, name: 'Park Hyatt Tokyo', rating: 5, location: 'Shinjuku', price: 7000, details: 'Luxo' },
+                        { id: 2, name: 'Hotel Gracery Shinjuku', rating: 4, location: 'Shinjuku', price: 4500, details: 'Moderno' }
+                    ]
+                    setHotelOptions(mockHotels)
+
+                    setMessages(prev => [
+                        ...prev,
+                        {
+                            id: Date.now().toString(),
+                            sender: 'aurora',
+                            text: 'Ótimo! Agora, veja essas opções de hospedagem que selecionei:',
+                            type: 'action-select-hotel'
+                        }
+                    ])
+                } else if (toolUse.name === 'request_logistics_approval') {
+                    // This step is skipped in the new flow as we do it sequentially
+                    // But if the agent calls it, we can treat it as "Ready for Itinerary"
+                    setMessages(prev => [
+                        ...prev,
+                        {
+                            id: Date.now().toString(),
+                            sender: 'aurora',
+                            text: 'Perfeito! Com voo e hotel definidos, posso criar seu roteiro detalhado.',
+                            type: 'action-create-itinerary'
+                        }
+                    ])
+                } else if (toolUse.name === 'propose_itinerary') {
+                    // Itinerary generated!
+                    setGeneratedItinerary(data.content.find((c: any) => c.type === 'tool_use')?.input || toolUse.input)
+                    setIsItineraryModalOpen(true)
+                } else if (toolUse.name === 'submit_final_itinerary') {
+                    setMessages(prev => [
+                        ...prev,
+                        {
+                            id: Date.now().toString(),
+                            sender: 'aurora',
+                            text: 'Roteiro finalizado e salvo com sucesso! Boa viagem!',
+                            type: 'text'
+                        }
+                    ])
+                    setTimeout(() => router.push('/trips'), 2000)
+                }
+            }
+
+            // Handle text response
             if (data.content) {
                 const assistantMessage = data.content.find((c: any) => c.type === 'text')?.text
                 if (assistantMessage) {
@@ -269,6 +372,7 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                     ])
                 }
             }
+
         } catch (error) {
             console.error('Error connecting to agent:', error)
             setMessages(prev => [
@@ -276,7 +380,7 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 {
                     id: Date.now().toString(),
                     sender: 'aurora',
-                    text: 'Desculpe, tive um problema ao processar suas informações. Podemos tentar novamente?',
+                    text: 'Desculpe, tive um problema. Podemos tentar novamente?',
                     type: 'text'
                 }
             ])
@@ -286,11 +390,10 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
     }
 
     const handleFlightSelect = async (optionId: number) => {
-        setSelectedFlight(optionId)
         const selectedFlightData = flightOptions.find(f => f.id === optionId)
-
         if (selectedFlightData) {
-            const userMessage = `Selecionei a opção ${optionId} de voo: ${selectedFlightData.airline} - ${selectedFlightData.details}`
+            const userMessage = `Selecionei a opção ${optionId} de voo: ${selectedFlightData.airline}`
+
             setMessages(prev => [
                 ...prev,
                 {
@@ -301,17 +404,28 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 }
             ])
 
-            // Send to agent to get hotel options
-            await handleSendMessage(userMessage)
+            // Send selection to agent to trigger next step (Hotels)
+            setIsLoading(true)
+            // Reconstruct history + new message
+            // In a real app, use a robust history state
+            const history = [
+                { role: 'assistant', content: 'Olá! Para onde vamos na próxima aventura?' },
+                { role: 'user', content: tripDetails.location },
+                { role: 'assistant', content: 'Ótima escolha! E quais são as datas?' },
+                { role: 'user', content: `De ${tripDetails.startDate} até ${tripDetails.endDate}` },
+                { role: 'user', content: `Somos ${tripDetails.travelers} adultos com orçamento total de ${tripDetails.budget}` },
+                { role: 'assistant', content: 'Encontrei algumas opções de voos...' }, // Simplified context
+                { role: 'user', content: userMessage }
+            ]
+            await sendMessageToAgent(history)
         }
     }
 
     const handleHotelSelect = async (optionId: number) => {
-        setSelectedHotel(optionId)
         const selectedHotelData = hotelOptions.find(h => h.id === optionId)
-
         if (selectedHotelData) {
-            const userMessage = `Selecionei a opção ${optionId} de hotel: ${selectedHotelData.name} - ${selectedHotelData.details}`
+            const userMessage = `Selecionei a opção ${optionId} de hotel: ${selectedHotelData.name}`
+
             setMessages(prev => [
                 ...prev,
                 {
@@ -322,122 +436,81 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 }
             ])
 
-            // Show create itinerary button
-            setShowCreateItineraryButton(true)
-
-            // Add agent confirmation message
-            setMessages(prev => [
-                ...prev,
-                {
-                    id: Date.now().toString(),
-                    sender: 'aurora',
-                    text: 'Perfeito! Tenho todas as informações necessárias. Quando quiser, posso criar um roteiro detalhado para sua viagem.',
-                    type: 'action-create-itinerary'
-                }
-            ])
+            // Send selection to agent to trigger next step (Itinerary Button)
+            setIsLoading(true)
+            const history = [
+                // ... previous history ...
+                { role: 'user', content: `Selecionei a opção de voo...` }, // Simplified
+                { role: 'assistant', content: 'Ótimo! Agora, veja essas opções de hospedagem...' },
+                { role: 'user', content: userMessage }
+            ]
+            // We actually just want to trigger the "Ready for Itinerary" state, 
+            // but let's send to agent so it acknowledges and maybe calls request_logistics_approval
+            await sendMessageToAgent(history)
         }
     }
 
     const handleCreateItinerary = async () => {
-        setShowCreateItineraryButton(false)
+        const userMessage = "Criar roteiro"
+        console.log('[handleCreateItinerary] Starting itinerary creation...')
+        console.log('[handleCreateItinerary] Trip Details:', tripDetails)
+        console.log('[handleCreateItinerary] Flight Options:', flightOptions)
+        console.log('[handleCreateItinerary] Hotel Options:', hotelOptions)
+
+        // TEMPORARY: Alert to confirm function is called
+        alert('DEBUG: handleCreateItinerary foi chamado! Verifique o console do navegador.')
+
         setMessages(prev => [
             ...prev,
             {
                 id: Date.now().toString(),
                 sender: 'user',
-                text: 'Criar roteiro',
+                text: userMessage,
                 type: 'text'
             }
         ])
 
         setIsLoading(true)
 
-        // Mock itinerary generation for testing
-        setTimeout(() => {
-            const mockItinerary = {
-                trip_title: `Viagem para ${tripDetails.location}`,
-                destination: tripDetails.location,
-                start_date: tripDetails.startDate,
-                end_date: tripDetails.endDate,
-                travelers: tripDetails.travelers,
-                budget: tripDetails.budget,
-                days: [
-                    {
-                        date: tripDetails.startDate,
-                        activities: [
-                            {
-                                time: '09:00',
-                                title: 'Check-in no Hotel',
-                                location: selectedHotel ? hotelOptions.find(h => h.id === selectedHotel)?.name || 'Hotel' : 'Hotel',
-                                type: 'morning' as const,
-                                cost: 0
-                            },
-                            {
-                                time: '12:30',
-                                title: 'Almoço no Restaurante Local',
-                                location: 'Centro Histórico',
-                                type: 'lunch' as const,
-                                cost: 80
-                            },
-                            {
-                                time: '15:00',
-                                title: 'Tour pela Cidade',
-                                location: 'Pontos Turísticos',
-                                type: 'afternoon' as const,
-                                cost: 120
-                            },
-                            {
-                                time: '19:30',
-                                title: 'Jantar com Vista',
-                                location: 'Restaurante Panorâmico',
-                                type: 'dinner' as const,
-                                cost: 150
-                            }
-                        ]
-                    }
-                ]
-            }
+        // Reconstruct the FULL message history to send to backend
+        const agentMessages = [
+            { role: 'assistant', content: 'Olá! Para onde vamos na próxima aventura?' },
+            { role: 'user', content: tripDetails.location },
+            { role: 'assistant', content: 'Ótima escolha! E quais são as datas?' },
+            { role: 'user', content: `De ${tripDetails.startDate} até ${tripDetails.endDate}` },
+            { role: 'user', content: `Somos ${tripDetails.travelers} adultos com orçamento total de ${tripDetails.budget}` },
+            { role: 'assistant', content: 'Perfeito! Encontrei essas opções de voo...' },
+            { role: 'user', content: `Selecionei a opção de voo` },
+            { role: 'assistant', content: 'Ótimo! Agora veja essas opções de hotel...' },
+            { role: 'user', content: `Selecionei a opção de hotel` },
+            { role: 'assistant', content: 'Perfeito! Voo e hotel selecionados com sucesso!' },
+            { role: 'user', content: userMessage }
+        ]
 
-            setGeneratedItinerary(mockItinerary)
-            setMessages(prev => [
-                ...prev,
-                {
-                    id: Date.now().toString(),
-                    sender: 'aurora',
-                    text: 'Seu roteiro está pronto! Clique no botão abaixo para visualizar todos os detalhes.',
-                    type: 'action-view-itinerary'
-                }
-            ])
-            setIsLoading(false)
-        }, 2000)
+        console.log('[handleCreateItinerary] Sending messages:', agentMessages)
+        await sendMessageToAgent(agentMessages)
     }
 
-    const handleViewItinerary = () => {
-        setIsItineraryModalOpen(true)
-    }
-
-    const handleApproveItinerary = async () => {
+    const handleConfirmItinerary = async () => {
         setIsItineraryModalOpen(false)
+        const userMessage = "Aprovado"
         setMessages(prev => [
             ...prev,
             {
                 id: Date.now().toString(),
                 sender: 'user',
-                text: 'Aprovado',
-                type: 'text'
-            },
-            {
-                id: (Date.now() + 1).toString(),
-                sender: 'aurora',
-                text: 'Roteiro aprovado! Salvando os detalhes da sua viagem...',
+                text: userMessage,
                 type: 'text'
             }
         ])
 
-        // Redirect to trips page
-        setTimeout(() => {
-            router.push('/trips')
-        }, 2000)
+        setIsLoading(true)
+        const history = [
+            // ... previous history ...
+            { role: 'assistant', content: 'Aqui está a proposta do roteiro...' },
+            { role: 'user', content: userMessage }
+        ]
+        await sendMessageToAgent(history)
     }
 
     const handleRejectItinerary = async () => {
@@ -503,6 +576,19 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
 
             const data = await response.json()
 
+            if (data.error) {
+                setMessages(prev => [
+                    ...prev,
+                    {
+                        id: Date.now().toString(),
+                        sender: 'aurora',
+                        text: `Erro: ${data.error}`,
+                        type: 'text'
+                    }
+                ])
+                return
+            }
+
             // Handle Tool Calls (specifically submit_final_itinerary)
             if (data.stop_reason === 'tool_use' && data.tool_use?.name === 'submit_final_itinerary') {
                 // Success! Redirect or show success message
@@ -538,17 +624,6 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 }
             }
 
-            // Handle other tool results (like search_flights) that return data to be displayed
-            // In this simplified version, if the agent returns a tool use that ISN'T submit, 
-            // we might want to display the result or just let the agent continue.
-            // Since our API route returns the tool result, we should probably feed it back to the agent
-            // to get a text response. But for this demo, let's see if the agent included text WITH the tool use.
-            // Often Claude explains what it's doing.
-
-            // If there's a tool_result in the response (from our API mock), it means the server executed it.
-            // We should probably display something or trigger another call.
-            // For now, let's rely on the text content if present.
-
         } catch (error) {
             console.error('Error in chat:', error)
         } finally {
@@ -566,38 +641,78 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                             sender={msg.sender}
                         />
 
-                        {/* Action Buttons rendered below Aurora's message */}
+                        {/* Action Buttons */}
                         {msg.sender === 'aurora' && msg.type === 'action-location' && !messages.some(m => m.id === '2') && (
-                            <button
-                                onClick={handleLocationClick}
-                                className="w-fit px-6 py-3 bg-[#FFDdd6] rounded-[20px] border border-[#FF896F] flex items-center gap-2 text-[#FF5F38] font-inria-sans font-bold shadow-sm hover:bg-[#ffccc3] transition-colors self-start ml-0"
-                            >
-                                <span>Escolher local</span>
-                                <FiMapPin className="text-xl" />
+                            <button onClick={handleLocationClick} className="action-btn">
+                                <span>Escolher local</span> <FiMapPin className="text-xl" />
                             </button>
                         )}
 
                         {msg.sender === 'aurora' && msg.type === 'action-date' && !messages.some(m => m.id === '4') && (
-                            <button
-                                onClick={handleDateClick}
-                                className="w-fit px-6 py-3 bg-[#FFDdd6] rounded-[20px] border border-[#FF896F] flex items-center gap-2 text-[#FF5F38] font-inria-sans font-bold shadow-sm hover:bg-[#ffccc3] transition-colors self-start ml-0"
-                            >
-                                <span>Escolher Data</span>
-                                <FiCalendar className="text-xl" />
+                            <button onClick={handleDateClick} className="action-btn">
+                                <span>Escolher Data</span> <FiCalendar className="text-xl" />
                             </button>
                         )}
 
                         {msg.sender === 'aurora' && msg.type === 'action-budget' && !messages.some(m => m.id === '6') && (
+                            <button onClick={handleBudgetClick} className="action-btn">
+                                <span>Definir detalhes</span> <FiDollarSign className="text-xl" />
+                            </button>
+                        )}
+
+                        {/* Flight Selection Buttons */}
+                        {msg.sender === 'aurora' && msg.type === 'action-select-flight' && !messages.some(m => m.text.includes('Selecionei a opção') && m.text.includes('voo')) && (
+                            <div className="flex flex-col gap-3 w-full max-w-sm">
+                                {flightOptions.map((flight, idx) => (
+                                    <button
+                                        key={flight.id}
+                                        onClick={() => handleFlightSelect(flight.id)}
+                                        className="w-full p-4 bg-white dark:bg-[#1E293B] rounded-[20px] border border-gray-200 dark:border-gray-700 shadow-sm hover:border-[#FF5F38] transition-all text-left group"
+                                    >
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="font-bold text-[#FF5F38]">Opção {idx + 1}</span>
+                                            <IoAirplane className="text-gray-400 group-hover:text-[#FF5F38]" />
+                                        </div>
+                                        <p className="font-bold text-[var(--text-primary)]">{flight.airline}</p>
+                                        <p className="text-sm text-[var(--text-secondary)]">{flight.details} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(flight.price)}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Hotel Selection Buttons */}
+                        {msg.sender === 'aurora' && msg.type === 'action-select-hotel' && !messages.some(m => m.text.includes('Selecionei a opção') && m.text.includes('hotel')) && (
+                            <div className="flex flex-col gap-3 w-full max-w-sm">
+                                {hotelOptions.map((hotel, idx) => (
+                                    <button
+                                        key={hotel.id}
+                                        onClick={() => handleHotelSelect(hotel.id)}
+                                        className="w-full p-4 bg-white dark:bg-[#1E293B] rounded-[20px] border border-gray-200 dark:border-gray-700 shadow-sm hover:border-[#FF5F38] transition-all text-left group"
+                                    >
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="font-bold text-[#FF5F38]">Opção {idx + 1}</span>
+                                            <IoBed className="text-gray-400 group-hover:text-[#FF5F38]" />
+                                        </div>
+                                        <p className="font-bold text-[var(--text-primary)]">{hotel.name}</p>
+                                        <p className="text-sm text-[var(--text-secondary)]">{hotel.details} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(hotel.price)}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Create Itinerary Button */}
+                        {msg.sender === 'aurora' && msg.type === 'action-create-itinerary' && !messages.some(m => m.text === 'Criar roteiro') && (
                             <button
-                                onClick={handleBudgetClick}
-                                className="w-fit px-6 py-3 bg-[#FFDdd6] rounded-[20px] border border-[#FF896F] flex items-center gap-2 text-[#FF5F38] font-inria-sans font-bold shadow-sm hover:bg-[#ffccc3] transition-colors self-start ml-0"
+                                onClick={handleCreateItinerary}
+                                className="w-fit px-6 py-3 bg-[#FF5F38] text-white rounded-[20px] font-bold shadow-lg hover:bg-[#e04f2c] transition-colors flex items-center gap-2"
                             >
-                                <span>Definir detalhes</span>
-                                <FiDollarSign className="text-xl" />
+                                <span>Criar Roteiro</span>
+                                <IoMap className="text-xl" />
                             </button>
                         )}
                     </div>
                 ))}
+
                 {isLoading && (
                     <div className="flex items-center gap-2 text-gray-500 italic ml-4">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
@@ -630,6 +745,20 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 onClose={() => setIsBudgetModalOpen(false)}
                 onConfirm={handleBudgetSelect}
             />
+
+            <ItineraryModal
+                isOpen={isItineraryModalOpen}
+                onClose={() => setIsItineraryModalOpen(false)}
+                onConfirm={handleConfirmItinerary}
+                onReject={() => setIsItineraryModalOpen(false)}
+                itinerary={generatedItinerary}
+            />
+
+            <style jsx>{`
+                .action-btn {
+                    @apply w-fit px-6 py-3 bg-[#FFDdd6] rounded-[20px] border border-[#FF896F] flex items-center gap-2 text-[#FF5F38] font-inria-sans font-bold shadow-sm hover:bg-[#ffccc3] transition-colors self-start ml-0;
+                }
+            `}</style>
         </div>
     )
 }

@@ -34,6 +34,11 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { messages, userProfile, totalBudget } = body;
 
+        console.log('[API] Received request');
+        console.log('[API] Messages count:', messages?.length);
+        console.log('[API] Last message:', messages?.[messages.length - 1]);
+        console.log('[API] Total Budget:', totalBudget);
+
         if (!messages || !Array.isArray(messages)) {
             return NextResponse.json({ error: "Formato de mensagem inválido" }, { status: 400 });
         }
@@ -44,32 +49,38 @@ export async function POST(req: NextRequest) {
 [[PERFIL DO USUÁRIO]]
 ${JSON.stringify(userProfile, null, 2)}
 
-[[INSTRUÇÕES CRÍTICAS - SIGA EXATAMENTE]]
+[[FLUXO OBRIGATÓRIO - SIGA A ORDEM EXATA]]
 
-O usuário JÁ FORNECEU: destino, datas e orçamento.
+1. **BUSCA DE VOOS (Passo Atual: Voos)**
+   - O usuário informou destino e datas.
+   - CHAME \`search_flights\` para buscar opções reais.
+   - NÃO busque hotéis ainda.
+   - PARE e aguarde o usuário selecionar uma opção de voo.
 
-**FASE 1 - LOGÍSTICA (FAÇA AGORA):**
-1. Busque voos: chame search_flights
-2. Busque hotel: chame search_hotels  
-3. Apresente AS DUAS opções ao usuário com links reais
-4. **IMEDIATAMENTE** após mostrar voo E hotel, você DEVE chamar a tool request_logistics_approval
+2. **BUSCA DE HOTÉIS (Passo Atual: Hotéis)**
+   - O usuário JÁ selecionou o voo (você verá na mensagem "Selecionei a opção X de voo").
+   - CHAME \`search_hotels\` para buscar opções reais na cidade de destino.
+   - PARE e aguarde o usuário selecionar uma opção de hotel.
 
-⚠️ REGRA OBRIGATÓRIA: Depois de apresentar voo e hotel, a PRÓXIMA AÇÃO deve ser chamar request_logistics_approval. NÃO apenas mencione aprovação, CHAME A TOOL.
+3. **CRIAÇÃO DE ROTEIRO (Passo Atual: Roteiro)**
+   - O usuário JÁ selecionou voo E hotel.
+   - O usuário enviou o comando "Criar roteiro".
+   - CHAME \`propose_itinerary\` com um plano detalhado dia-a-dia.
+   - O frontend mostrará isso em um modal para aprovação.
+   - **IMPORTANTE:** NÃO faça buscas (search_places) para cada item do roteiro. Use seu conhecimento interno para preencher as atividades e chame a ferramenta IMEDIATAMENTE. O usuário quer ver o roteiro rápido.
 
-**FASE 2 - ROTEIRO (SÓ APÓS APROVAÇÃO):**
-- Aguarde o usuário aprovar (ele dirá algo como "aprovado", "ok", "pode prosseguir")
-- Crie roteiro dia-a-dia com links para TODOS os lugares
-- Ao finalizar, chame submit_final_itinerary
+4. **FINALIZAÇÃO (Passo Atual: Salvar)**
+   - O usuário aprovou o roteiro ("Aprovado").
+   - CHAME \`submit_final_itinerary\` para salvar no banco.
 
-[[LINKS OBRIGATÓRIOS]]
-- Todo restaurante/atração DEVE ter link
-- Se search_places não retornar URL: https://www.google.com/maps/search/?api=1&query=NOME+DO+LUGAR
-
-Comece buscando voos e hotéis AGORA.`;
+[[REGRAS CRÍTICAS]]
+- NUNCA pule etapas. Não busque hotéis antes de ter o voo definido.
+- Sempre retorne pelo menos 2 opções de voo e 2 opções de hotel quando solicitado.
+- Para o roteiro, priorize velocidade: gere o JSON completo de uma vez só.`;
 
         let currentMessages = [...messages];
         let loopCount = 0;
-        const MAX_LOOPS = 20;
+        const MAX_LOOPS = 8; // Reduced to prevent timeouts
 
         // 4. Tool Execution Loop
         while (loopCount < MAX_LOOPS) {
@@ -78,13 +89,13 @@ Comece buscando voos e hotéis AGORA.`;
 
             const response = await anthropic.messages.create({
                 model: "claude-sonnet-4-5-20250929",
-                max_tokens: 8192,
+                max_tokens: 20000,
                 system: systemPrompt,
                 messages: currentMessages,
                 tools: [
                     {
                         name: "search_flights",
-                        description: "Busca voos reais via Amadeus.",
+                        description: "Busca voos reais via Amadeus. Retorna lista de opções.",
                         input_schema: {
                             type: "object",
                             properties: {
@@ -98,7 +109,7 @@ Comece buscando voos e hotéis AGORA.`;
                     },
                     {
                         name: "search_hotels",
-                        description: "Busca hotéis disponíveis via Amadeus.",
+                        description: "Busca hotéis disponíveis via Amadeus. Retorna lista de opções.",
                         input_schema: {
                             type: "object",
                             properties: {
@@ -124,19 +135,61 @@ Comece buscando voos e hotéis AGORA.`;
                         }
                     },
                     {
-                        name: "request_logistics_approval",
-                        description: "Chame esta tool APÓS apresentar as opções de voo e hotel para solicitar a aprovação do usuário antes de criar o roteiro detalhado.",
+                        name: "propose_itinerary",
+                        description: "Gera um roteiro detalhado para aprovação do usuário. Chame isso quando o usuário pedir para 'Criar roteiro'.",
                         input_schema: {
                             type: "object",
                             properties: {
-                                summary: { type: "string", description: "Resumo do que precisa ser aprovado (ex: 'Voo X e Hotel Y')" }
+                                trip_title: { type: "string" },
+                                destination: { type: "string" },
+                                start_date: { type: "string" },
+                                end_date: { type: "string" },
+                                budget: { type: "string" },
+                                travelers: { type: "integer" },
+                                flight_summary: {
+                                    type: "object",
+                                    properties: {
+                                        airline: { type: "string" },
+                                        price: { type: "number" }
+                                    }
+                                },
+                                hotel_summary: {
+                                    type: "object",
+                                    properties: {
+                                        name: { type: "string" },
+                                        price: { type: "number" }
+                                    }
+                                },
+                                days: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            date: { type: "string" },
+                                            title: { type: "string", description: "Título do dia (ex: Chegada e Exploração)" },
+                                            activities: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        time: { type: "string" },
+                                                        title: { type: "string" },
+                                                        description: { type: "string" },
+                                                        icon: { type: "string", enum: ["plane", "hotel", "food", "camera"] },
+                                                        cost: { type: "number" }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             },
-                            required: ["summary"]
+                            required: ["trip_title", "destination", "start_date", "end_date", "days"]
                         }
                     },
                     {
                         name: "submit_final_itinerary",
-                        description: "Chame esta função APENAS quando o roteiro estiver pronto e aprovado. Isso salvará o plano no banco de dados.",
+                        description: "Salva o roteiro APROVADO no banco de dados.",
                         input_schema: {
                             type: "object",
                             properties: {
@@ -152,39 +205,8 @@ Comece buscando voos e hotéis AGORA.`;
                                         type: "object",
                                         properties: {
                                             date: { type: "string" },
-                                            morning_activity: {
-                                                type: "object",
-                                                properties: {
-                                                    title: { type: "string" },
-                                                    location: { type: "string" },
-                                                    type: { type: "string" }
-                                                }
-                                            },
-                                            lunch_spot: {
-                                                type: "object",
-                                                properties: {
-                                                    name: { type: "string" },
-                                                    cuisine: { type: "string" },
-                                                    price_level: { type: "string" }
-                                                }
-                                            },
-                                            afternoon_activity: {
-                                                type: "object",
-                                                properties: {
-                                                    title: { type: "string" },
-                                                    location: { type: "string" }
-                                                }
-                                            },
-                                            dinner_spot: {
-                                                type: "object",
-                                                properties: {
-                                                    name: { type: "string" },
-                                                    cuisine: { type: "string" },
-                                                    booking_required: { type: "boolean" }
-                                                }
-                                            }
-                                        },
-                                        required: ["date"]
+                                            activities: { type: "array", items: { type: "object" } }
+                                        }
                                     }
                                 }
                             },
@@ -221,6 +243,7 @@ Comece buscando voos e hotéis AGORA.`;
                 const submitTool = toolUses.find(t => t.name === 'submit_final_itinerary');
                 if (submitTool) {
                     console.log("[SUBMIT] Submitting final itinerary to DB...");
+                    console.log("[SUBMIT] Tool input:", JSON.stringify(submitTool.input, null, 2));
 
                     try {
                         const supabase = await createClient();
@@ -350,13 +373,15 @@ Comece buscando voos e hotéis AGORA.`;
                     content: toolResults
                 });
 
-                // If request_logistics_approval was called, return to frontend to show the button
-                if (toolUses.some(t => t.name === 'request_logistics_approval')) {
-                    console.log(`[Agent Loop ${loopCount}] Returning to frontend for logistics approval...`);
+                // If propose_itinerary or request_logistics_approval was called, return to frontend
+                const interactiveTool = toolUses.find(t => t.name === 'propose_itinerary' || t.name === 'request_logistics_approval');
+                if (interactiveTool) {
+                    console.log(`[Agent Loop ${loopCount}] Returning to frontend for interaction: ${interactiveTool.name}`);
+                    console.log(`[Agent Loop ${loopCount}] Tool input:`, JSON.stringify(interactiveTool.input, null, 2));
                     return NextResponse.json({
                         content: response.content,
                         stop_reason: 'tool_use',
-                        tool_use: toolUses.find(t => t.name === 'request_logistics_approval')
+                        tool_use: interactiveTool
                     });
                 }
 
@@ -405,6 +430,12 @@ async function executeToolCall(toolUse: any) {
                 toolUse.input.query,
                 toolUse.input.location
             );
+        case 'propose_itinerary':
+            // Just return the input so the frontend can render it
+            return {
+                status: "itinerary_proposed",
+                itinerary: toolUse.input
+            };
         case 'request_logistics_approval':
             return { status: "waiting_for_user_approval", message: "User will see approval button." };
         default:
