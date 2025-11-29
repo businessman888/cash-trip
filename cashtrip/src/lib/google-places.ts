@@ -2,7 +2,9 @@ const GOOGLE_PLACES_BASE_URL = 'https://places.googleapis.com/v1/places:searchTe
 
 export async function searchPlaces(query: string, location: string) {
     try {
-        const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+        // Support both variable names
+        const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
         if (!apiKey) {
             return { error: 'Google Places API Key missing' };
         }

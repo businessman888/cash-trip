@@ -11,8 +11,17 @@ async function getAccessToken() {
 
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
-    params.append('client_id', process.env.AMADEUS_API_KEY!);
-    params.append('client_secret', process.env.AMADEUS_API_SECRET!);
+
+    // Support both naming conventions
+    const clientId = process.env.AMADEUS_API_KEY || process.env.AMADEUS_CLIENT_ID;
+    const clientSecret = process.env.AMADEUS_API_SECRET || process.env.AMADEUS_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+        throw new Error("Amadeus API credentials missing");
+    }
+
+    params.append('client_id', clientId);
+    params.append('client_secret', clientSecret);
 
     try {
         const response = await fetch(`${AMADEUS_BASE_URL}/v1/security/oauth2/token`, {

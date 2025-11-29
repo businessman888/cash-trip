@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
 import { ItineraryHeader } from '@/components/itinerary/ItineraryHeader'
 import { ItineraryTabs } from '@/components/itinerary/ItineraryTabs'
 import { TripProgress } from '@/components/itinerary/TripProgress'
@@ -8,131 +9,141 @@ import { MapPreview } from '@/components/itinerary/MapPreview'
 import { DaySection } from '@/components/itinerary/DaySection'
 import { TimelineItem } from '@/components/itinerary/TimelineItem'
 import { ChatInterface } from '@/components/chat/ChatInterface'
-import { FiCheckCircle, FiCircle } from 'react-icons/fi'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ItineraryPage() {
     const [activeTab, setActiveTab] = useState<'roteiro' | 'chat'>('roteiro')
+    const [trip, setTrip] = useState<any>(null)
+    const [itineraryItems, setItineraryItems] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const router = useRouter()
+
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    useEffect(() => {
+        async function fetchLatestTrip() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) {
+                    router.push('/login')
+                    return
+                }
+
+                // Fetch the most recent trip
+                const { data: trips, error: tripError } = await supabase
+                    .from('trips')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+
+                if (tripError) throw tripError
+
+                if (trips && trips.length > 0) {
+                    const latestTrip = trips[0]
+                    setTrip(latestTrip)
+
+                    // Fetch itinerary items for this trip
+                    const { data: items, error: itemsError } = await supabase
+                        .from('itinerary_items')
+                        .select('*')
+                        .eq('trip_id', latestTrip.id)
+                        .order('date', { ascending: true })
+
+                    if (itemsError) throw itemsError
+                    setItineraryItems(items || [])
+                }
+            } catch (error) {
+                console.error('Error fetching itinerary:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchLatestTrip()
+    }, [router, supabase])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[var(--surface-main)]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF5F38]"></div>
+            </div>
+        )
+    }
+
+    if (!trip) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--surface-main)] p-6 text-center">
+                <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Nenhuma viagem encontrada</h2>
+                <p className="text-gray-500 mb-8">Crie sua primeira viagem para ver o roteiro aqui.</p>
+                <Link href="/trips/new" className="bg-[#FF5F38] text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-[#E6502C] transition-colors">
+                    Criar Nova Viagem
+                </Link>
+            </div>
+        )
+    }
+
+    // Group items by date
+    const groupedItems: { [key: string]: any[] } = {}
+    itineraryItems.forEach(item => {
+        if (!groupedItems[item.date]) {
+            groupedItems[item.date] = []
+        }
+        groupedItems[item.date].push(item)
+    })
+
+    // Sort items within each day by period (morning, lunch, afternoon, dinner)
+    const periodOrder = { morning: 1, lunch: 2, afternoon: 3, dinner: 4 }
+    Object.keys(groupedItems).forEach(date => {
+        groupedItems[date].sort((a, b) => {
+            return (periodOrder[a.period as keyof typeof periodOrder] || 99) - (periodOrder[b.period as keyof typeof periodOrder] || 99)
+        })
+    })
 
     return (
         <div className="min-h-screen bg-[var(--surface-main)] pb-8">
             <div className="p-6">
-                <ItineraryHeader title="Roteiro de Cancún" />
+                <ItineraryHeader title={`Roteiro de ${trip.destination || trip.title}`} />
                 <ItineraryTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
                 {activeTab === 'roteiro' ? (
                     <>
-                        <TripProgress progress={50} />
+                        <TripProgress progress={0} />
                         <MapPreview />
 
                         <div className="bg-[#F8FAFC] dark:bg-[#0F172A] rounded-[20px] p-4 mb-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-inria-sans font-bold text-[16px] text-[var(--text-primary)]">
-                                    Preparação
+                                    Resumo
                                 </h3>
-                                <span className="font-inria-sans font-bold text-[14px] text-[#FF5F38]">
-                                    100%
-                                </span>
                             </div>
-                            <div className="w-full h-[6px] bg-[#E2E8F0] dark:bg-[#334155] rounded-full overflow-hidden mb-6">
-                                <div className="h-full bg-[#FF5F38] w-full rounded-full" />
-                            </div>
-
-                            <div className="relative pl-4 border-l-2 border-[#FF5F38]/20 ml-2 space-y-6">
-                                <div className="relative">
-                                    <div className="absolute -left-[21px] top-0 w-[10px] h-[10px] rounded-full bg-[#FF5F38]" />
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-[40px] h-[40px] rounded-full bg-[#FF5F38]/10 flex items-center justify-center text-[#FF5F38]">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-inria-sans font-bold text-[14px] text-[var(--text-primary)]">
-                                                Passagem reservada
-                                            </h4>
-                                            <p className="font-inria-sans text-[12px] text-[#64748B] dark:text-[#94A3B8]">
-                                                Check-in disponível em 24h.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="relative">
-                                    <div className="absolute -left-[21px] top-0 w-[10px] h-[10px] rounded-full bg-[#FF5F38]" />
-                                    <div className="bg-[#FFD7D7] rounded-[16px] p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-[40px] h-[40px] rounded-full bg-[#FF5F38] flex items-center justify-center text-white">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                                                    <polyline points="9 22 9 12 15 12 15 22" />
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <h4 className="font-inria-sans font-bold text-[14px] text-[#1E293B]">
-                                                    Hotel reservado
-                                                </h4>
-                                                <p className="font-inria-sans text-[12px] text-[#64748B]">
-                                                    Cancun grand Hotel
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="w-[32px] h-[32px] rounded-full bg-[#FF5F38] flex items-center justify-center text-white">
-                                            <FiCheckCircle />
-                                        </div>
-                                    </div>
-                                </div>
+                            <div className="space-y-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Data:</strong> {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Orçamento:</strong> {trip.budget}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Viajantes:</strong> {trip.travelers}</p>
                             </div>
                         </div>
 
-                        <DaySection day="Dia 1" progress={50}>
-                            <TimelineItem
-                                title="Praia la-blanca"
-                                time="09:00"
-                                status="completed"
-                                weather="22°C"
-                                hasAction
-                                actionLabel="Conhecer local"
-                            />
-                            <TimelineItem
-                                title="Restaurante habla"
-                                time="12:30"
-                                status="pending"
-                                weather="22°C"
-                                hasAction
-                                actionLabel="Conhecer local"
-                                isLast
-                            />
-                        </DaySection>
-
-                        <DaySection day="Dia 2" progress={0}>
-                            <TimelineItem
-                                title="Mergulho com tubarão"
-                                time="09:00"
-                                status="upcoming"
-                                weather="22°C"
-                                hasAction
-                                actionLabel="Conhecer local"
-                            />
-                            <TimelineItem
-                                title="Restaurante Kendall"
-                                time="12:30"
-                                status="upcoming"
-                                weather="22°C"
-                                hasAction
-                                actionLabel="Conhecer local"
-                                isLast
-                            />
-                        </DaySection>
-
-                        <DaySection day="Último dia" progress={0}>
-                            <TimelineItem
-                                title="Fazer as malas"
-                                time="09:00"
-                                status="upcoming"
-                                isLast
-                            />
-                        </DaySection>
+                        {Object.entries(groupedItems).map(([date, items], index) => (
+                            <DaySection key={date} day={`Dia ${index + 1} - ${new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`} progress={0}>
+                                {items.map((item, idx) => (
+                                    <TimelineItem
+                                        key={item.id}
+                                        title={item.title}
+                                        time={item.period === 'morning' ? 'Manhã' : item.period === 'lunch' ? 'Almoço' : item.period === 'afternoon' ? 'Tarde' : 'Noite'}
+                                        status="upcoming"
+                                        weather="--"
+                                        hasAction={!!item.location}
+                                        actionLabel="Ver local"
+                                        isLast={idx === items.length - 1}
+                                    />
+                                ))}
+                            </DaySection>
+                        ))}
                     </>
                 ) : (
                     <ChatInterface />
@@ -150,6 +161,5 @@ export default function ItineraryPage() {
                 </Link>
             </div>
         </div>
-
     )
 }

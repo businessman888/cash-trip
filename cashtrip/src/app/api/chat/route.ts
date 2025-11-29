@@ -2,203 +2,389 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { searchFlights, searchHotels } from '@/lib/amadeus';
 import { searchPlaces } from '@/lib/google-places';
+import { createClient } from '@/lib/supabase/server';
 
+// Initialize Anthropic client
 const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
+    apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key_for_init',
 });
 
 export async function POST(req: NextRequest) {
     try {
-        const { messages, userProfile, totalBudget } = await req.json();
-
-        const systemPrompt = `Você é o Agente Cash Trip, um estrategista de viagens focado em 'Smart Luxury' e eficiência.
-Sua missão não é apenas reservar, mas arquitetar uma experiência completa (logística + roteiro dia-a-dia) maximizando o valor do dinheiro do usuário.
-
-[[PERFIL DO USUÁRIO - JSON]]
-${JSON.stringify(userProfile, null, 2)}
-
-[[ESTADO ATUAL DA CONVERSA]]
-O usuário JÁ INFORMOU o destino, as datas e o orçamento através da interface visual.
-NÃO pergunte "Para onde vamos?" ou "Qual a data?".
-O fluxo deve ser:
-1. Reconhecer/Validar os dados iniciais.
-2. Resolver Logística (Voos/Hospedagem).
-3. Resolver Experiência (Roteiro dia-a-dia e Gastronomia).
-
-[[DIRETRIZES DE ROTEIRO E EXPERIÊNCIA]]
-Ao criar o roteiro diário, você deve obedecer estritamente às variáveis do JSON:
-
-1. Ritmo (Pace):
-   - Se "Relax": Máximo 1 atividade principal + 1 refeição longa. Deixe manhãs livres.
-   - Se "Agitado": Otimize a rota geográfica para caber 3-4 atividades sem deslocamentos longos.
-   - Se "Equilibrado": 1 atividade manhã, 1 tarde, noite livre.
-
-2. Gastronomia & Smart Luxury:
-   - Use a regra "High-Low": Se sugerir um jantar caro (Splurge) numa noite, sugira um almoço incrível e barato (Street Food/Bistrô local) no dia seguinte para equilibrar o budget.
-   - Filtro Absoluto: Se JSON contém 'dietary_restrictions', NUNCA sugira um lugar que não atenda.
-   - Valide 'dining_style': Se o usuário marcou "Gourmet", priorize Michelin/Awards. Se "Local", priorize lugares frequentados por residentes, fora da rota turística.
-
-3. Atividades & Interesses:
-   - Cruzamento de Dados: Se JSON tem interesse em "História" e "Música", sugira um show de Jazz em um prédio histórico, não apenas um museu genérico.
-   - Logística Geográfica: Agrupe atividades por bairro. Não faça o usuário cruzar a cidade duas vezes no mesmo dia.
-
-[[PROTOCOLO DE RESPOSTA]]
-Fase 1: Logística (Imediata)
-- Busque voos e hotéis usando as tools \`search_flights\` e \`search_hotels\`.
-- Apresente as opções focando no custo-benefício.
-
-Fase 2: Roteiro (Após aprovação da logística)
-- Gere o roteiro detalhado (Manhã/Tarde/Noite) para TODOS os dias da estadia.
-- Para cada sugestão, explique POR QUE ela foi escolhida baseada no perfil (ex: "Sugeri o Restaurante X porque você ama comida asiática e ele é um 'hidden gem' barato").
-- QUANDO O ROTEIRO ESTIVER COMPLETO E APROVADO PELO USUÁRIO, chame OBRIGATORIAMENTE a tool \`submit_final_itinerary\` para salvar no banco de dados.
-
-[[DIRETRIZES GERAIS]]
-- Não invente lugares: Use \`search_places\` para validar se o restaurante/atração existe.
-- Personalização Radical: Nunca dê sugestões genéricas de "Top 10 Tripadvisor".
-- Orçamento: Mantenha o total (Voo + Hotel + Estimativa de Gastos Diários) dentro do budget informado (${totalBudget}). Se o roteiro estourar, avise e sugira cortes.
-
-Comece agora analisando os dados injetados (Destino/Data/Budget) e inicie a busca logística.`;
-
-        const response = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-20241022",
-            max_tokens: 8192,
-            system: systemPrompt,
-            messages: messages,
-            tools: [
-                {
-                    name: "search_flights",
-                    description: "Busca voos reais via Amadeus. Chame isso IMEDIATAMENTE após receber destino e datas.",
-                    input_schema: {
-                        type: "object",
-                        properties: {
-                            origin: { type: "string", description: "Código IATA (ex: GRU)" },
-                            destination: { type: "string", description: "Código IATA (ex: CDG)" },
-                            departureDate: { type: "string", description: "YYYY-MM-DD" },
-                            adults: { type: "integer" }
-                        },
-                        required: ["origin", "destination", "departureDate"]
-                    }
-                },
-                {
-                    name: "search_hotels",
-                    description: "Busca hotéis disponíveis via Amadeus.",
-                    input_schema: {
-                        type: "object",
-                        properties: {
-                            cityCode: { type: "string" },
-                            checkInDate: { type: "string", description: "YYYY-MM-DD" },
-                            checkOutDate: { type: "string", description: "YYYY-MM-DD" },
-                            budget_max: { type: "number" }
-                        },
-                        required: ["cityCode", "checkInDate", "checkOutDate"]
-                    }
-                },
-                {
-                    name: "search_places",
-                    description: "Busca restaurantes, atrações turísticas, baladas ou parques via Google Places/Yelp.",
-                    input_schema: {
-                        type: "object",
-                        properties: {
-                            query: { type: "string", description: "Ex: 'Restaurante Italiano Romântico em Paris'" },
-                            location: { type: "string", description: "Cidade ou coordenadas" },
-                            category: { type: "string", enum: ["food", "attraction", "nightlife", "shopping"] }
-                        },
-                        required: ["query", "location"]
-                    }
-                },
-                {
-                    name: "submit_final_itinerary",
-                    description: "Chame esta função APENAS quando o usuário aprovar o roteiro final. Isso salvará o plano no banco de dados e atualizará a UI do App.",
-                    input_schema: {
-                        type: "object",
-                        properties: {
-                            trip_title: { type: "string", description: "Ex: 'Aventura em Paris'" },
-                            days: {
-                                type: "array",
-                                items: {
-                                    type: "object",
-                                    properties: {
-                                        date: { type: "string", description: "YYYY-MM-DD (formato obrigatório)" },
-                                        morning_activity: {
-                                            type: "object",
-                                            properties: {
-                                                title: { type: "string" },
-                                                location: { type: "string" },
-                                                type: { type: "string", description: "Ex: museu, parque, caminhada" }
-                                            }
-                                        },
-                                        lunch_spot: {
-                                            type: "object",
-                                            properties: {
-                                                name: { type: "string" },
-                                                cuisine: { type: "string" },
-                                                price_level: { type: "string", enum: ["$", "$$", "$$$", "$$$$"] }
-                                            }
-                                        },
-                                        afternoon_activity: {
-                                            type: "object",
-                                            properties: {
-                                                title: { type: "string" },
-                                                location: { type: "string" }
-                                            }
-                                        },
-                                        dinner_spot: {
-                                            type: "object",
-                                            properties: {
-                                                name: { type: "string" },
-                                                cuisine: { type: "string" },
-                                                booking_required: { type: "boolean" }
-                                            }
-                                        }
-                                    },
-                                    required: ["date"]
-                                }
-                            }
-                        },
-                        required: ["trip_title", "days"]
-                    }
-                }
-            ]
-        });
-
-        // Process tool calls
-        if (response.stop_reason === 'tool_use') {
-            const toolUse = response.content.find(block => block.type === 'tool_use');
-
-            if (toolUse && toolUse.name === 'submit_final_itinerary') {
-                // In a real app, save to DB here
-                // await saveItineraryToDatabase(toolUse.input);
-
-                return NextResponse.json({
-                    success: true,
-                    itinerary: toolUse.input,
-                    message: 'Roteiro salvo com sucesso!'
-                });
-            }
-
-            // Process other tools
-            const toolResult = await executeToolCall(toolUse);
-
-            return NextResponse.json({
-                tool_use: toolUse,
-                tool_result: toolResult,
-                stop_reason: 'tool_use'
-            });
+        // 1. Validate Environment Variables
+        if (!process.env.ANTHROPIC_API_KEY) {
+            console.error("CRITICAL: ANTHROPIC_API_KEY is missing");
+            return NextResponse.json({ error: "Configuração de API ausente: ANTHROPIC_API_KEY" }, { status: 500 });
         }
 
-        return NextResponse.json(response);
+        const amadeusKey = process.env.AMADEUS_API_KEY || process.env.AMADEUS_CLIENT_ID;
+        const amadeusSecret = process.env.AMADEUS_API_SECRET || process.env.AMADEUS_CLIENT_SECRET;
 
-    } catch (error) {
-        console.error('Erro na API:', error);
+        if (!amadeusKey || !amadeusSecret) {
+            console.error("CRITICAL: Amadeus keys are missing");
+            return NextResponse.json({ error: "Configuração de API ausente: Amadeus Keys" }, { status: 500 });
+        }
+
+        if (!process.env.GOOGLE_PLACES_API_KEY && !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+            console.error("CRITICAL: GOOGLE_PLACES_API_KEY (or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) is missing");
+            return NextResponse.json({ error: "Configuração de API ausente: GOOGLE_PLACES_API_KEY" }, { status: 500 });
+        }
+
+        // 2. Parse Request Body
+        const body = await req.json();
+        const { messages, userProfile, totalBudget } = body;
+
+        if (!messages || !Array.isArray(messages)) {
+            return NextResponse.json({ error: "Formato de mensagem inválido" }, { status: 400 });
+        }
+
+        // 3. System Prompt
+        const systemPrompt = `Você é o Agente Cash Trip, um estrategista de viagens focado em 'Smart Luxury' e eficiência.
+
+[[PERFIL DO USUÁRIO]]
+${JSON.stringify(userProfile, null, 2)}
+
+[[INSTRUÇÕES CRÍTICAS - SIGA EXATAMENTE]]
+
+O usuário JÁ FORNECEU: destino, datas e orçamento.
+
+**FASE 1 - LOGÍSTICA (FAÇA AGORA):**
+1. Busque voos: chame search_flights
+2. Busque hotel: chame search_hotels  
+3. Apresente AS DUAS opções ao usuário com links reais
+4. **IMEDIATAMENTE** após mostrar voo E hotel, você DEVE chamar a tool request_logistics_approval
+
+⚠️ REGRA OBRIGATÓRIA: Depois de apresentar voo e hotel, a PRÓXIMA AÇÃO deve ser chamar request_logistics_approval. NÃO apenas mencione aprovação, CHAME A TOOL.
+
+**FASE 2 - ROTEIRO (SÓ APÓS APROVAÇÃO):**
+- Aguarde o usuário aprovar (ele dirá algo como "aprovado", "ok", "pode prosseguir")
+- Crie roteiro dia-a-dia com links para TODOS os lugares
+- Ao finalizar, chame submit_final_itinerary
+
+[[LINKS OBRIGATÓRIOS]]
+- Todo restaurante/atração DEVE ter link
+- Se search_places não retornar URL: https://www.google.com/maps/search/?api=1&query=NOME+DO+LUGAR
+
+Comece buscando voos e hotéis AGORA.`;
+
+        let currentMessages = [...messages];
+        let loopCount = 0;
+        const MAX_LOOPS = 20;
+
+        // 4. Tool Execution Loop
+        while (loopCount < MAX_LOOPS) {
+            loopCount++;
+            console.log(`[Agent Loop ${loopCount}/${MAX_LOOPS}] Starting iteration...`);
+
+            const response = await anthropic.messages.create({
+                model: "claude-sonnet-4-5-20250929",
+                max_tokens: 8192,
+                system: systemPrompt,
+                messages: currentMessages,
+                tools: [
+                    {
+                        name: "search_flights",
+                        description: "Busca voos reais via Amadeus.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                origin: { type: "string" },
+                                destination: { type: "string" },
+                                departureDate: { type: "string" },
+                                adults: { type: "integer" }
+                            },
+                            required: ["origin", "destination", "departureDate"]
+                        }
+                    },
+                    {
+                        name: "search_hotels",
+                        description: "Busca hotéis disponíveis via Amadeus.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                cityCode: { type: "string" },
+                                checkInDate: { type: "string" },
+                                checkOutDate: { type: "string" },
+                                budget_max: { type: "number" }
+                            },
+                            required: ["cityCode", "checkInDate", "checkOutDate"]
+                        }
+                    },
+                    {
+                        name: "search_places",
+                        description: "Busca restaurantes e atrações via Google Places.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                query: { type: "string" },
+                                location: { type: "string" },
+                                category: { type: "string", enum: ["food", "attraction", "nightlife", "shopping"] }
+                            },
+                            required: ["query", "location"]
+                        }
+                    },
+                    {
+                        name: "request_logistics_approval",
+                        description: "Chame esta tool APÓS apresentar as opções de voo e hotel para solicitar a aprovação do usuário antes de criar o roteiro detalhado.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                summary: { type: "string", description: "Resumo do que precisa ser aprovado (ex: 'Voo X e Hotel Y')" }
+                            },
+                            required: ["summary"]
+                        }
+                    },
+                    {
+                        name: "submit_final_itinerary",
+                        description: "Chame esta função APENAS quando o roteiro estiver pronto e aprovado. Isso salvará o plano no banco de dados.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                trip_title: { type: "string" },
+                                destination: { type: "string" },
+                                start_date: { type: "string" },
+                                end_date: { type: "string" },
+                                budget: { type: "string" },
+                                travelers: { type: "integer" },
+                                days: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            date: { type: "string" },
+                                            morning_activity: {
+                                                type: "object",
+                                                properties: {
+                                                    title: { type: "string" },
+                                                    location: { type: "string" },
+                                                    type: { type: "string" }
+                                                }
+                                            },
+                                            lunch_spot: {
+                                                type: "object",
+                                                properties: {
+                                                    name: { type: "string" },
+                                                    cuisine: { type: "string" },
+                                                    price_level: { type: "string" }
+                                                }
+                                            },
+                                            afternoon_activity: {
+                                                type: "object",
+                                                properties: {
+                                                    title: { type: "string" },
+                                                    location: { type: "string" }
+                                                }
+                                            },
+                                            dinner_spot: {
+                                                type: "object",
+                                                properties: {
+                                                    name: { type: "string" },
+                                                    cuisine: { type: "string" },
+                                                    booking_required: { type: "boolean" }
+                                                }
+                                            }
+                                        },
+                                        required: ["date"]
+                                    }
+                                }
+                            },
+                            required: ["trip_title", "destination", "start_date", "end_date", "days"]
+                        }
+                    }
+                ]
+            });
+
+            console.log(`[Agent Loop ${loopCount}] Stop reason: ${response.stop_reason}`);
+
+            if (response.stop_reason === 'tool_use') {
+                const toolUses = response.content.filter(block => block.type === 'tool_use');
+
+                if (toolUses.length === 0) {
+                    console.log(`[Agent Loop ${loopCount}] No tool uses found, breaking...`);
+                    break;
+                }
+
+                console.log(`[Agent Loop ${loopCount}] Tools called: ${toolUses.map(t => t.name).join(', ')}`);
+
+                // Check if there's text content along with tool calls
+                const textContent = response.content.find(c => c.type === 'text');
+                if (textContent) {
+                    console.log(`[Agent Loop ${loopCount}] Agent message preview: ${textContent.text.substring(0, 150)}...`);
+                }
+
+                currentMessages.push({
+                    role: "assistant",
+                    content: response.content
+                });
+
+                // Check for final submission FIRST
+                const submitTool = toolUses.find(t => t.name === 'submit_final_itinerary');
+                if (submitTool) {
+                    console.log("[SUBMIT] Submitting final itinerary to DB...");
+
+                    try {
+                        const supabase = await createClient();
+                        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+                        if (authError || !user) {
+                            console.error("[SUBMIT] Auth error:", authError);
+                            throw new Error("Usuário não autenticado");
+                        }
+
+                        console.log("[SUBMIT] User authenticated:", user.id);
+
+                        const input = submitTool.input as any;
+
+                        // 1. Insert Trip
+                        const { data: trip, error: tripError } = await supabase
+                            .from('trips')
+                            .insert({
+                                user_id: user.id,
+                                title: input.trip_title,
+                                destination: input.destination,
+                                start_date: input.start_date,
+                                end_date: input.end_date,
+                                budget: input.budget,
+                                travelers: input.travelers
+                            })
+                            .select()
+                            .single();
+
+                        if (tripError) {
+                            console.error("[SUBMIT] Trip insert error:", tripError);
+                            throw new Error("Erro ao criar viagem: " + tripError.message);
+                        }
+
+                        console.log("[SUBMIT] Trip inserted:", trip.id);
+
+                        // 2. Insert Itinerary Items
+                        const itineraryItems = [];
+                        for (const day of input.days) {
+                            if (day.morning_activity) {
+                                itineraryItems.push({
+                                    trip_id: trip.id,
+                                    date: day.date,
+                                    period: 'morning',
+                                    title: day.morning_activity.title,
+                                    location: day.morning_activity.location,
+                                    details: day.morning_activity
+                                });
+                            }
+                            if (day.lunch_spot) {
+                                itineraryItems.push({
+                                    trip_id: trip.id,
+                                    date: day.date,
+                                    period: 'lunch',
+                                    title: day.lunch_spot.name,
+                                    location: day.lunch_spot.name,
+                                    details: day.lunch_spot
+                                });
+                            }
+                            if (day.afternoon_activity) {
+                                itineraryItems.push({
+                                    trip_id: trip.id,
+                                    date: day.date,
+                                    period: 'afternoon',
+                                    title: day.afternoon_activity.title,
+                                    location: day.afternoon_activity.location,
+                                    details: day.afternoon_activity
+                                });
+                            }
+                            if (day.dinner_spot) {
+                                itineraryItems.push({
+                                    trip_id: trip.id,
+                                    date: day.date,
+                                    period: 'dinner',
+                                    title: day.dinner_spot.name,
+                                    location: day.dinner_spot.name,
+                                    details: day.dinner_spot
+                                });
+                            }
+                        }
+
+                        if (itineraryItems.length > 0) {
+                            const { error: itemsError } = await supabase.from('itinerary_items').insert(itineraryItems);
+                            if (itemsError) {
+                                console.error("[SUBMIT] Items insert error:", itemsError);
+                                throw new Error("Erro ao salvar itens do roteiro: " + itemsError.message);
+                            }
+                        }
+
+                        console.log("[SUBMIT] Success! Trip saved with", itineraryItems.length, "items");
+
+                        return NextResponse.json({
+                            success: true,
+                            itinerary: input,
+                            message: 'Roteiro salvo com sucesso!',
+                            tool_use: submitTool
+                        });
+
+                    } catch (dbError: any) {
+                        console.error("[SUBMIT] FATAL ERROR:", dbError);
+                        return NextResponse.json({ error: "Erro ao salvar roteiro: " + dbError.message }, { status: 500 });
+                    }
+                }
+
+                // Execute ALL tools in parallel with individual error handling
+                const toolResults = await Promise.all(toolUses.map(async (toolUse) => {
+                    try {
+                        const result = await executeToolCall(toolUse);
+                        return {
+                            type: "tool_result",
+                            tool_use_id: toolUse.id,
+                            content: JSON.stringify(result)
+                        };
+                    } catch (toolError: any) {
+                        console.error(`[Agent Loop ${loopCount}] Error executing ${toolUse.name}:`, toolError);
+                        return {
+                            type: "tool_result",
+                            tool_use_id: toolUse.id,
+                            content: JSON.stringify({ error: `Failed to execute tool: ${toolError.message}` }),
+                            is_error: true
+                        };
+                    }
+                }));
+
+                currentMessages.push({
+                    role: "user",
+                    content: toolResults
+                });
+
+                // If request_logistics_approval was called, return to frontend to show the button
+                if (toolUses.some(t => t.name === 'request_logistics_approval')) {
+                    console.log(`[Agent Loop ${loopCount}] Returning to frontend for logistics approval...`);
+                    return NextResponse.json({
+                        content: response.content,
+                        stop_reason: 'tool_use',
+                        tool_use: toolUses.find(t => t.name === 'request_logistics_approval')
+                    });
+                }
+
+                continue;
+
+            } else {
+                console.log(`[Agent Loop ${loopCount}] Agent finished with: ${response.stop_reason}`);
+                return NextResponse.json({
+                    content: response.content,
+                    stop_reason: response.stop_reason
+                });
+            }
+        }
+
+        console.error(`[Agent Loop] MAX_LOOPS (${MAX_LOOPS}) exceeded!`);
+        return NextResponse.json({ error: "Limite de interações excedido" }, { status: 500 });
+
+    } catch (error: any) {
+        console.error('ERRO FATAL NA API:', error);
         return NextResponse.json(
-            { error: 'Erro ao processar requisição' },
+            { error: 'Erro interno no servidor: ' + (error.message || 'Desconhecido') },
             { status: 500 }
         );
     }
 }
 
 async function executeToolCall(toolUse: any) {
-    console.log(`Executing tool: ${toolUse.name}`);
+    console.log(`[Tool] Executing: ${toolUse.name}`);
 
     switch (toolUse.name) {
         case 'search_flights':
@@ -219,6 +405,8 @@ async function executeToolCall(toolUse: any) {
                 toolUse.input.query,
                 toolUse.input.location
             );
+        case 'request_logistics_approval':
+            return { status: "waiting_for_user_approval", message: "User will see approval button." };
         default:
             return { error: 'Tool não implementada' };
     }

@@ -13,7 +13,7 @@ interface Message {
     id: string
     sender: 'aurora' | 'user'
     text: string
-    type?: 'text' | 'action-location' | 'action-date' | 'action-budget'
+    type?: 'text' | 'action-location' | 'action-date' | 'action-budget' | 'action-view-itinerary' | 'action-approve-logistics'
 }
 
 interface NewTripChatProps {

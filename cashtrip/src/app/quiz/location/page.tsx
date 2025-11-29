@@ -5,32 +5,56 @@ import { useRouter } from "next/navigation";
 import { useQuiz } from "@/contexts/QuizContext";
 import QuizAnimationWrapper from "@/components/quiz/QuizAnimationWrapper";
 import { motion } from "framer-motion";
+import { LocationModal } from "@/components/trips/new/LocationModal";
+import { FiMapPin } from "react-icons/fi";
 
 export default function QuizLocationPage() {
   const router = useRouter();
   const { responses, saveResponse } = useQuiz();
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Load existing response
   useEffect(() => {
     if (responses.location) {
-      setState(responses.location.state || "");
-      setCity(responses.location.city || "");
+      // Reconstruct location string from state and city
+      const { state, city } = responses.location;
+      if (city && state) {
+        setSelectedLocation(`${city}, ${state}`);
+      }
     }
   }, [responses]);
 
+  const handleLocationSelect = (location: string) => {
+    setSelectedLocation(location);
+    setIsModalOpen(false);
+
+    // Parse location to extract city and state
+    // Format is usually "City, State, Country" or "City, State"
+    const parts = location.split(',').map(p => p.trim());
+    const city = parts[0] || "";
+    const state = parts[1] || "";
+
+    // We'll save immediately or wait for user to click continue
+    // For consistency with original, we'll just set it and save on continue
+  };
+
   const handleContinue = async () => {
-    if (!state.trim() || !city.trim()) return;
+    if (!selectedLocation.trim()) return;
+
+    // Parse location
+    const parts = selectedLocation.split(',').map(p => p.trim());
+    const city = parts[0] || "";
+    const state = parts[1] || "";
 
     // Save to Supabase via Context
-    await saveResponse("location", { state: state.trim(), city: city.trim() });
+    await saveResponse("location", { state, city });
 
     // Redirect to next question
     router.push("/quiz/age");
   };
 
-  const isValid = state.trim().length > 0 && city.trim().length > 0;
+  const isValid = selectedLocation.trim().length > 0;
 
   return (
     <QuizAnimationWrapper className="min-h-screen bg-[#F1F1F1] px-4 py-[30px] pb-20">
@@ -55,52 +79,27 @@ export default function QuizLocationPage() {
         </div>
       </div>
 
-      {/* Campos de Input */}
+      {/* Location Selection Button */}
       <div className="flex flex-col items-center gap-10 py-[60px] mb-5">
-        {/* Campo Estado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="relative w-[344px] h-[86px]"
+          className="w-[344px]"
         >
-          <label
-            htmlFor="state"
-            className="absolute left-[23px] top-0 text-[16px] font-roboto font-normal text-[#E6502C] leading-[1.17em] bg-[#F1F1F1] px-1 z-10"
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full h-[86px] rounded-[30px] border-2 border-[#E6502C] bg-white px-6 flex items-center gap-4 text-left hover:border-[#FF5F38] transition-all group"
           >
-            Estado:
-          </label>
-          <input
-            id="state"
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            placeholder="Digite seu estado"
-            className="absolute top-[25px] w-full h-[61px] rounded-[30px] border border-[#E6502C] bg-white px-6 text-gray-700 outline-none focus:border-[#FF5F38] focus:border-2 transition-all"
-          />
-        </motion.div>
-
-        {/* Campo Cidade */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="relative w-[344px] h-[86px]"
-        >
-          <label
-            htmlFor="city"
-            className="absolute left-[23px] top-0 text-[16px] font-roboto font-normal text-[#E6502C] leading-[1.17em] bg-[#F1F1F1] px-1 z-10"
-          >
-            Cidade:
-          </label>
-          <input
-            id="city"
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Digite sua cidade"
-            className="absolute top-[25px] w-full h-[61px] rounded-[30px] border border-[#E6502C] bg-white px-6 text-gray-700 outline-none focus:border-[#FF5F38] focus:border-2 transition-all"
-          />
+            <FiMapPin className="text-[#FF5F38] text-2xl flex-shrink-0" />
+            <div className="flex-1">
+              {selectedLocation ? (
+                <p className="text-gray-700 font-roboto text-[16px]">{selectedLocation}</p>
+              ) : (
+                <p className="text-gray-400 font-roboto text-[16px]">Clique para selecionar sua localização</p>
+              )}
+            </div>
+          </button>
         </motion.div>
       </div>
 
@@ -129,6 +128,13 @@ export default function QuizLocationPage() {
           </svg>
         </motion.button>
       </div>
+
+      {/* Location Modal */}
+      <LocationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleLocationSelect}
+      />
     </QuizAnimationWrapper>
   );
 }
