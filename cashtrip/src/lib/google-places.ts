@@ -6,7 +6,32 @@ export async function searchPlaces(query: string, location: string) {
         const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
         if (!apiKey) {
-            return { error: 'Google Places API Key missing' };
+            console.warn('[Google Places] No API key - returning mock data');
+            return {
+                results: [
+                    {
+                        name: 'Restaurante Tradicional',
+                        address: `Centro, ${location}`,
+                        rating: 4.5,
+                        price_level: 'PRICE_LEVEL_MODERATE',
+                        type: 'restaurant'
+                    },
+                    {
+                        name: 'Atração Turística Principal',
+                        address: `Zona Turística, ${location}`,
+                        rating: 4.8,
+                        price_level: 'PRICE_LEVEL_INEXPENSIVE',
+                        type: 'tourist_attraction'
+                    },
+                    {
+                        name: 'Café Local',
+                        address: `Bairro Histórico, ${location}`,
+                        rating: 4.3,
+                        price_level: 'PRICE_LEVEL_INEXPENSIVE',
+                        type: 'cafe'
+                    }
+                ]
+            };
         }
 
         // Combine query and location for better search

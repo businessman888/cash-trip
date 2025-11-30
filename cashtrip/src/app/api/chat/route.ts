@@ -21,13 +21,11 @@ export async function POST(req: NextRequest) {
         const amadeusSecret = process.env.AMADEUS_API_SECRET || process.env.AMADEUS_CLIENT_SECRET;
 
         if (!amadeusKey || !amadeusSecret) {
-            console.error("CRITICAL: Amadeus keys are missing");
-            return NextResponse.json({ error: "Configuração de API ausente: Amadeus Keys" }, { status: 500 });
+            console.warn("WARNING: Amadeus keys are missing - will use mock data");
         }
 
         if (!process.env.GOOGLE_PLACES_API_KEY && !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-            console.error("CRITICAL: GOOGLE_PLACES_API_KEY (or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) is missing");
-            return NextResponse.json({ error: "Configuração de API ausente: GOOGLE_PLACES_API_KEY" }, { status: 500 });
+            console.warn("WARNING: GOOGLE_PLACES_API_KEY is missing - will use mock data");
         }
 
         // 2. Parse Request Body

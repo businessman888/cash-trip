@@ -110,11 +110,15 @@ export function ItineraryModal({ isOpen, onClose, onConfirm, onReject, itinerary
                         <div className="flex-1 overflow-y-auto p-6 space-y-8">
 
                             {/* Hero Image */}
-                            <div className="relative h-48 w-full rounded-[20px] overflow-hidden shadow-md">
+                            <div className="relative h-48 w-full rounded-[20px] overflow-hidden shadow-md bg-gradient-to-br from-orange-400 to-pink-500">
                                 <img
-                                    src={`https://source.unsplash.com/800x400/?${itinerary.destination},travel`}
+                                    src={`https://picsum.photos/seed/${encodeURIComponent(itinerary.destination)}/800/400`}
                                     alt={itinerary.destination}
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        // Fallback to a gradient if image fails to load
+                                        e.currentTarget.style.display = 'none'
+                                    }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
                                     <h1 className="text-2xl font-bold text-white font-inria-sans">{itinerary.trip_title}</h1>

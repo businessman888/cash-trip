@@ -48,6 +48,36 @@ async function getAccessToken() {
 }
 
 export async function searchFlights(origin: string, destination: string, departureDate: string, adults: number = 1) {
+    // Check if credentials are available
+    const clientId = process.env.AMADEUS_API_KEY || process.env.AMADEUS_CLIENT_ID;
+    const clientSecret = process.env.AMADEUS_API_SECRET || process.env.AMADEUS_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+        console.warn('[Amadeus] No credentials - returning mock flight data');
+        return {
+            results: [
+                {
+                    airline: 'LATAM',
+                    price: 'BRL 4500.00',
+                    duration: 'PT8H30M',
+                    stops: 0
+                },
+                {
+                    airline: 'GOL',
+                    price: 'BRL 4200.00',
+                    duration: 'PT9H15M',
+                    stops: 1
+                },
+                {
+                    airline: 'Azul',
+                    price: 'BRL 3950.00',
+                    duration: 'PT10H30M',
+                    stops: 1
+                }
+            ]
+        };
+    }
+
     try {
         const token = await getAccessToken();
         const url = `${AMADEUS_BASE_URL}/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${departureDate}&adults=${adults}&max=5`;
@@ -82,6 +112,36 @@ export async function searchFlights(origin: string, destination: string, departu
 }
 
 export async function searchHotels(cityCode: string, checkInDate: string, checkOutDate: string) {
+    // Check if credentials are available
+    const clientId = process.env.AMADEUS_API_KEY || process.env.AMADEUS_CLIENT_ID;
+    const clientSecret = process.env.AMADEUS_API_SECRET || process.env.AMADEUS_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+        console.warn('[Amadeus] No credentials - returning mock hotel data');
+        return {
+            results: [
+                {
+                    name: 'Hotel Boutique Premium',
+                    price_total: '850.00',
+                    currency: 'BRL',
+                    rating: 5
+                },
+                {
+                    name: 'Hotel Confort Centro',
+                    price_total: '450.00',
+                    currency: 'BRL',
+                    rating: 4
+                },
+                {
+                    name: 'Hotel Executivo',
+                    price_total: '350.00',
+                    currency: 'BRL',
+                    rating: 3
+                }
+            ]
+        };
+    }
+
     try {
         const token = await getAccessToken();
 

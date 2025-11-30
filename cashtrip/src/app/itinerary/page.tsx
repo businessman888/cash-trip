@@ -27,8 +27,68 @@ export default function ItineraryPage() {
     useEffect(() => {
         async function fetchLatestTrip() {
             try {
+                // First, check localStorage for the latest itinerary
+                const savedItinerary = localStorage.getItem('latest_itinerary')
+
+                if (savedItinerary) {
+                    console.log('[Itinerary Page] Found itinerary in localStorage')
+                    const itineraryData = JSON.parse(savedItinerary)
+                    console.log('[Itinerary Page] Itinerary data:', itineraryData)
+
+                    // Transform the itinerary data to match the expected format
+                    const transformedTrip = {
+                        id: 'local-' + Date.now(),
+                        title: itineraryData.trip_title || 'Minha Viagem',
+                        destination: itineraryData.destination,
+                        start_date: itineraryData.start_date,
+                        end_date: itineraryData.end_date,
+                        budget: itineraryData.budget || 'Não definido',
+                        travelers: itineraryData.travelers || 1,
+                        created_at: new Date().toISOString()
+                    }
+
+                    setTrip(transformedTrip)
+
+                    // Transform the days/activities to itinerary items
+                    const transformedItems: any[] = []
+
+                    if (itineraryData.days && Array.isArray(itineraryData.days)) {
+                        itineraryData.days.forEach((day: any) => {
+                            if (day.activities && Array.isArray(day.activities)) {
+                                day.activities.forEach((activity: any) => {
+                                    // Map time to period
+                                    let period = 'morning'
+                                    if (activity.time) {
+                                        const hour = parseInt(activity.time.split(':')[0])
+                                        if (hour >= 12 && hour < 14) period = 'lunch'
+                                        else if (hour >= 14 && hour < 18) period = 'afternoon'
+                                        else if (hour >= 18) period = 'dinner'
+                                    }
+
+                                    transformedItems.push({
+                                        id: `item-${day.date}-${activity.time}`,
+                                        date: day.date,
+                                        period: period,
+                                        title: activity.title,
+                                        location: activity.description || activity.title,
+                                        details: activity
+                                    })
+                                })
+                            }
+                        })
+                    }
+
+                    console.log('[Itinerary Page] Transformed items:', transformedItems)
+                    setItineraryItems(transformedItems)
+                    setLoading(false)
+                    return
+                }
+
+                // Fallback to Supabase if no localStorage data
+                console.log('[Itinerary Page] No localStorage data, checking Supabase...')
                 const { data: { user } } = await supabase.auth.getUser()
                 if (!user) {
+                    console.log('[Itinerary Page] No user found, redirecting to login')
                     router.push('/login')
                     return
                 }

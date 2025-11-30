@@ -504,85 +504,45 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
         await sendMessageToAgent(agentMessages)
     }
 
-    const handleConfirmItinerary = async () => {
+    const handleConfirmItinerary = () => {
         console.log('[handleConfirmItinerary] User confirmed itinerary')
+        console.log('[handleConfirmItinerary] Itinerary data:', generatedItinerary)
+
         setIsItineraryModalOpen(false)
-        const userMessage = "Aprovado"
-        setMessages(prev => [
-            ...prev,
-            {
-                id: Date.now().toString(),
-                sender: 'user',
-                text: userMessage,
-                type: 'text'
-            }
-        ])
 
-        setIsLoading(true)
+        if (!generatedItinerary) {
+            console.error('[handleConfirmItinerary] No itinerary data available')
+            return
+        }
 
-        // Build complete history for the agent
-        const history = [
-            { role: 'assistant', content: 'Olá! Para onde vamos na próxima aventura?' },
-            { role: 'user', content: tripDetails.location },
-            { role: 'assistant', content: 'Ótima escolha! E quais são as datas?' },
-            { role: 'user', content: `De ${tripDetails.startDate} até ${tripDetails.endDate}` },
-            { role: 'user', content: `Somos ${tripDetails.travelers} adultos com orçamento total de ${tripDetails.budget}` },
-            { role: 'assistant', content: 'Encontrei algumas opções de voos...' },
-            { role: 'user', content: `Selecionei a opção de voo` },
-            { role: 'assistant', content: 'Ótimo! Agora veja essas opções de hotel...' },
-            { role: 'user', content: `Selecionei a opção de hotel` },
-            { role: 'assistant', content: 'Perfeito! Vou criar seu roteiro...' },
-            { role: 'user', content: 'Criar roteiro' },
-            { role: 'assistant', content: 'Aqui está a proposta do roteiro...' },
-            { role: 'user', content: userMessage }
-        ]
-
-        console.log('[handleConfirmItinerary] Sending approval to agent...')
-
+        // Save itinerary to localStorage
         try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: history,
-                    userProfile: mockUserProfile,
-                    totalBudget: tripDetails.budget
-                })
-            })
+            localStorage.setItem('latest_itinerary', JSON.stringify(generatedItinerary))
+            console.log('[handleConfirmItinerary] Itinerary saved to localStorage')
 
-            const data = await response.json()
-            console.log('[handleConfirmItinerary] Response from agent:', data)
+            // Show success message
+            setMessages(prev => [
+                ...prev,
+                {
+                    id: Date.now().toString(),
+                    sender: 'user',
+                    text: 'Aprovado',
+                    type: 'text'
+                },
+                {
+                    id: (Date.now() + 1).toString(),
+                    sender: 'aurora',
+                    text: 'Roteiro confirmado! Redirecionando...',
+                    type: 'text'
+                }
+            ])
 
-            if (data.success) {
-                // Successfully saved
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: Date.now().toString(),
-                        sender: 'aurora',
-                        text: 'Roteiro salvo com sucesso! Redirecionando...',
-                        type: 'text'
-                    }
-                ])
-
-                // Redirect to trips page after a short delay
-                setTimeout(() => {
-                    router.push('/trips')
-                }, 1500)
-            } else if (data.error) {
-                console.error('[handleConfirmItinerary] Error:', data.error)
-                setMessages(prev => [
-                    ...prev,
-                    {
-                        id: Date.now().toString(),
-                        sender: 'aurora',
-                        text: `Erro ao salvar roteiro: ${data.error}`,
-                        type: 'text'
-                    }
-                ])
-            }
+            // Redirect to itinerary page
+            setTimeout(() => {
+                router.push('/itinerary')
+            }, 800)
         } catch (error) {
-            console.error('[handleConfirmItinerary] Error:', error)
+            console.error('[handleConfirmItinerary] Error saving to localStorage:', error)
             setMessages(prev => [
                 ...prev,
                 {
@@ -592,8 +552,6 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                     type: 'text'
                 }
             ])
-        } finally {
-            setIsLoading(false)
         }
     }
 
