@@ -64,10 +64,14 @@ ${JSON.stringify(userProfile, null, 2)}
 
 3. **CRIAÇÃO DE ROTEIRO (Passo Atual: Roteiro)**
    - O usuário JÁ selecionou voo E hotel.
-   - O usuário enviou o comando "Criar roteiro".
-   - CHAME \`propose_itinerary\` com um plano detalhado dia-a-dia.
+   - O usuário enviou EXATAMENTE o comando "Criar roteiro".
+   - IMEDIATAMENTE CHAME \`propose_itinerary\` com um plano detalhado dia-a-dia.
    - O frontend mostrará isso em um modal para aprovação.
-   - **IMPORTANTE:** NÃO faça buscas (search_places) para cada item do roteiro. Use seu conhecimento interno para preencher as atividades e chame a ferramenta IMEDIATAMENTE. O usuário quer ver o roteiro rápido.
+   - **CRÍTICO:** Quando você vir "Criar roteiro", sua ÚNICA ação deve ser chamar \`propose_itinerary\`.
+   - **NÃO** faça buscas (search_places) antes de propor o roteiro.
+   - **NÃO** envie mensagens de texto antes de chamar a ferramenta.
+   - Use seu conhecimento interno para criar atividades interessantes baseadas no perfil do usuário.
+   - O roteiro DEVE incluir: trip_title, destination, start_date, end_date, budget, travelers, flight_summary, hotel_summary, e days (array com atividades).
 
 4. **FINALIZAÇÃO (Passo Atual: Salvar)**
    - O usuário aprovou o roteiro ("Aprovado").
@@ -76,7 +80,8 @@ ${JSON.stringify(userProfile, null, 2)}
 [[REGRAS CRÍTICAS]]
 - NUNCA pule etapas. Não busque hotéis antes de ter o voo definido.
 - Sempre retorne pelo menos 2 opções de voo e 2 opções de hotel quando solicitado.
-- Para o roteiro, priorize velocidade: gere o JSON completo de uma vez só.`;
+- Para o roteiro, priorize velocidade: gere o JSON completo de uma vez só.
+- Quando o usuário disser "Criar roteiro", chame \`propose_itinerary\` IMEDIATAMENTE sem fazer outras buscas.`;
 
         let currentMessages = [...messages];
         let loopCount = 0;
@@ -86,6 +91,7 @@ ${JSON.stringify(userProfile, null, 2)}
         while (loopCount < MAX_LOOPS) {
             loopCount++;
             console.log(`[Agent Loop ${loopCount}/${MAX_LOOPS}] Starting iteration...`);
+            console.log(`[Agent Loop ${loopCount}] Last user message:`, currentMessages[currentMessages.length - 1]);
 
             const response = await anthropic.messages.create({
                 model: "claude-sonnet-4-5-20250929",
@@ -376,8 +382,12 @@ ${JSON.stringify(userProfile, null, 2)}
                 // If propose_itinerary or request_logistics_approval was called, return to frontend
                 const interactiveTool = toolUses.find(t => t.name === 'propose_itinerary' || t.name === 'request_logistics_approval');
                 if (interactiveTool) {
-                    console.log(`[Agent Loop ${loopCount}] Returning to frontend for interaction: ${interactiveTool.name}`);
-                    console.log(`[Agent Loop ${loopCount}] Tool input:`, JSON.stringify(interactiveTool.input, null, 2));
+                    console.log(`[Agent Loop ${loopCount}] ===== INTERACTIVE TOOL DETECTED =====`);
+                    console.log(`[Agent Loop ${loopCount}] Tool name: ${interactiveTool.name}`);
+                    console.log(`[Agent Loop ${loopCount}] Tool input structure:`, Object.keys(interactiveTool.input || {}));
+                    console.log(`[Agent Loop ${loopCount}] Full tool input:`, JSON.stringify(interactiveTool.input, null, 2));
+                    console.log(`[Agent Loop ${loopCount}] Response content blocks:`, response.content.map(c => c.type));
+                    console.log(`[Agent Loop ${loopCount}] ===== RETURNING TO FRONTEND =====`);
                     return NextResponse.json({
                         content: response.content,
                         stop_reason: 'tool_use',
