@@ -21,22 +21,25 @@ interface Message {
 }
 
 interface FlightOption {
-    id: number
+    id: string
     airline: string
-    departure: string
-    arrival: string
+    flightNumber: string
+    departure: { iataCode: string; at: string }
+    arrival: { iataCode: string; at: string }
     duration: string
-    price: number
-    details: string
+    price: { total: string; currency: string }
+    link?: string
 }
 
 interface HotelOption {
-    id: number
+    id: string
     name: string
     rating: number
-    location: string
-    price: number
-    details: string
+    description?: string
+    amenities?: string[]
+    price: { total: string; currency: string }
+    image?: string
+    link?: string
 }
 
 interface NewTripChatProps {
@@ -239,11 +242,12 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
             { role: 'user', content: `Somos ${details.travelers} adultos com orçamento total de ${details.budget}` }
         ]
 
-        await sendMessageToAgent(agentMessages)
+        await sendMessageToAgent(agentMessages, details.budget)
     }
 
-    const sendMessageToAgent = async (agentMessages: any[]) => {
-        console.log('[sendMessageToAgent] Calling API with:', { messages: agentMessages, userProfile: mockUserProfile, totalBudget: tripDetails.budget })
+    const sendMessageToAgent = async (agentMessages: any[], budget?: string) => {
+        const budgetToUse = budget || tripDetails.budget
+        console.log('[sendMessageToAgent] Calling API with:', { messages: agentMessages, userProfile: mockUserProfile, totalBudget: budgetToUse })
 
         // Create timeout controller
         const controller = new AbortController()
@@ -259,7 +263,7 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 body: JSON.stringify({
                     messages: agentMessages,
                     userProfile: mockUserProfile,
-                    totalBudget: tripDetails.budget
+                    totalBudget: budgetToUse
                 }),
                 signal: controller.signal
             })
@@ -288,6 +292,25 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 return
             }
 
+            // Handle Executed Actions (Data from Backend)
+            if (data.executed_actions && Array.isArray(data.executed_actions)) {
+                data.executed_actions.forEach((action: any) => {
+                    if (action.type === 'flight_data') {
+                        console.log('[sendMessageToAgent] Received flight data:', action.data)
+                        // Map backend data to frontend interface if needed, or just use it if it matches
+                        // Backend returns { results: FlightOffer[] }
+                        if (action.data.results) {
+                            setFlightOptions(action.data.results)
+                        }
+                    } else if (action.type === 'hotel_data') {
+                        console.log('[sendMessageToAgent] Received hotel data:', action.data)
+                        if (action.data.results) {
+                            setHotelOptions(action.data.results)
+                        }
+                    }
+                })
+            }
+
             // Handle Tool Calls
             if (data.stop_reason === 'tool_use') {
                 const toolUse = data.tool_use
@@ -295,13 +318,6 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                 console.log('[sendMessageToAgent] Full tool use object:', toolUse)
 
                 if (toolUse.name === 'search_flights') {
-                    // Mock flight options for now (in real app, these would come from the tool result)
-                    const mockFlights = [
-                        { id: 1, airline: 'Latam', departure: '10:00', arrival: '18:00', duration: '8h', price: 4500, details: 'Direto' },
-                        { id: 2, airline: 'Azul', departure: '14:00', arrival: '23:00', duration: '9h', price: 4200, details: '1 Parada' }
-                    ]
-                    setFlightOptions(mockFlights)
-
                     // Add message with flight options
                     setMessages(prev => [
                         ...prev,
@@ -313,13 +329,6 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                         }
                     ])
                 } else if (toolUse.name === 'search_hotels') {
-                    // Mock hotel options
-                    const mockHotels = [
-                        { id: 1, name: 'Park Hyatt Tokyo', rating: 5, location: 'Shinjuku', price: 7000, details: 'Luxo' },
-                        { id: 2, name: 'Hotel Gracery Shinjuku', rating: 4, location: 'Shinjuku', price: 4500, details: 'Moderno' }
-                    ]
-                    setHotelOptions(mockHotels)
-
                     setMessages(prev => [
                         ...prev,
                         {
@@ -405,10 +414,10 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
         }
     }
 
-    const handleFlightSelect = async (optionId: number) => {
+    const handleFlightSelect = async (optionId: string) => {
         const selectedFlightData = flightOptions.find(f => f.id === optionId)
         if (selectedFlightData) {
-            const userMessage = `Selecionei a opção ${optionId} de voo: ${selectedFlightData.airline}`
+            const userMessage = `Selecionei a opção de voo: ${selectedFlightData.airline} (${selectedFlightData.flightNumber})`
 
             setMessages(prev => [
                 ...prev,
@@ -437,10 +446,10 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
         }
     }
 
-    const handleHotelSelect = async (optionId: number) => {
+    const handleHotelSelect = async (optionId: string) => {
         const selectedHotelData = hotelOptions.find(h => h.id === optionId)
         if (selectedHotelData) {
-            const userMessage = `Selecionei a opção ${optionId} de hotel: ${selectedHotelData.name}`
+            const userMessage = `Selecionei a opção de hotel: ${selectedHotelData.name}`
 
             setMessages(prev => [
                 ...prev,
@@ -728,8 +737,9 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                                             <span className="font-bold text-[#FF5F38]">Opção {idx + 1}</span>
                                             <IoAirplane className="text-gray-400 group-hover:text-[#FF5F38]" />
                                         </div>
-                                        <p className="font-bold text-[var(--text-primary)]">{flight.airline}</p>
-                                        <p className="text-sm text-[var(--text-secondary)]">{flight.details} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(flight.price)}</p>
+                                        <p className="font-bold text-[var(--text-primary)]">{flight.airline} ({flight.flightNumber})</p>
+                                        <p className="text-sm text-[var(--text-secondary)]">{flight.duration} • {flight.price.currency} {flight.price.total}</p>
+                                        {flight.link && <a href={flight.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block" onClick={(e) => e.stopPropagation()}>Ver detalhes</a>}
                                     </button>
                                 ))}
                             </div>
@@ -749,7 +759,13 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                                             <IoBed className="text-gray-400 group-hover:text-[#FF5F38]" />
                                         </div>
                                         <p className="font-bold text-[var(--text-primary)]">{hotel.name}</p>
-                                        <p className="text-sm text-[var(--text-secondary)]">{hotel.details} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(hotel.price)}</p>
+                                        <div className="flex items-center gap-1 text-sm text-[var(--text-secondary)]">
+                                            <span>⭐ {hotel.rating}</span>
+                                            <span>•</span>
+                                            <span>{hotel.price.currency} {hotel.price.total}</span>
+                                        </div>
+                                        {hotel.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{hotel.description}</p>}
+                                        {hotel.link && <a href={hotel.link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block" onClick={(e) => e.stopPropagation()}>Ver detalhes</a>}
                                     </button>
                                 ))}
                             </div>
