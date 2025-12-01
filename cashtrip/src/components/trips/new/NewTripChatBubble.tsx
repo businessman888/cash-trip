@@ -50,6 +50,8 @@ export function NewTripChatBubble({ message, sender }: NewTripChatBubbleProps) {
                             blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-white/30 pl-3 italic my-2 bg-white/10 p-2 rounded-r" {...props} />,
                             // Style horizontal rules
                             hr: ({ node, ...props }) => <hr className="border-white/20 my-4" {...props} />,
+                            // Style links
+                            a: ({ node, ...props }) => <a className="text-blue-200 hover:text-white underline decoration-blue-200/50 hover:decoration-white transition-colors font-bold" target="_blank" rel="noopener noreferrer" {...props} />,
                         }}
                     >
                         {message}

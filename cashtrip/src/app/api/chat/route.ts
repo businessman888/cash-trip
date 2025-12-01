@@ -52,12 +52,14 @@ ${JSON.stringify(userProfile, null, 2)}
 1. **BUSCA DE VOOS (Passo Atual: Voos)**
    - O usuário informou destino e datas.
    - CHAME \`search_flights\` para buscar opções reais.
+   - **OBRIGATÓRIO:** Ao apresentar as opções, inclua o LINK de reserva (campo \`link\` do JSON) para cada voo.
    - NÃO busque hotéis ainda.
    - PARE e aguarde o usuário selecionar uma opção de voo.
 
 2. **BUSCA DE HOTÉIS (Passo Atual: Hotéis)**
    - O usuário JÁ selecionou o voo (você verá na mensagem "Selecionei a opção X de voo").
    - CHAME \`search_hotels\` para buscar opções reais na cidade de destino.
+   - **OBRIGATÓRIO:** Ao apresentar as opções, inclua o LINK de reserva (campo \`link\` do JSON) para cada hotel.
    - PARE e aguarde o usuário selecionar uma opção de hotel.
 
 3. **CRIAÇÃO DE ROTEIRO (Passo Atual: Roteiro)**
@@ -353,9 +355,18 @@ ${JSON.stringify(userProfile, null, 2)}
                 }
 
                 // Execute ALL tools in parallel with individual error handling
+                const executedActions: any[] = [];
                 const toolResults = await Promise.all(toolUses.map(async (toolUse) => {
                     try {
                         const result = await executeToolCall(toolUse);
+
+                        // Collect flight and hotel data for frontend
+                        if (toolUse.name === 'search_flights' && 'results' in result && result.results) {
+                            executedActions.push({ type: 'flight_data', data: result });
+                        } else if (toolUse.name === 'search_hotels' && 'results' in result && result.results) {
+                            executedActions.push({ type: 'hotel_data', data: result });
+                        }
+
                         return {
                             type: "tool_result",
                             tool_use_id: toolUse.id,
@@ -389,7 +400,8 @@ ${JSON.stringify(userProfile, null, 2)}
                     return NextResponse.json({
                         content: response.content,
                         stop_reason: 'tool_use',
-                        tool_use: interactiveTool
+                        tool_use: interactiveTool,
+                        executed_actions: executedActions
                     });
                 }
 

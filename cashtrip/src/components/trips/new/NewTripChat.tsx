@@ -300,6 +300,8 @@ export function NewTripChat({ currentStep, onStepChange }: NewTripChatProps) {
                         // Map backend data to frontend interface if needed, or just use it if it matches
                         // Backend returns { results: FlightOffer[] }
                         if (action.data.results) {
+                            console.log('[sendMessageToAgent] First flight:', action.data.results[0])
+                            console.log('[sendMessageToAgent] First flight has link?', action.data.results[0]?.link)
                             setFlightOptions(action.data.results)
                         }
                     } else if (action.type === 'hotel_data') {

@@ -10,8 +10,8 @@ export interface FlightOffer {
     id: string;
     airline: string;
     flightNumber: string;
-    departure: { iata: string; at: string };
-    arrival: { iata: string; at: string };
+    departure: { iataCode: string; at: string };
+    arrival: { iataCode: string; at: string };
     duration: string;
     price: { currency: string; total: string };
     stops: number;
@@ -101,8 +101,8 @@ export async function searchFlights(
                 id: generateId(`LATAM-${destination}-1`),
                 airline: 'LATAM Airlines',
                 flightNumber: 'LA3456',
-                departure: { iata: origin, at: `${departureDate}T08:00:00` },
-                arrival: { iata: destination, at: `${departureDate}T11:30:00` },
+                departure: { iataCode: origin, at: `${departureDate}T08:00:00` },
+                arrival: { iataCode: destination, at: `${departureDate}T11:30:00` },
                 duration: 'PT3H30M',
                 price: { currency: 'BRL', total: '1250.00' },
                 stops: 0,
@@ -112,8 +112,8 @@ export async function searchFlights(
                 id: generateId(`GOL-${destination}-1`),
                 airline: 'GOL Linhas Aéreas',
                 flightNumber: 'G31234',
-                departure: { iata: origin, at: `${departureDate}T14:00:00` },
-                arrival: { iata: destination, at: `${departureDate}T17:45:00` },
+                departure: { iataCode: origin, at: `${departureDate}T14:00:00` },
+                arrival: { iataCode: destination, at: `${departureDate}T17:45:00` },
                 duration: 'PT3H45M',
                 price: { currency: 'BRL', total: '1100.00' },
                 stops: 0,
@@ -123,8 +123,8 @@ export async function searchFlights(
                 id: generateId(`AZUL-${destination}-1`),
                 airline: 'Azul Linhas Aéreas',
                 flightNumber: 'AD5678',
-                departure: { iata: origin, at: `${departureDate}T09:30:00` },
-                arrival: { iata: destination, at: `${departureDate}T14:00:00` },
+                departure: { iataCode: origin, at: `${departureDate}T09:30:00` },
+                arrival: { iataCode: destination, at: `${departureDate}T14:00:00` },
                 duration: 'PT4H30M',
                 price: { currency: 'BRL', total: '1450.00' },
                 stops: 1,
