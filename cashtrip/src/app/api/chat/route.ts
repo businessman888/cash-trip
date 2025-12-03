@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
-import { searchFlights, searchHotels } from '@/lib/amadeus';
+import { searchFlights, getAffiliateLink } from '@/lib/travelpayout';
+import { searchHotels } from '@/lib/amadeus';
 import { searchPlaces } from '@/lib/google-places';
 import { createClient } from '@/lib/supabase/server';
 
@@ -51,8 +52,13 @@ ${JSON.stringify(userProfile, null, 2)}
 
 1. **BUSCA DE VOOS (Passo Atual: Voos)**
    - O usuário informou destino e datas.
-   - CHAME \`search_flights\` para buscar opções reais.
-   - **OBRIGATÓRIO:** Ao apresentar as opções, inclua o LINK de reserva (campo \`link\` do JSON) para cada voo.
+   - **ORIGEM PADRÃO:** Use "São Paulo" como cidade de origem para todos os voos.
+   - CHAME \`search_flights\` com origin="São Paulo", destination=[cidade informada], departureDate=[data], adults=[número de pessoas].
+   - **IMPORTANTE:** Os resultados incluirão metadados (searchId, resultsUrl, proposalId).
+   - Apresente as opções ao usuário.
+   - **QUANDO O USUÁRIO SELECIONAR UM VOO:**
+     - CHAME \`get_flight_link\` usando os metadados do voo escolhido.
+     - Apresente o LINK FINAL retornado pela tool para o usuário completar a compra.
    - NÃO busque hotéis ainda.
    - PARE e aguarde o usuário selecionar uma opção de voo.
 
@@ -101,7 +107,7 @@ ${JSON.stringify(userProfile, null, 2)}
                 tools: [
                     {
                         name: "search_flights",
-                        description: "Busca voos reais via Amadeus. Retorna lista de opções.",
+                        description: "Busca voos reais via Travelpayout. Retorna lista de opções.",
                         input_schema: {
                             type: "object",
                             properties: {
@@ -111,6 +117,19 @@ ${JSON.stringify(userProfile, null, 2)}
                                 adults: { type: "integer" }
                             },
                             required: ["origin", "destination", "departureDate"]
+                        }
+                    },
+                    {
+                        name: "get_flight_link",
+                        description: "Gera o link final de compra para um voo selecionado. Use APÓS o usuário escolher um voo.",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                searchId: { type: "string" },
+                                resultsUrl: { type: "string" },
+                                proposalId: { type: "string" }
+                            },
+                            required: ["searchId", "resultsUrl", "proposalId"]
                         }
                     },
                     {
@@ -361,9 +380,9 @@ ${JSON.stringify(userProfile, null, 2)}
                         const result = await executeToolCall(toolUse);
 
                         // Collect flight and hotel data for frontend
-                        if (toolUse.name === 'search_flights' && 'results' in result && result.results) {
+                        if (toolUse.name === 'search_flights' && typeof result === 'object' && result !== null && 'results' in result && (result as any).results) {
                             executedActions.push({ type: 'flight_data', data: result });
-                        } else if (toolUse.name === 'search_hotels' && 'results' in result && result.results) {
+                        } else if (toolUse.name === 'search_hotels' && typeof result === 'object' && result !== null && 'results' in result && (result as any).results) {
                             executedActions.push({ type: 'hotel_data', data: result });
                         }
 
@@ -439,6 +458,13 @@ async function executeToolCall(toolUse: any) {
                 toolUse.input.departureDate,
                 toolUse.input.adults
             );
+        case 'get_flight_link':
+            const url = await getAffiliateLink(
+                toolUse.input.searchId,
+                toolUse.input.resultsUrl,
+                toolUse.input.proposalId
+            );
+            return { url };
         case 'search_hotels':
             return await searchHotels(
                 toolUse.input.cityCode,
